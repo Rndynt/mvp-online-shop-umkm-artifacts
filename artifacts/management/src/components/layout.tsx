@@ -7,6 +7,8 @@ import {
   BarChart3,
   Settings,
   Menu,
+  Tag,
+  Truck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -14,12 +16,33 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import type { ReactNode } from 'react';
 
-const navItems = [
-  { href: '/', label: 'Kelola Produk', icon: Package },
-  { href: '/orders', label: 'Manajemen Order', icon: ShoppingCart },
-  { href: '/analytics', label: 'Analitik', icon: BarChart3 },
-  { href: '/settings', label: 'Pengaturan Toko', icon: Settings },
+const NAV_GROUPS = [
+  {
+    label: 'Katalog',
+    items: [
+      { href: '/', label: 'Kelola Produk', icon: Package },
+    ],
+  },
+  {
+    label: 'Penjualan',
+    items: [
+      { href: '/orders', label: 'Manajemen Order', icon: ShoppingCart },
+      { href: '/discounts', label: 'Kode Promo', icon: Tag },
+    ],
+  },
+  {
+    label: 'Toko',
+    items: [
+      { href: '/shipping', label: 'Pengiriman', icon: Truck },
+      { href: '/analytics', label: 'Analitik', icon: BarChart3 },
+      { href: '/settings', label: 'Pengaturan', icon: Settings },
+    ],
+  },
 ];
+
+function isActive(href: string, location: string) {
+  return href === '/' ? location === '/' : location.startsWith(href);
+}
 
 function SidebarContent({ location, onNavigate }: { location: string; onNavigate?: () => void }) {
   return (
@@ -33,29 +56,40 @@ function SidebarContent({ location, onNavigate }: { location: string; onNavigate
           <p className="text-xs text-slate-400 leading-tight">Management</p>
         </div>
       </div>
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = href === '/' ? location === '/' : location.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={onNavigate}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                active
-                  ? 'bg-teal-50 text-teal-700 ring-1 ring-teal-100'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
-              )}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </Link>
-          );
-        })}
+
+      <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label}>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-1.5">
+              {group.label}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map(({ href, label, icon: Icon }) => {
+                const active = isActive(href, location);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={onNavigate}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                      active
+                        ? 'bg-teal-50 text-teal-700 ring-1 ring-teal-100'
+                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
+
       <div className="px-5 py-4 border-t border-slate-200">
-        <a href="/" className="text-xs text-slate-400 hover:text-slate-600 transition-colors">
+        <a href="/" className="text-xs text-slate-400 hover:text-teal-600 transition-colors">
           Lihat Storefront &rarr;
         </a>
       </div>
