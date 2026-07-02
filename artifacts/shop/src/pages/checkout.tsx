@@ -117,7 +117,7 @@ export default function CheckoutPage() {
     };
 
     try {
-      const result = await createCheckout.mutateAsync(payload);
+      const result = await createCheckout.mutateAsync({ data: payload });
       clearCart();
       navigate(`/orders/${result.data.orderCode}`);
     } catch (err) {
