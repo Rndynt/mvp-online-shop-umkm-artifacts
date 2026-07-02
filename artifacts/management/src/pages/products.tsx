@@ -54,7 +54,7 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
     <Badge
       className={
         isActive
-          ? 'bg-indigo-50 text-indigo-700 hover:bg-indigo-50 ring-1 ring-inset ring-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:ring-indigo-500/20'
+          ? 'bg-teal-50 text-teal-700 hover:bg-teal-50 ring-1 ring-inset ring-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:ring-teal-500/20'
           : 'bg-slate-100 text-slate-500 hover:bg-slate-100 ring-1 ring-inset ring-slate-200 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10'
       }
     >
@@ -94,7 +94,7 @@ export default function ProductsPage() {
         </div>
         <Button
           onClick={() => navigate('/products/new')}
-          className="bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 w-full sm:w-auto"
+          className="bg-teal-700 hover:bg-teal-800 shadow-sm shadow-teal-900/20 w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Tambah Produk

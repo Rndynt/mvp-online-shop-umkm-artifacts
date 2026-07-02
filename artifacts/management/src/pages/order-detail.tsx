@@ -54,7 +54,7 @@ export default function OrderDetailPage() {
     return (
       <div className="p-8 text-center">
         <p className="text-slate-500 text-sm">Order tidak ditemukan.</p>
-        <button onClick={() => navigate('/orders')} className="text-indigo-600 text-sm mt-2 hover:underline">
+        <button onClick={() => navigate('/orders')} className="text-teal-600 text-sm mt-2 hover:underline">
           Kembali ke Manajemen Order
         </button>
       </div>

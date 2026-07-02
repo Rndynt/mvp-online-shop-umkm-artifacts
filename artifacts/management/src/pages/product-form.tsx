@@ -236,7 +236,7 @@ export default function ProductFormPage() {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-600/25">
+          <Button type="submit" disabled={submitting} className="bg-teal-700 hover:bg-teal-800 shadow-sm shadow-teal-900/25">
             {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate('/')}>

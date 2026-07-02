@@ -18,10 +18,10 @@ const queryClient = new QueryClient({
 function ComingSoon({ icon: Icon, title }: { icon: typeof Settings; title: string }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center max-w-lg mx-auto w-full min-h-[70vh]">
-      <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 ring-1 ring-indigo-100">
-        <Clock className="w-8 h-8 text-indigo-600" />
+      <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 ring-1 ring-teal-100">
+        <Clock className="w-8 h-8 text-teal-600" />
       </div>
-      <span className="inline-block bg-indigo-50 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full ring-1 ring-indigo-200 mb-4">
+      <span className="inline-block bg-teal-50 text-teal-700 text-xs font-medium px-3 py-1 rounded-full ring-1 ring-teal-200 mb-4">
         Segera Hadir
       </span>
       <h1 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">{title}</h1>

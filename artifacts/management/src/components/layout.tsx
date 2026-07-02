@@ -74,7 +74,7 @@ function NavLinks({
                 )}
               />
             )}
-            <Icon className={cn('w-[18px] h-[18px] shrink-0', active && 'text-indigo-400')} />
+            <Icon className={cn('w-[18px] h-[18px] shrink-0', active && 'text-teal-400')} />
             {!collapsed && <span className="truncate">{label}</span>}
           </Link>
         );
@@ -102,7 +102,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <Menu className="w-5 h-5" />
           </Button>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shrink-0">
               <Store className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="font-semibold text-slate-900 dark:text-white text-sm truncate">RukoLite</span>
