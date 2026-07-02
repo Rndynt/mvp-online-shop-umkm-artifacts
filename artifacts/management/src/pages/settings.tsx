@@ -51,7 +51,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">Pengaturan Toko</h1>
         <p className="text-slate-500 text-sm mt-0.5">Kelola informasi dan preferensi toko Anda</p>

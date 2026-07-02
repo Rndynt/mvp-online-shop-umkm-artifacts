@@ -63,7 +63,7 @@ const maxVal = Math.max(...MONTHLY.map((m) => m.value));
 
 export default function AnalyticsPage() {
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">Analitik</h1>
         <p className="text-slate-500 text-sm mt-0.5">Ringkasan performa toko Anda</p>

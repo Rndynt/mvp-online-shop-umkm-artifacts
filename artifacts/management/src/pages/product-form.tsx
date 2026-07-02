@@ -145,7 +145,7 @@ export default function ProductFormPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
       <button
         onClick={() => navigate('/')}
         className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-teal-600 mb-5 transition-colors"
