@@ -20,6 +20,10 @@ tags:
     description: Checkout & order creation
   - name: orders
     description: Order management
+  - name: admin-products
+    description: Admin product management
+  - name: admin-orders
+    description: Admin order management
 
 paths:
   /healthz:
@@ -231,8 +235,329 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /admin/products:
+    get:
+      operationId: adminListProducts
+      tags: [admin-products]
+      summary: List all products (admin)
+      responses:
+        "200":
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AdminProduct"
+    post:
+      operationId: adminCreateProduct
+      tags: [admin-products]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminProductInput"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AdminProduct"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/products/{id}:
+    get:
+      operationId: adminGetProduct
+      tags: [admin-products]
+      summary: Get a product by id (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AdminProduct"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: adminUpdateProduct
+      tags: [admin-products]
+      summary: Update a product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminProductInput"
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/AdminProduct"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: adminDeleteProduct
+      tags: [admin-products]
+      summary: Delete a product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [success]
+                    properties:
+                      success:
+                        type: boolean
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/orders:
+    get:
+      operationId: adminListOrders
+      tags: [admin-orders]
+      summary: List all orders (admin)
+      parameters:
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AdminOrderListItem"
+
+  /admin/orders/{orderCode}:
+    get:
+      operationId: adminGetOrder
+      tags: [admin-orders]
+      summary: Get order detail (admin)
+      parameters:
+        - in: path
+          name: orderCode
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/OrderResponse"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/orders/{orderCode}/status:
+    patch:
+      operationId: adminUpdateOrderStatus
+      tags: [admin-orders]
+      summary: Update order status (admin)
+      parameters:
+        - in: path
+          name: orderCode
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminOrderStatusInput"
+      responses:
+        "200":
+          description: Order status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/OrderResponse"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
+    AdminProduct:
+      type: object
+      required: [id, name, slug, price, stockQuantity, isActive, images]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        shortDescription:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+        compareAtPrice:
+          type: integer
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        stockQuantity:
+          type: integer
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductImage"
+
+    AdminProductInput:
+      type: object
+      required: [name, slug, price, stockQuantity]
+      properties:
+        name:
+          type: string
+        slug:
+          type: string
+        shortDescription:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+        compareAtPrice:
+          type: integer
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        stockQuantity:
+          type: integer
+        isActive:
+          type: boolean
+        imageUrl:
+          type: string
+          nullable: true
+
+    AdminOrderStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending_payment, payment_review, paid, processing, shipped, completed, cancelled]
+
+    AdminOrderListItem:
+      type: object
+      required: [id, orderCode, customerEmail, status, totalAmount, currency, createdAt]
+      properties:
+        id:
+          type: string
+        orderCode:
+          type: string
+        customerEmail:
+          type: string
+        status:
+          type: string
+        totalAmount:
+          type: integer
+        currency:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
     HealthStatus:
       type: object
       required: [status]

@@ -5,6 +5,68 @@
  * RukoLite Online Shop UMKM MVP API
  * OpenAPI spec version: 0.1.0
  */
+export interface ProductImage {
+  id: string;
+  url: string;
+  alt?: string | null;
+  sortOrder: number;
+}
+
+export interface AdminProduct {
+  id: string;
+  name: string;
+  slug: string;
+  shortDescription?: string | null;
+  description?: string | null;
+  price: number;
+  compareAtPrice?: number | null;
+  sku?: string | null;
+  stockQuantity: number;
+  isActive: boolean;
+  sortOrder?: number;
+  images: ProductImage[];
+}
+
+export interface AdminProductInput {
+  name: string;
+  slug: string;
+  shortDescription?: string | null;
+  description?: string | null;
+  price: number;
+  compareAtPrice?: number | null;
+  sku?: string | null;
+  stockQuantity: number;
+  isActive?: boolean;
+  imageUrl?: string | null;
+}
+
+export type AdminOrderStatusInputStatus = typeof AdminOrderStatusInputStatus[keyof typeof AdminOrderStatusInputStatus];
+
+
+export const AdminOrderStatusInputStatus = {
+  pending_payment: 'pending_payment',
+  payment_review: 'payment_review',
+  paid: 'paid',
+  processing: 'processing',
+  shipped: 'shipped',
+  completed: 'completed',
+  cancelled: 'cancelled',
+} as const;
+
+export interface AdminOrderStatusInput {
+  status: AdminOrderStatusInputStatus;
+}
+
+export interface AdminOrderListItem {
+  id: string;
+  orderCode: string;
+  customerEmail: string;
+  status: string;
+  totalAmount: number;
+  currency: string;
+  createdAt: string;
+}
+
 export interface HealthStatus {
   status: string;
 }
@@ -17,13 +79,6 @@ export type ErrorResponseError = {
 
 export interface ErrorResponse {
   error: ErrorResponseError;
-}
-
-export interface ProductImage {
-  id: string;
-  url: string;
-  alt?: string | null;
-  sortOrder: number;
 }
 
 export interface ProductListItem {
@@ -224,5 +279,45 @@ export type GetOrderByCode200 = {
 
 export type SubmitPaymentConfirmation200 = {
   data: PaymentConfirmationResponse;
+};
+
+export type AdminListProducts200 = {
+  data: AdminProduct[];
+};
+
+export type AdminCreateProduct201 = {
+  data: AdminProduct;
+};
+
+export type AdminGetProduct200 = {
+  data: AdminProduct;
+};
+
+export type AdminUpdateProduct200 = {
+  data: AdminProduct;
+};
+
+export type AdminDeleteProduct200Data = {
+  success: boolean;
+};
+
+export type AdminDeleteProduct200 = {
+  data: AdminDeleteProduct200Data;
+};
+
+export type AdminListOrdersParams = {
+status?: string;
+};
+
+export type AdminListOrders200 = {
+  data: AdminOrderListItem[];
+};
+
+export type AdminGetOrder200 = {
+  data: OrderResponse;
+};
+
+export type AdminUpdateOrderStatus200 = {
+  data: OrderResponse;
 };
 
