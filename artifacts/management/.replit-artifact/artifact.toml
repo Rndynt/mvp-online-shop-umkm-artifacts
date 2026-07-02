@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/management/"
+title = "RukoLite Management"
+version = "1.0.0"
+id = "artifacts/management"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/management/" ]
+localPort = 24310
+
+[services.development]
+run = "pnpm --filter @workspace/management run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/management", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/management/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24310"
+BASE_PATH = "/management/"

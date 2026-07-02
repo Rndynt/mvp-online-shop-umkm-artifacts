@@ -1,0 +1,586 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: RukoLite Online Shop UMKM MVP API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: storefront
+    description: Store settings
+  - name: catalog
+    description: Product catalog
+  - name: shipping
+    description: Shipping methods
+  - name: checkout
+    description: Checkout & order creation
+  - name: orders
+    description: Order management
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /storefront:
+    get:
+      operationId: getStorefront
+      tags: [storefront]
+      summary: Get store settings for the storefront
+      responses:
+        "200":
+          description: Store settings
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/StorefrontResponse"
+        "404":
+          description: Store not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [catalog]
+      summary: List active products
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [newest, price_asc, price_desc]
+          required: false
+      responses:
+        "200":
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductListItem"
+
+  /products/{slug}:
+    get:
+      operationId: getProductBySlug
+      tags: [catalog]
+      summary: Get product detail by slug
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product detail
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ProductDetail"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /shipping-methods:
+    get:
+      operationId: listShippingMethods
+      tags: [shipping]
+      summary: List active shipping methods
+      responses:
+        "200":
+          description: Shipping methods
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ShippingMethod"
+
+  /checkout:
+    post:
+      operationId: createCheckout
+      tags: [checkout]
+      summary: Create a new order via checkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutRequest"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CheckoutResponse"
+        "400":
+          description: Validation or business error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /orders/{orderCode}:
+    get:
+      operationId: getOrderByCode
+      tags: [orders]
+      summary: Get order by order code
+      parameters:
+        - in: path
+          name: orderCode
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/OrderResponse"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /orders/{orderCode}/payment-confirmation:
+    post:
+      operationId: submitPaymentConfirmation
+      tags: [orders]
+      summary: Submit payment confirmation for an order
+      parameters:
+        - in: path
+          name: orderCode
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentConfirmationRequest"
+      responses:
+        "200":
+          description: Confirmation submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PaymentConfirmationResponse"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: array
+              items: {}
+
+    ProductImage:
+      type: object
+      required: [id, url, sortOrder]
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        alt:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+
+    ProductListItem:
+      type: object
+      required: [id, name, slug, price, stockQuantity, images]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        shortDescription:
+          type: string
+          nullable: true
+        price:
+          type: integer
+          description: Amount in IDR integer (e.g. 150000 = Rp 150.000)
+        compareAtPrice:
+          type: integer
+          nullable: true
+        stockQuantity:
+          type: integer
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductImage"
+
+    ProductDetail:
+      type: object
+      required: [id, name, slug, price, stockQuantity, images, isActive]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        shortDescription:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+        compareAtPrice:
+          type: integer
+          nullable: true
+        stockQuantity:
+          type: integer
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductImage"
+        isActive:
+          type: boolean
+
+    ShippingMethod:
+      type: object
+      required: [id, code, name, price]
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        price:
+          type: integer
+
+    StorefrontResponse:
+      type: object
+      required: [id, name, slug, primaryColor, currency, country, activePaymentMethods, activeShippingMethods]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+        primaryColor:
+          type: string
+        announcementText:
+          type: string
+          nullable: true
+        currency:
+          type: string
+        country:
+          type: string
+        contactEmail:
+          type: string
+          nullable: true
+        contactPhone:
+          type: string
+          nullable: true
+        activePaymentMethods:
+          type: array
+          items:
+            type: string
+        activeShippingMethods:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShippingMethod"
+
+    CheckoutItem:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+
+    CheckoutCustomer:
+      type: object
+      required: [email, phone]
+      properties:
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+
+    CheckoutShippingAddress:
+      type: object
+      required: [firstName, lastName, addressLine1, city, province, postalCode, country]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+        city:
+          type: string
+        province:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+
+    CheckoutRequest:
+      type: object
+      required: [items, customer, shippingAddress, shippingMethodId, paymentMethod]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CheckoutItem"
+          minItems: 1
+        customer:
+          $ref: "#/components/schemas/CheckoutCustomer"
+        shippingAddress:
+          $ref: "#/components/schemas/CheckoutShippingAddress"
+        shippingMethodId:
+          type: string
+        paymentMethod:
+          type: string
+          enum: [manual_fake_qris]
+        discountCode:
+          type: string
+
+    PaymentInstructionDetail:
+      type: object
+      required: [title, description, qrPayload, expiresAt]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        qrPayload:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+
+    PaymentInstruction:
+      type: object
+      required: [method, displayName, status, amount, instruction]
+      properties:
+        method:
+          type: string
+        displayName:
+          type: string
+        status:
+          type: string
+        amount:
+          type: integer
+        instruction:
+          $ref: "#/components/schemas/PaymentInstructionDetail"
+
+    CheckoutResponse:
+      type: object
+      required: [orderCode, payment]
+      properties:
+        orderCode:
+          type: string
+        payment:
+          $ref: "#/components/schemas/PaymentInstruction"
+
+    OrderItem:
+      type: object
+      required: [id, itemType, nameSnapshot, unitPrice, quantity, lineTotal]
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+          nullable: true
+        itemType:
+          type: string
+        nameSnapshot:
+          type: string
+        skuSnapshot:
+          type: string
+          nullable: true
+        unitPrice:
+          type: integer
+        compareAtPrice:
+          type: integer
+          nullable: true
+        quantity:
+          type: integer
+        lineTotal:
+          type: integer
+
+    OrderAddress:
+      type: object
+      required: [firstName, lastName, addressLine1, city, province, postalCode, country]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+          nullable: true
+        city:
+          type: string
+        province:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+
+    OrderResponse:
+      type: object
+      required: [id, orderCode, customerEmail, customerPhone, status, subtotalAmount, discountAmount, shippingAmount, totalAmount, currency, paymentMethod, items, address, payment, createdAt]
+      properties:
+        id:
+          type: string
+        orderCode:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        status:
+          type: string
+        subtotalAmount:
+          type: integer
+        discountAmount:
+          type: integer
+        shippingAmount:
+          type: integer
+        totalAmount:
+          type: integer
+        currency:
+          type: string
+        paymentMethod:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        address:
+          $ref: "#/components/schemas/OrderAddress"
+        payment:
+          $ref: "#/components/schemas/PaymentInstruction"
+        createdAt:
+          type: string
+          format: date-time
+
+    PaymentConfirmationRequest:
+      type: object
+      required: [payerName]
+      properties:
+        payerName:
+          type: string
+        reference:
+          type: string
+        note:
+          type: string
+
+    PaymentConfirmationResponse:
+      type: object
+      required: [success, paymentStatus]
+      properties:
+        success:
+          type: boolean
+        paymentStatus:
+          type: string
