@@ -4,7 +4,6 @@ import {
   useAdminListProducts,
   useAdminDeleteProduct,
 } from '@workspace/api-client-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -44,14 +43,10 @@ function formatRupiah(amount: number) {
 
 function ProductThumb({ url, name }: { url?: string; name: string }) {
   return url ? (
-    <img
-      src={url}
-      alt={name}
-      className="w-12 h-12 rounded-xl object-cover shrink-0"
-    />
+    <img src={url} alt={name} className="w-11 h-11 rounded-lg object-cover shrink-0" />
   ) : (
-    <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-      <Package className="w-5 h-5 text-slate-300" />
+    <div className="w-11 h-11 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+      <Package className="w-4 h-4 text-slate-300" />
     </div>
   );
 }
@@ -85,7 +80,7 @@ export default function ProductsPage() {
       toast.success('Produk berhasil dihapus');
       setPendingDeleteId(null);
       refetch();
-    } catch (err) {
+    } catch {
       toast.error('Gagal menghapus produk');
     }
   }
@@ -94,38 +89,36 @@ export default function ProductsPage() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Kelola Produk
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900">Kelola Produk</h1>
           <p className="text-slate-500 text-sm mt-0.5">Tambah, ubah, dan hapus produk toko Anda</p>
         </div>
-        <Button
+        <button
           onClick={() => navigate('/products/new')}
-          className="bg-teal-700 hover:bg-teal-800 shadow-sm shadow-teal-900/20 w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors w-full sm:w-auto"
         >
-          <Plus className="w-4 h-4 mr-1.5" />
+          <Plus className="w-4 h-4" />
           Tambah Produk
-        </Button>
+        </button>
       </div>
 
       {isLoading ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-400 text-sm">
+        <div className="bg-white rounded-xl border border-slate-200 p-10 text-center text-slate-400 text-sm">
           Memuat produk...
         </div>
       ) : products.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center">
+        <div className="bg-white rounded-xl border border-slate-200 p-10 text-center">
           <Package className="w-8 h-8 text-slate-300 mx-auto mb-3" />
           <p className="text-slate-500 text-sm">Belum ada produk. Tambahkan produk pertama Anda.</p>
         </div>
       ) : (
         <>
-          {/* Mobile: modern card list */}
+          {/* Mobile */}
           <div className="sm:hidden space-y-2">
             {products.map((p) => (
               <div
                 key={p.id}
                 onClick={() => navigate(`/products/${p.id}`)}
-                className="bg-white rounded-2xl border border-slate-200 p-4 active:bg-slate-50 cursor-pointer transition-colors"
+                className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer active:bg-slate-50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <ProductThumb url={p.images?.[0]?.url} name={p.name} />
@@ -146,16 +139,14 @@ export default function ProductsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
                         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate(`/products/${p.id}`); }}>
-                          <Pencil className="w-4 h-4 mr-2" />
-                          Edit Produk
+                          <Pencil className="w-4 h-4 mr-2" />Edit Produk
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-600 focus:bg-red-50"
                           onClick={(e) => { e.stopPropagation(); setPendingDeleteId(p.id); }}
                         >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Hapus
+                          <Trash2 className="w-4 h-4 mr-2" />Hapus
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -166,8 +157,8 @@ export default function ProductsPage() {
             ))}
           </div>
 
-          {/* Desktop: table */}
-          <div className="hidden sm:block bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm shadow-slate-200/50">
+          {/* Desktop */}
+          <div className="hidden sm:block bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent border-slate-100">
@@ -195,9 +186,7 @@ export default function ProductsPage() {
                     <TableCell className="text-slate-500">{p.sku ?? '-'}</TableCell>
                     <TableCell className="text-slate-700">{formatRupiah(p.price)}</TableCell>
                     <TableCell className="text-slate-700">{p.stockQuantity}</TableCell>
-                    <TableCell>
-                      <StatusBadge isActive={p.isActive} />
-                    </TableCell>
+                    <TableCell><StatusBadge isActive={p.isActive} /></TableCell>
                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -207,16 +196,14 @@ export default function ProductsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
                           <DropdownMenuItem onClick={() => navigate(`/products/${p.id}`)}>
-                            <Pencil className="w-4 h-4 mr-2" />
-                            Edit Produk
+                            <Pencil className="w-4 h-4 mr-2" />Edit Produk
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-red-600 focus:text-red-600 focus:bg-red-50"
                             onClick={() => setPendingDeleteId(p.id)}
                           >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Hapus
+                            <Trash2 className="w-4 h-4 mr-2" />Hapus
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

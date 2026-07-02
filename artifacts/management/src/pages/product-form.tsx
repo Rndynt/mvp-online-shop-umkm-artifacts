@@ -6,11 +6,8 @@ import {
   useAdminCreateProduct,
   useAdminUpdateProduct,
 } from '@workspace/api-client-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Package, Tag, Boxes, Image, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function slugify(value: string) {
@@ -21,27 +18,8 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, '');
 }
 
-function Section({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: typeof Package;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100">
-        <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
-          <Icon className="w-3.5 h-3.5 text-teal-600" />
-        </div>
-        <span className="text-sm font-semibold text-slate-700">{title}</span>
-      </div>
-      <div className="p-5 space-y-4">{children}</div>
-    </div>
-  );
-}
+const inputCls =
+  'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow bg-white';
 
 function Field({
   label,
@@ -53,11 +31,9 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-baseline justify-between gap-2">
-        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-          {label}
-        </label>
+    <div>
+      <div className="flex items-baseline justify-between mb-1.5">
+        <label className="text-sm font-medium text-slate-700">{label}</label>
         {hint && <span className="text-xs text-slate-400">{hint}</span>}
       </div>
       {children}
@@ -65,8 +41,16 @@ function Field({
   );
 }
 
-const inputClass =
-  'h-11 rounded-xl border-slate-200 bg-slate-50 text-sm placeholder:text-slate-300 focus-visible:ring-2 focus-visible:ring-teal-500/30 focus-visible:border-teal-500 transition-colors';
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="px-5 py-4 border-b border-slate-100">
+        <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
+      </div>
+      <div className="p-5 space-y-4">{children}</div>
+    </div>
+  );
+}
 
 export default function ProductFormPage() {
   const params = useParams<{ id?: string }>();
@@ -116,21 +100,11 @@ export default function ProductFormPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-
     const priceNum = Number(price);
     const stockNum = Number(stockQuantity);
-    if (!name.trim() || !slug.trim()) {
-      toast.error('Nama dan slug produk wajib diisi');
-      return;
-    }
-    if (Number.isNaN(priceNum) || priceNum < 0) {
-      toast.error('Harga tidak valid');
-      return;
-    }
-    if (Number.isNaN(stockNum) || stockNum < 0) {
-      toast.error('Stok tidak valid');
-      return;
-    }
+    if (!name.trim() || !slug.trim()) { toast.error('Nama dan slug wajib diisi'); return; }
+    if (Number.isNaN(priceNum) || priceNum < 0) { toast.error('Harga tidak valid'); return; }
+    if (Number.isNaN(stockNum) || stockNum < 0) { toast.error('Stok tidak valid'); return; }
 
     const payload = {
       name: name.trim(),
@@ -156,8 +130,7 @@ export default function ProductFormPage() {
       }
       navigate('/');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Terjadi kesalahan';
-      toast.error(`Gagal menyimpan produk: ${message}`);
+      toast.error(`Gagal: ${err instanceof Error ? err.message : 'Terjadi kesalahan'}`);
     } finally {
       setSubmitting(false);
     }
@@ -175,171 +148,158 @@ export default function ProductFormPage() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
       <button
         onClick={() => navigate('/')}
-        className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-700 mb-5 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-teal-600 mb-5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Kembali
       </button>
 
       <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+        <h1 className="text-2xl font-bold text-slate-900">
           {isEdit ? 'Edit Produk' : 'Produk Baru'}
         </h1>
-        <p className="text-slate-400 text-sm mt-0.5">
+        <p className="text-slate-500 text-sm mt-0.5">
           {isEdit ? 'Ubah detail produk di bawah ini' : 'Isi detail produk yang ingin ditambahkan'}
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Info dasar */}
-        <Section icon={Package} title="Info Produk">
+        <Card title="Info Produk">
           <Field label="Nama Produk">
-            <Input
+            <input
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
               placeholder="cth. Tas Kanvas Handy"
-              className={inputClass}
+              className={inputCls}
               required
             />
           </Field>
-          <Field label="Slug" hint="otomatis dari nama">
-            <Input
+          <Field label="Slug (URL)" hint="otomatis dari nama">
+            <input
               value={slug}
               onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }}
               placeholder="tas-kanvas-handy"
-              className={inputClass}
+              className={inputCls}
               required
             />
           </Field>
           <Field label="Deskripsi Singkat">
-            <Input
+            <input
               value={shortDescription}
               onChange={(e) => setShortDescription(e.target.value)}
               placeholder="Satu kalimat singkat tentang produk"
-              className={inputClass}
+              className={inputCls}
             />
           </Field>
           <Field label="Deskripsi Lengkap">
-            <Textarea
+            <textarea
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Jelaskan detail produk, bahan, ukuran, dll."
-              className={cn(inputClass, 'h-auto resize-none')}
+              placeholder="Jelaskan bahan, ukuran, keunggulan produk..."
+              className={cn(inputCls, 'resize-none')}
             />
           </Field>
-        </Section>
+        </Card>
 
-        {/* Harga */}
-        <Section icon={Tag} title="Harga">
+        <Card title="Harga">
           <div className="grid grid-cols-2 gap-3">
             <Field label="Harga Jual">
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
-                  Rp
-                </span>
-                <Input
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium pointer-events-none">Rp</span>
+                <input
                   type="number"
                   min={0}
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="0"
-                  className={cn(inputClass, 'pl-9')}
+                  className={cn(inputCls, 'pl-9')}
                   required
                 />
               </div>
             </Field>
             <Field label="Harga Coret" hint="opsional">
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
-                  Rp
-                </span>
-                <Input
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium pointer-events-none">Rp</span>
+                <input
                   type="number"
                   min={0}
                   value={compareAtPrice}
                   onChange={(e) => setCompareAtPrice(e.target.value)}
                   placeholder="0"
-                  className={cn(inputClass, 'pl-9')}
+                  className={cn(inputCls, 'pl-9')}
                 />
               </div>
             </Field>
           </div>
-        </Section>
+        </Card>
 
-        {/* Inventori */}
-        <Section icon={Boxes} title="Inventori">
+        <Card title="Inventori">
           <div className="grid grid-cols-2 gap-3">
             <Field label="SKU">
-              <Input
+              <input
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
                 placeholder="cth. TKH-001"
-                className={inputClass}
+                className={inputCls}
               />
             </Field>
             <Field label="Stok">
-              <Input
+              <input
                 type="number"
                 min={0}
                 value={stockQuantity}
                 onChange={(e) => setStockQuantity(e.target.value)}
-                placeholder="0"
-                className={inputClass}
+                className={inputCls}
                 required
               />
             </Field>
           </div>
-        </Section>
+        </Card>
 
-        {/* Gambar */}
-        <Section icon={Image} title="Gambar">
+        <Card title="Gambar Produk">
           <Field label="URL Gambar">
-            <Input
+            <input
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://..."
-              className={inputClass}
+              className={inputCls}
             />
           </Field>
           {imageUrl && (
             <img
               src={imageUrl}
               alt="Preview"
-              className="w-full h-40 object-cover rounded-xl border border-slate-200"
+              className="w-full h-44 object-cover rounded-lg border border-slate-200 mt-1"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
           )}
-        </Section>
+        </Card>
 
-        {/* Status */}
-        <div className="bg-white rounded-2xl border border-slate-200 px-5 py-4 flex items-center justify-between">
+        <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-sm font-semibold text-slate-700">Tampilkan di toko</p>
-            <p className="text-xs text-slate-400 mt-0.5">Produk nonaktif tidak akan muncul di storefront</p>
+            <p className="text-sm font-medium text-slate-700">Tampilkan di toko</p>
+            <p className="text-xs text-slate-500 mt-0.5">Produk nonaktif tidak muncul di storefront</p>
           </div>
           <Switch checked={isActive} onCheckedChange={setIsActive} />
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-3 pt-1 pb-6">
-          <Button
+        <div className="flex gap-3 pb-8">
+          <button
             type="submit"
             disabled={submitting}
-            className="flex-1 h-12 bg-teal-700 hover:bg-teal-800 text-sm font-semibold rounded-xl shadow-sm shadow-teal-900/20"
+            className="flex-1 inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
           >
-            {submitting ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Menyimpan...</>
-            ) : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
-          </Button>
-          <Button
+            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
+          </button>
+          <button
             type="button"
-            variant="outline"
             onClick={() => navigate('/')}
-            className="h-12 px-5 rounded-xl border-slate-200 text-slate-500"
+            className="inline-flex items-center justify-center border border-slate-300 text-slate-600 text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-slate-50 transition-colors"
           >
             Batal
-          </Button>
+          </button>
         </div>
       </form>
     </div>
