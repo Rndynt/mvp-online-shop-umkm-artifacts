@@ -8,10 +8,10 @@ import {
 } from '@workspace/api-client-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Package, Tag, Boxes, Image, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 function slugify(value: string) {
   return value
@@ -20,6 +20,53 @@ function slugify(value: string) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 }
+
+function Section({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: typeof Package;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100">
+        <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
+          <Icon className="w-3.5 h-3.5 text-teal-600" />
+        </div>
+        <span className="text-sm font-semibold text-slate-700">{title}</span>
+      </div>
+      <div className="p-5 space-y-4">{children}</div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline justify-between gap-2">
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+          {label}
+        </label>
+        {hint && <span className="text-xs text-slate-400">{hint}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+const inputClass =
+  'h-11 rounded-xl border-slate-200 bg-slate-50 text-sm placeholder:text-slate-300 focus-visible:ring-2 focus-visible:ring-teal-500/30 focus-visible:border-teal-500 transition-colors';
 
 export default function ProductFormPage() {
   const params = useParams<{ id?: string }>();
@@ -117,129 +164,180 @@ export default function ProductFormPage() {
   }
 
   if (isEdit && isLoadingExisting) {
-    return <div className="p-8 text-center text-slate-400 text-sm">Memuat produk...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-5 h-5 text-teal-600 animate-spin" />
+      </div>
+    );
   }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
       <button
         onClick={() => navigate('/')}
-        className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-4"
+        className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-700 mb-5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
-        Kembali ke Kelola Produk
+        Kembali
       </button>
 
-      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-6">
-        {isEdit ? 'Ubah Produk' : 'Tambah Produk'}
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          {isEdit ? 'Edit Produk' : 'Produk Baru'}
+        </h1>
+        <p className="text-slate-400 text-sm mt-0.5">
+          {isEdit ? 'Ubah detail produk di bawah ini' : 'Isi detail produk yang ingin ditambahkan'}
+        </p>
+      </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-white/10 p-5 sm:p-6 space-y-5 shadow-sm shadow-slate-200/50"
-      >
-        <div className="space-y-2">
-          <Label htmlFor="name">Nama Produk</Label>
-          <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} required />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="slug">Slug (URL)</Label>
-          <Input
-            id="slug"
-            value={slug}
-            onChange={(e) => {
-              setSlugTouched(true);
-              setSlug(e.target.value);
-            }}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="shortDescription">Deskripsi Singkat</Label>
-          <Input
-            id="shortDescription"
-            value={shortDescription}
-            onChange={(e) => setShortDescription(e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="description">Deskripsi Lengkap</Label>
-          <Textarea
-            id="description"
-            rows={5}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="price">Harga (Rp)</Label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Info dasar */}
+        <Section icon={Package} title="Info Produk">
+          <Field label="Nama Produk">
             <Input
-              id="price"
-              type="number"
-              min={0}
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              value={name}
+              onChange={(e) => handleNameChange(e.target.value)}
+              placeholder="cth. Tas Kanvas Handy"
+              className={inputClass}
               required
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="compareAtPrice">Harga Coret (Opsional)</Label>
+          </Field>
+          <Field label="Slug" hint="otomatis dari nama">
             <Input
-              id="compareAtPrice"
-              type="number"
-              min={0}
-              value={compareAtPrice}
-              onChange={(e) => setCompareAtPrice(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="sku">SKU</Label>
-            <Input id="sku" value={sku} onChange={(e) => setSku(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="stockQuantity">Stok</Label>
-            <Input
-              id="stockQuantity"
-              type="number"
-              min={0}
-              value={stockQuantity}
-              onChange={(e) => setStockQuantity(e.target.value)}
+              value={slug}
+              onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }}
+              placeholder="tas-kanvas-handy"
+              className={inputClass}
               required
             />
+          </Field>
+          <Field label="Deskripsi Singkat">
+            <Input
+              value={shortDescription}
+              onChange={(e) => setShortDescription(e.target.value)}
+              placeholder="Satu kalimat singkat tentang produk"
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Deskripsi Lengkap">
+            <Textarea
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Jelaskan detail produk, bahan, ukuran, dll."
+              className={cn(inputClass, 'h-auto resize-none')}
+            />
+          </Field>
+        </Section>
+
+        {/* Harga */}
+        <Section icon={Tag} title="Harga">
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Harga Jual">
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
+                  Rp
+                </span>
+                <Input
+                  type="number"
+                  min={0}
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="0"
+                  className={cn(inputClass, 'pl-9')}
+                  required
+                />
+              </div>
+            </Field>
+            <Field label="Harga Coret" hint="opsional">
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
+                  Rp
+                </span>
+                <Input
+                  type="number"
+                  min={0}
+                  value={compareAtPrice}
+                  onChange={(e) => setCompareAtPrice(e.target.value)}
+                  placeholder="0"
+                  className={cn(inputClass, 'pl-9')}
+                />
+              </div>
+            </Field>
           </div>
-        </div>
+        </Section>
 
-        <div className="space-y-2">
-          <Label htmlFor="imageUrl">URL Gambar</Label>
-          <Input
-            id="imageUrl"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://..."
-          />
-        </div>
+        {/* Inventori */}
+        <Section icon={Boxes} title="Inventori">
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="SKU">
+              <Input
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+                placeholder="cth. TKH-001"
+                className={inputClass}
+              />
+            </Field>
+            <Field label="Stok">
+              <Input
+                type="number"
+                min={0}
+                value={stockQuantity}
+                onChange={(e) => setStockQuantity(e.target.value)}
+                placeholder="0"
+                className={inputClass}
+                required
+              />
+            </Field>
+          </div>
+        </Section>
 
-        <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3">
+        {/* Gambar */}
+        <Section icon={Image} title="Gambar">
+          <Field label="URL Gambar">
+            <Input
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://..."
+              className={inputClass}
+            />
+          </Field>
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt="Preview"
+              className="w-full h-40 object-cover rounded-xl border border-slate-200"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          )}
+        </Section>
+
+        {/* Status */}
+        <div className="bg-white rounded-2xl border border-slate-200 px-5 py-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-800 dark:text-white">Status Aktif</p>
-            <p className="text-xs text-slate-400">Produk nonaktif tidak akan tampil di toko</p>
+            <p className="text-sm font-semibold text-slate-700">Tampilkan di toko</p>
+            <p className="text-xs text-slate-400 mt-0.5">Produk nonaktif tidak akan muncul di storefront</p>
           </div>
           <Switch checked={isActive} onCheckedChange={setIsActive} />
         </div>
 
-        <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={submitting} className="bg-teal-700 hover:bg-teal-800 shadow-sm shadow-teal-900/25">
-            {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
+        {/* Actions */}
+        <div className="flex gap-3 pt-1 pb-6">
+          <Button
+            type="submit"
+            disabled={submitting}
+            className="flex-1 h-12 bg-teal-700 hover:bg-teal-800 text-sm font-semibold rounded-xl shadow-sm shadow-teal-900/20"
+          >
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Menyimpan...</>
+            ) : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
           </Button>
-          <Button type="button" variant="outline" onClick={() => navigate('/')}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate('/')}
+            className="h-12 px-5 rounded-xl border-slate-200 text-slate-500"
+          >
             Batal
           </Button>
         </div>
