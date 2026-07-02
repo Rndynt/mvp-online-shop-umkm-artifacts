@@ -121,7 +121,7 @@ export default function ProductFormPage() {
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
       <button
         onClick={() => navigate('/')}
         className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-4"
@@ -130,11 +130,14 @@ export default function ProductFormPage() {
         Kembali ke Kelola Produk
       </button>
 
-      <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-6">
+      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight mb-6">
         {isEdit ? 'Ubah Produk' : 'Tambah Produk'}
       </h1>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-white/10 p-5 sm:p-6 space-y-5 shadow-sm shadow-slate-200/50"
+      >
         <div className="space-y-2">
           <Label htmlFor="name">Nama Produk</Label>
           <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} required />
@@ -172,7 +175,7 @@ export default function ProductFormPage() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="price">Harga (Rp)</Label>
             <Input
@@ -196,7 +199,7 @@ export default function ProductFormPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="sku">SKU</Label>
             <Input id="sku" value={sku} onChange={(e) => setSku(e.target.value)} />
@@ -224,16 +227,16 @@ export default function ProductFormPage() {
           />
         </div>
 
-        <div className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3">
+        <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-4 py-3">
           <div>
-            <p className="text-sm font-medium text-slate-800">Status Aktif</p>
+            <p className="text-sm font-medium text-slate-800 dark:text-white">Status Aktif</p>
             <p className="text-xs text-slate-400">Produk nonaktif tidak akan tampil di toko</p>
           </div>
           <Switch checked={isActive} onCheckedChange={setIsActive} />
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={submitting} className="bg-teal-600 hover:bg-teal-700">
+          <Button type="submit" disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-600/25">
             {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate('/')}>

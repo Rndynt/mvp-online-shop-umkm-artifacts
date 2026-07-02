@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, ChevronRight } from 'lucide-react';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'Semua Status' },
@@ -35,13 +35,13 @@ const STATUS_LABELS: Record<string, string> = Object.fromEntries(
 );
 
 const STATUS_COLORS: Record<string, string> = {
-  pending_payment: 'bg-amber-100 text-amber-700 hover:bg-amber-100',
-  payment_review: 'bg-blue-100 text-blue-700 hover:bg-blue-100',
-  paid: 'bg-teal-100 text-teal-700 hover:bg-teal-100',
-  processing: 'bg-indigo-100 text-indigo-700 hover:bg-indigo-100',
-  shipped: 'bg-purple-100 text-purple-700 hover:bg-purple-100',
-  completed: 'bg-green-100 text-green-700 hover:bg-green-100',
-  cancelled: 'bg-red-100 text-red-700 hover:bg-red-100',
+  pending_payment: 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200 hover:bg-amber-50',
+  payment_review: 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200 hover:bg-blue-50',
+  paid: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-50',
+  processing: 'bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-200 hover:bg-indigo-50',
+  shipped: 'bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-200 hover:bg-purple-50',
+  completed: 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-200 hover:bg-green-50',
+  cancelled: 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-50',
 };
 
 function formatRupiah(amount: number) {
@@ -73,14 +73,16 @@ export default function OrdersPage() {
   const orders = data?.data ?? [];
 
   return (
-    <div className="p-6 sm:p-8 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Manajemen Order</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Manajemen Order
+          </h1>
           <p className="text-slate-500 text-sm mt-1">Pantau dan proses pesanan yang masuk</p>
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-56">
+          <SelectTrigger className="w-full sm:w-56">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -93,47 +95,78 @@ export default function OrdersPage() {
         </Select>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        {isLoading ? (
-          <div className="p-10 text-center text-slate-400 text-sm">Memuat order...</div>
-        ) : orders.length === 0 ? (
-          <div className="p-10 text-center">
-            <ShoppingCart className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 text-sm">Belum ada order untuk status ini.</p>
+      {isLoading ? (
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-white/10 p-10 text-center text-slate-400 text-sm">
+          Memuat order...
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-white/10 p-10 text-center">
+          <ShoppingCart className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+          <p className="text-slate-500 text-sm">Belum ada order untuk status ini.</p>
+        </div>
+      ) : (
+        <>
+          {/* Mobile: card list */}
+          <div className="grid grid-cols-1 sm:hidden gap-3">
+            {orders.map((o) => (
+              <button
+                key={o.id}
+                onClick={() => navigate(`/orders/${o.orderCode}`)}
+                className="w-full text-left bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-white/10 p-4 active:bg-slate-50"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-slate-800 dark:text-white text-sm">{o.orderCode}</span>
+                  <ChevronRight className="w-4 h-4 text-slate-300" />
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5 truncate">{o.customerEmail}</p>
+                <div className="flex items-center justify-between mt-3">
+                  <Badge className={STATUS_COLORS[o.status] ?? ''}>
+                    {STATUS_LABELS[o.status] ?? o.status}
+                  </Badge>
+                  <span className="font-semibold text-slate-800 dark:text-white text-sm">
+                    {formatRupiah(o.totalAmount)}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-2">{formatDate(o.createdAt)}</p>
+              </button>
+            ))}
           </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Kode Order</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Tanggal</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((o) => (
-                <TableRow
-                  key={o.id}
-                  className="cursor-pointer hover:bg-slate-50"
-                  onClick={() => navigate(`/orders/${o.orderCode}`)}
-                >
-                  <TableCell className="font-medium text-slate-800">{o.orderCode}</TableCell>
-                  <TableCell className="text-slate-500">{o.customerEmail}</TableCell>
-                  <TableCell className="text-slate-700">{formatRupiah(o.totalAmount)}</TableCell>
-                  <TableCell>
-                    <Badge className={STATUS_COLORS[o.status] ?? ''}>
-                      {STATUS_LABELS[o.status] ?? o.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-slate-500">{formatDate(o.createdAt)}</TableCell>
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-white/10 overflow-hidden shadow-sm shadow-slate-200/50">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent border-slate-100 dark:border-white/5">
+                  <TableHead>Kode Order</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Tanggal</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
+              </TableHeader>
+              <TableBody>
+                {orders.map((o) => (
+                  <TableRow
+                    key={o.id}
+                    className="cursor-pointer border-slate-100 dark:border-white/5 hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
+                    onClick={() => navigate(`/orders/${o.orderCode}`)}
+                  >
+                    <TableCell className="font-medium text-slate-800 dark:text-white">{o.orderCode}</TableCell>
+                    <TableCell className="text-slate-500">{o.customerEmail}</TableCell>
+                    <TableCell className="text-slate-700 dark:text-slate-300">{formatRupiah(o.totalAmount)}</TableCell>
+                    <TableCell>
+                      <Badge className={STATUS_COLORS[o.status] ?? ''}>
+                        {STATUS_LABELS[o.status] ?? o.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-slate-500">{formatDate(o.createdAt)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
+      )}
     </div>
   );
 }

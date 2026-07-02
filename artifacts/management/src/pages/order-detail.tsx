@@ -3,7 +3,6 @@ import { useLocation, useParams } from 'wouter';
 import { toast } from 'sonner';
 import { useAdminGetOrder, useAdminUpdateOrderStatus } from '@workspace/api-client-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -13,6 +12,15 @@ import {
 } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 import { STATUS_OPTIONS, STATUS_LABELS, STATUS_COLORS, formatRupiah, formatDate } from './orders';
+
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-white/10 p-5 sm:p-6 mb-4 shadow-sm shadow-slate-200/50">
+      <h2 className="text-sm font-semibold text-slate-800 dark:text-white mb-3">{title}</h2>
+      {children}
+    </div>
+  );
+}
 
 export default function OrderDetailPage() {
   const params = useParams<{ orderCode: string }>();
@@ -46,7 +54,7 @@ export default function OrderDetailPage() {
     return (
       <div className="p-8 text-center">
         <p className="text-slate-500 text-sm">Order tidak ditemukan.</p>
-        <button onClick={() => navigate('/orders')} className="text-teal-600 text-sm mt-2 hover:underline">
+        <button onClick={() => navigate('/orders')} className="text-indigo-600 text-sm mt-2 hover:underline">
           Kembali ke Manajemen Order
         </button>
       </div>
@@ -54,7 +62,7 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-3xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto">
       <button
         onClick={() => navigate('/orders')}
         className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-4"
@@ -63,9 +71,11 @@ export default function OrderDetailPage() {
         Kembali ke Manajemen Order
       </button>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{order.orderCode}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+            {order.orderCode}
+          </h1>
           <p className="text-slate-500 text-sm mt-1">{formatDate(order.createdAt)}</p>
         </div>
         <Badge className={STATUS_COLORS[order.status] ?? ''}>
@@ -73,10 +83,9 @@ export default function OrderDetailPage() {
         </Badge>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Ubah Status Order</h2>
+      <Card title="Ubah Status Order">
         <Select value={order.status} onValueChange={handleStatusChange} disabled={saving}>
-          <SelectTrigger className="w-64">
+          <SelectTrigger className="w-full sm:w-64">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -87,24 +96,23 @@ export default function OrderDetailPage() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Card>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Informasi Pelanggan</h2>
-        <dl className="grid grid-cols-2 gap-3 text-sm">
+      <Card title="Informasi Pelanggan">
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
           <div>
             <dt className="text-slate-400">Email</dt>
-            <dd className="text-slate-700">{order.customerEmail}</dd>
+            <dd className="text-slate-700 dark:text-slate-300 break-all">{order.customerEmail}</dd>
           </div>
           <div>
             <dt className="text-slate-400">Telepon</dt>
-            <dd className="text-slate-700">{order.customerPhone ?? '-'}</dd>
+            <dd className="text-slate-700 dark:text-slate-300">{order.customerPhone ?? '-'}</dd>
           </div>
         </dl>
         {order.address && (
-          <div className="mt-4 pt-4 border-t border-slate-100 text-sm">
+          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/5 text-sm">
             <dt className="text-slate-400 mb-1">Alamat Pengiriman</dt>
-            <dd className="text-slate-700">
+            <dd className="text-slate-700 dark:text-slate-300">
               {order.address.firstName} {order.address.lastName}
               <br />
               {order.address.addressLine1}
@@ -116,24 +124,23 @@ export default function OrderDetailPage() {
             </dd>
           </div>
         )}
-      </div>
+      </Card>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 mb-4">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Produk Dipesan</h2>
-        <div className="divide-y divide-slate-100">
+      <Card title="Produk Dipesan">
+        <div className="divide-y divide-slate-100 dark:divide-white/5">
           {order.items.map((item) => (
-            <div key={item.id} className="flex items-center justify-between py-2 text-sm">
-              <div>
-                <p className="text-slate-800 font-medium">{item.nameSnapshot}</p>
+            <div key={item.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+              <div className="min-w-0">
+                <p className="text-slate-800 dark:text-white font-medium truncate">{item.nameSnapshot}</p>
                 <p className="text-slate-400 text-xs">
                   {item.skuSnapshot ?? '-'} &middot; {item.quantity}x {formatRupiah(item.unitPrice)}
                 </p>
               </div>
-              <p className="text-slate-700 font-medium">{formatRupiah(item.lineTotal)}</p>
+              <p className="text-slate-700 dark:text-slate-300 font-medium shrink-0">{formatRupiah(item.lineTotal)}</p>
             </div>
           ))}
         </div>
-        <div className="pt-4 mt-2 border-t border-slate-100 space-y-1 text-sm">
+        <div className="pt-4 mt-2 border-t border-slate-100 dark:border-white/5 space-y-1 text-sm">
           <div className="flex justify-between text-slate-500">
             <span>Subtotal</span>
             <span>{formatRupiah(order.subtotalAmount)}</span>
@@ -146,27 +153,26 @@ export default function OrderDetailPage() {
             <span>Ongkir</span>
             <span>{formatRupiah(order.shippingAmount)}</span>
           </div>
-          <div className="flex justify-between text-slate-800 font-semibold pt-1">
+          <div className="flex justify-between text-slate-800 dark:text-white font-semibold pt-1">
             <span>Total</span>
             <span>{formatRupiah(order.totalAmount)}</span>
           </div>
         </div>
-      </div>
+      </Card>
 
       {order.payment && (
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="text-sm font-semibold text-slate-800 mb-3">Pembayaran</h2>
-          <dl className="grid grid-cols-2 gap-3 text-sm">
+        <Card title="Pembayaran">
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
             <div>
               <dt className="text-slate-400">Metode</dt>
-              <dd className="text-slate-700">{order.payment.displayName}</dd>
+              <dd className="text-slate-700 dark:text-slate-300">{order.payment.displayName}</dd>
             </div>
             <div>
               <dt className="text-slate-400">Status Pembayaran</dt>
-              <dd className="text-slate-700">{order.payment.status}</dd>
+              <dd className="text-slate-700 dark:text-slate-300">{order.payment.status}</dd>
             </div>
           </dl>
-        </div>
+        </Card>
       )}
     </div>
   );
