@@ -80,52 +80,59 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
 /**
  * GET /storage/objects/*
  *
- * Serve object entities from PRIVATE_OBJECT_DIR.
- * These are served from a separate path from /public-objects and can optionally
- * be protected with authentication or ACL checks based on the use case.
+ * Serve private object entities from PRIVATE_OBJECT_DIR.
+ *
+ * ⚠️  ACCESS CONTROL REQUIRED — this route is intentionally blocked until an
+ * authentication layer is wired up. Returning 401 unconditionally prevents
+ * unauthenticated clients from reading private files.
+ *
+ * To enable: add a session/token middleware above this handler, verify the
+ * caller's identity, check ACL via objectStorageService.canAccessObjectEntity,
+ * and only then stream the file (see the commented example below).
  */
-router.get("/storage/objects/*path", async (req: Request, res: Response) => {
-  try {
-    const raw = req.params.path;
-    const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
-    const objectPath = `/objects/${wildcardPath}`;
-    const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+router.get("/storage/objects/*path", (_req: Request, res: Response) => {
+  // No auth system is wired up yet — block all access to private objects.
+  res.status(401).json({
+    error: { code: "UNAUTHORIZED", message: "Authentication required to access private objects." },
+  });
 
-    // --- Protected route example (uncomment when using replit-auth) ---
-    // if (!req.isAuthenticated()) {
-    //   res.status(401).json({ error: "Unauthorized" });
-    //   return;
-    // }
-    // const canAccess = await objectStorageService.canAccessObjectEntity({
-    //   userId: req.user.id,
-    //   objectFile,
-    //   requestedPermission: ObjectPermission.READ,
-    // });
-    // if (!canAccess) {
-    //   res.status(403).json({ error: "Forbidden" });
-    //   return;
-    // }
-
-    const response = await objectStorageService.downloadObject(objectFile);
-
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
-  } catch (error) {
-    if (error instanceof ObjectNotFoundError) {
-      req.log.warn({ err: error }, "Object not found");
-      res.status(404).json({ error: "Object not found" });
-      return;
-    }
-    req.log.error({ err: error }, "Error serving object");
-    res.status(500).json({ error: "Failed to serve object" });
-  }
+  // --- Uncomment and adapt once authentication middleware is in place ---
+  // try {
+  //   if (!req.isAuthenticated()) {
+  //     res.status(401).json({ error: { code: "UNAUTHORIZED", message: "Authentication required." } });
+  //     return;
+  //   }
+  //   const raw = req.params.path;
+  //   const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
+  //   const objectPath = `/objects/${wildcardPath}`;
+  //   const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+  //   const canAccess = await objectStorageService.canAccessObjectEntity({
+  //     userId: req.user.id,
+  //     objectFile,
+  //     requestedPermission: ObjectPermission.READ,
+  //   });
+  //   if (!canAccess) {
+  //     res.status(403).json({ error: { code: "FORBIDDEN", message: "Access denied." } });
+  //     return;
+  //   }
+  //   const response = await objectStorageService.downloadObject(objectFile);
+  //   res.status(response.status);
+  //   response.headers.forEach((value, key) => res.setHeader(key, value));
+  //   if (response.body) {
+  //     const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+  //     nodeStream.pipe(res);
+  //   } else {
+  //     res.end();
+  //   }
+  // } catch (error) {
+  //   if (error instanceof ObjectNotFoundError) {
+  //     req.log.warn({ err: error }, "Object not found");
+  //     res.status(404).json({ error: "Object not found" });
+  //     return;
+  //   }
+  //   req.log.error({ err: error }, "Error serving object");
+  //   res.status(500).json({ error: "Failed to serve object" });
+  // }
 });
 
 export default router;
