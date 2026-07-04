@@ -30,6 +30,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Cegah browser/proxy meng-cache respons API secara heuristik (mis. saat
+// tidak ada header Cache-Control eksplisit), yang bisa membuat data lama
+// (mis. homepageTemplate) tetap tampil walau sudah diubah di server.
+app.use("/api", (_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  next();
+});
+
 app.use("/api", router);
 
 // Harus dipasang SETELAH semua route
