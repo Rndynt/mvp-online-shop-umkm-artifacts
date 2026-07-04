@@ -88,7 +88,7 @@ function SidebarContent({
                     className={cn(
                       'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                       active
-                        ? 'bg-accent text-accent-foreground ring-1 ring-accent'
+                        ? 'bg-primary text-primary-foreground ring-1 ring-primary'
                         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
                     )}
                   >
