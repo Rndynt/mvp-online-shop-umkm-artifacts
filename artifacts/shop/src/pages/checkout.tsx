@@ -3,8 +3,7 @@ import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Header } from '@/components/header';
-import { CartDrawer } from '@/components/cart-drawer';
+import { Layout } from '@/components/layout';
 import { useCartStore } from '@/lib/cart-store';
 import { formatIDR } from '@/lib/format';
 import { useListShippingMethods, useCreateCheckout } from '@workspace/api-client-react';
@@ -44,7 +43,7 @@ const PROVINCES = [
 ];
 
 const inputClass =
-  'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow';
+  'w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/60 transition-colors';
 
 interface FieldProps {
   label: string;
@@ -99,7 +98,7 @@ export default function CheckoutPage() {
     if (!contact || !address || !selectedShipping) return;
 
     const payload = {
-      items: items.map((i) => ({ productId: i.id, quantity: i.quantity })),
+      items: items.map((i) => ({ productId: i.id, quantity: i.quantity, bundleId: i.bundleId ?? undefined })),
       customer: contact,
       shippingAddress: {
         firstName: address.firstName,
@@ -127,25 +126,20 @@ export default function CheckoutPage() {
 
   if (items.length === 0 && step === 0) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Header />
+      <Layout>
         <div className="max-w-xl mx-auto px-4 py-16 text-center">
           <p className="text-slate-700 font-medium mb-3">Keranjang belanja Anda kosong</p>
-          <Link href="/" className="inline-block bg-teal-600 text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-teal-700 transition-colors">
+          <Link href="/" className="inline-block bg-primary text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-colors">
             Lihat Produk
           </Link>
         </div>
-        <CartDrawer />
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header />
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        <Link href="/" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-teal-600 mb-6 transition-colors">
+      <Layout mainClassName="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        <Link href="/" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-primary mb-6 transition-colors">
           <ChevronLeft className="w-4 h-4" />
           Kembali Belanja
         </Link>
@@ -160,9 +154,9 @@ export default function CheckoutPage() {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                     i < step
-                      ? 'bg-teal-600 text-white'
+                      ? 'bg-primary text-white'
                       : i === step
-                      ? 'bg-teal-600 text-white ring-4 ring-teal-100'
+                      ? 'bg-primary text-white ring-4 ring-primary/30'
                       : 'bg-slate-200 text-slate-400'
                   }`}
                 >
@@ -173,7 +167,7 @@ export default function CheckoutPage() {
                 </span>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`h-0.5 flex-1 mx-2 transition-colors ${i < step ? 'bg-teal-600' : 'bg-slate-200'}`} />
+                <div className={`h-0.5 flex-1 mx-2 transition-colors ${i < step ? 'bg-primary' : 'bg-slate-200'}`} />
               )}
             </div>
           ))}
@@ -195,7 +189,7 @@ export default function CheckoutPage() {
                 <Field label="Nomor HP" error={contactForm.formState.errors.phone?.message} required>
                   <input type="tel" {...contactForm.register('phone')} className={inputClass} placeholder="+62812-3456-7890" />
                 </Field>
-                <button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                <button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
                   Lanjut ke Alamat <ChevronRight className="w-4 h-4" />
                 </button>
               </form>
@@ -240,7 +234,7 @@ export default function CheckoutPage() {
                   <button type="button" onClick={() => setStep(0)} className="flex-1 border border-slate-300 text-slate-700 font-medium py-3 rounded-xl hover:bg-slate-50 transition-colors">
                     Kembali
                   </button>
-                  <button type="submit" className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                  <button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
                     Pilih Pengiriman <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -256,7 +250,7 @@ export default function CheckoutPage() {
                     <label
                       key={method.id}
                       className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-colors ${
-                        selectedShipping === method.id ? 'border-teal-600 bg-teal-50' : 'border-slate-200 hover:border-slate-300'
+                        selectedShipping === method.id ? 'border-primary bg-primary/10' : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -266,7 +260,7 @@ export default function CheckoutPage() {
                           value={method.id}
                           checked={selectedShipping === method.id}
                           onChange={() => setSelectedShipping(method.id)}
-                          className="accent-teal-600"
+                          className="accent-primary"
                         />
                         <div>
                           <p className="font-medium text-slate-900 text-sm">{method.name}</p>
@@ -302,7 +296,7 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={() => selectedShipping && setStep(3)}
                     disabled={!selectedShipping}
-                    className="flex-1 bg-teal-600 hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-primary hover:bg-primary/90 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     Lanjut Bayar <ChevronRight className="w-4 h-4" />
                   </button>
@@ -315,9 +309,9 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-2xl border border-slate-200 p-6">
                 <h2 className="font-semibold text-slate-900 mb-4">Metode Pembayaran</h2>
 
-                <label className="flex items-center justify-between p-4 rounded-xl border-2 border-teal-600 bg-teal-50 cursor-pointer mb-6">
+                <label className="flex items-center justify-between p-4 rounded-xl border-2 border-primary bg-primary/10 cursor-pointer mb-6">
                   <div className="flex items-center gap-3">
-                    <input type="radio" checked readOnly className="accent-teal-600" />
+                    <input type="radio" checked readOnly className="accent-primary" />
                     <div>
                       <p className="font-medium text-slate-900 text-sm">QRIS</p>
                       <p className="text-xs text-slate-500">Bayar dengan semua aplikasi dompet digital</p>
@@ -359,7 +353,7 @@ export default function CheckoutPage() {
                     type="button"
                     onClick={handleConfirmPayment}
                     disabled={createCheckout.isPending}
-                    className="flex-1 bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-primary hover:bg-primary/90 disabled:bg-primary/40 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     {createCheckout.isPending
                       ? <><Loader2 className="w-4 h-4 animate-spin" /> Memproses...</>
@@ -383,7 +377,7 @@ export default function CheckoutPage() {
               <h3 className="font-semibold text-slate-900 mb-4">Ringkasan Pesanan</h3>
               <div className="space-y-3 mb-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-3">
+                  <div key={item.lineId} className="flex gap-3">
                     <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden shrink-0">
                       {item.imageUrl && (
                         <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
@@ -394,7 +388,11 @@ export default function CheckoutPage() {
                       <p className="text-xs text-slate-500 mt-0.5">×{item.quantity}</p>
                     </div>
                     <span className="text-xs font-semibold text-slate-900 shrink-0">
-                      {formatIDR(item.price * item.quantity)}
+                      {formatIDR(
+                        item.bundlePackPrice != null && item.bundlePackQty != null && item.bundlePackQty > 0
+                          ? (item.quantity / item.bundlePackQty) * item.bundlePackPrice
+                          : item.price * item.quantity,
+                      )}
                     </span>
                   </div>
                 ))}
@@ -408,15 +406,12 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between font-bold text-slate-900 pt-2 border-t border-slate-200 text-base">
                   <span>Total</span>
-                  <span className="text-teal-700">{formatIDR(total)}</span>
+                  <span className="text-slate-900">{formatIDR(total)}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
-
-      <CartDrawer />
-    </div>
+      </Layout>
   );
 }

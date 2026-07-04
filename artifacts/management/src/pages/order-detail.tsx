@@ -72,7 +72,7 @@ function SectionCard({
   return (
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-slate-100 bg-slate-50/60">
-        <span className="text-teal-600">{icon}</span>
+        <span className="text-primary">{icon}</span>
         <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
       </div>
       <div className="p-5">{children}</div>
@@ -107,7 +107,7 @@ export default function OrderDetailPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <Loader2 className="w-6 h-6 text-teal-600 animate-spin" />
+        <Loader2 className="w-6 h-6 text-primary animate-spin" />
         <p className="text-sm text-slate-400">Memuat detail order…</p>
       </div>
     );
@@ -120,7 +120,7 @@ export default function OrderDetailPage() {
         <p className="text-slate-500 text-sm">Order tidak ditemukan.</p>
         <button
           onClick={() => navigate('/orders')}
-          className="text-teal-600 text-sm mt-2 hover:underline"
+          className="text-primary text-sm mt-2 hover:underline"
         >
           Kembali ke Manajemen Order
         </button>
@@ -136,19 +136,19 @@ export default function OrderDetailPage() {
       {/* Back link */}
       <button
         onClick={() => navigate('/orders')}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-teal-600 mb-5 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary mb-5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Manajemen Order
       </button>
 
       {/* Page header */}
-      <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-xl p-5 mb-5 text-white">
+      <div className="bg-gradient-to-r from-primary to-primary rounded-xl p-5 mb-5 text-white">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div>
-            <p className="text-teal-200 text-xs font-medium mb-1">Kode Order</p>
+            <p className="text-primary-foreground/70 text-xs font-medium mb-1">Kode Order</p>
             <h1 className="text-xl font-bold tracking-wide font-mono">{order.orderCode}</h1>
-            <p className="text-teal-200 text-xs mt-1">{formatDate(order.createdAt)}</p>
+            <p className="text-primary-foreground/70 text-xs mt-1">{formatDate(order.createdAt)}</p>
           </div>
           <div className="flex flex-col items-start sm:items-end gap-2">
             <Badge className={`${STATUS_COLORS[order.status] ?? ''} flex items-center gap-1.5`}>
@@ -156,13 +156,13 @@ export default function OrderDetailPage() {
               {STATUS_LABELS[order.status] ?? order.status}
             </Badge>
             <p className="text-2xl font-bold">{formatRupiah(order.totalAmount)}</p>
-            <p className="text-teal-200 text-xs">{order.items.length} produk · {order.currency}</p>
+            <p className="text-primary-foreground/70 text-xs">{order.items.length} produk · {order.currency}</p>
           </div>
         </div>
 
         {/* Order progress bar — hidden when cancelled */}
         {!isCancelled && (
-          <div className="mt-5 pt-4 border-t border-teal-500/40">
+          <div className="mt-5 pt-4 border-t border-primary/40">
             <div className="flex items-center gap-0">
               {PROGRESS_STEPS.map((step, idx) => {
                 const isLast = idx === PROGRESS_STEPS.length - 1;
@@ -183,13 +183,13 @@ export default function OrderDetailPage() {
                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
                           stepDone || stepActive
                             ? 'bg-white border-white'
-                            : 'bg-teal-500/30 border-teal-400/40'
+                            : 'bg-primary/30 border-primary/40'
                         }`}
                       >
                         {(stepDone || stepActive) ? (
-                          <CheckCircle2 className="w-3 h-3 text-teal-600" />
+                          <CheckCircle2 className="w-3 h-3 text-primary" />
                         ) : (
-                          <span className="w-1.5 h-1.5 rounded-full bg-teal-400/40" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary/60/40" />
                         )}
                       </div>
                       <span
@@ -197,8 +197,8 @@ export default function OrderDetailPage() {
                           stepActive
                             ? 'text-white font-semibold'
                             : stepDone
-                            ? 'text-teal-200'
-                            : 'text-teal-300/60'
+                            ? 'text-primary-foreground/70'
+                            : 'text-primary-foreground/60'
                         }`}
                       >
                         {step.label}
@@ -207,7 +207,7 @@ export default function OrderDetailPage() {
                     {!isLast && (
                       <div
                         className={`h-0.5 flex-1 mx-1 rounded-full ${
-                          stepDone ? 'bg-white' : 'bg-teal-500/30'
+                          stepDone ? 'bg-white' : 'bg-primary/30'
                         }`}
                       />
                     )}
@@ -218,7 +218,7 @@ export default function OrderDetailPage() {
           </div>
         )}
         {isCancelled && (
-          <div className="mt-4 pt-3 border-t border-teal-500/40 flex items-center gap-2">
+          <div className="mt-4 pt-3 border-t border-primary/40 flex items-center gap-2">
             <XCircle className="w-4 h-4 text-red-300" />
             <span className="text-sm text-red-200 font-medium">Order ini telah dibatalkan</span>
           </div>
@@ -232,7 +232,7 @@ export default function OrderDetailPage() {
           {/* Customer */}
           <SectionCard icon={<User className="w-4 h-4" />} title="Informasi Pelanggan">
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-full bg-teal-100 text-teal-700 font-bold text-sm flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-full bg-primary/10 text-primary font-bold text-sm flex items-center justify-center shrink-0">
                 {getInitials(order.customerEmail)}
               </div>
               <div className="flex-1 min-w-0 space-y-2.5">
@@ -373,7 +373,7 @@ export default function OrderDetailPage() {
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                   <span className="text-xs text-slate-400 font-medium">Jumlah</span>
-                  <span className="text-sm font-bold text-teal-700">{formatRupiah(order.totalAmount)}</span>
+                  <span className="text-sm font-bold text-slate-900">{formatRupiah(order.totalAmount)}</span>
                 </div>
               </div>
             </SectionCard>

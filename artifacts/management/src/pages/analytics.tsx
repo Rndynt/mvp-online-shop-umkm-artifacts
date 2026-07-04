@@ -21,8 +21,8 @@ function StatCard({
           <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
           {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
         </div>
-        <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
-          <Icon className="w-5 h-5 text-teal-600" />
+        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+          <Icon className="w-5 h-5 text-primary" />
         </div>
       </div>
       {trend && (
@@ -37,7 +37,7 @@ function StatCard({
 
 const STATUS_BREAKDOWN = [
   { label: 'Menunggu Pembayaran', value: 12, color: 'bg-amber-400', pct: 20 },
-  { label: 'Diproses', value: 8, color: 'bg-teal-500', pct: 13 },
+  { label: 'Diproses', value: 8, color: 'bg-primary', pct: 13 },
   { label: 'Dikirim', value: 15, color: 'bg-purple-400', pct: 25 },
   { label: 'Selesai', value: 24, color: 'bg-emerald-400', pct: 40 },
   { label: 'Dibatalkan', value: 1, color: 'bg-red-400', pct: 2 },
@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
               <div key={m.month} className="flex-1 flex flex-col items-center gap-1.5">
                 <span className="text-xs text-slate-400">{m.value}</span>
                 <div
-                  className="w-full bg-teal-500 rounded-t-md transition-all"
+                  className="w-full bg-primary rounded-t-md transition-all"
                   style={{ height: `${(m.value / maxVal) * 100}%` }}
                 />
                 <span className="text-xs text-slate-400 shrink-0">{m.month}</span>

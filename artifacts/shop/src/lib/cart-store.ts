@@ -2,21 +2,34 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface CartItem {
+  /** Unique line identifier: `${productId}` for plain items, `${productId}:${bundleId}` for bundles. */
+  lineId: string;
   id: string;
   name: string;
+  /** Display unit price. For bundles this is rounded; use bundlePackPrice / bundlePackQty for exact totals. */
   price: number;
   compareAtPrice: number | null;
   imageUrl: string | null;
   slug: string;
   quantity: number;
+  /** Bundle ID if this item was added via a bundle — used server-side for correct bundle pricing. */
+  bundleId?: string | null;
+  /** Exact total price for one bundle pack (bundle.price from API). Undefined for non-bundle items. */
+  bundlePackPrice?: number | null;
+  /** Number of units in one bundle pack (bundle.quantity from API). Undefined for non-bundle items. */
+  bundlePackQty?: number | null;
+}
+
+function computeLineId(productId: string, bundleId?: string | null): string {
+  return bundleId ? `${productId}:${bundleId}` : productId;
 }
 
 interface CartStore {
   items: CartItem[];
   isOpen: boolean;
-  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  addItem: (item: Omit<CartItem, 'quantity' | 'lineId'>, quantity?: number) => void;
+  removeItem: (lineId: string) => void;
+  updateQuantity: (lineId: string, quantity: number) => void;
   clearCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -32,33 +45,34 @@ export const useCartStore = create<CartStore>()(
       isOpen: false,
 
       addItem: (item, quantity = 1) => {
+        const lineId = computeLineId(item.id, item.bundleId);
         set((state) => {
-          const existing = state.items.find((i) => i.id === item.id);
+          const existing = state.items.find((i) => i.lineId === lineId);
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.id === item.id
+                i.lineId === lineId
                   ? { ...i, quantity: i.quantity + quantity }
                   : i,
               ),
             };
           }
-          return { items: [...state.items, { ...item, quantity }] };
+          return { items: [...state.items, { ...item, lineId, quantity }] };
         });
       },
 
-      removeItem: (id) => {
-        set((state) => ({ items: state.items.filter((i) => i.id !== id) }));
+      removeItem: (lineId) => {
+        set((state) => ({ items: state.items.filter((i) => i.lineId !== lineId) }));
       },
 
-      updateQuantity: (id, quantity) => {
+      updateQuantity: (lineId, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(id);
+          get().removeItem(lineId);
           return;
         }
         set((state) => ({
           items: state.items.map((i) =>
-            i.id === id ? { ...i, quantity } : i,
+            i.lineId === lineId ? { ...i, quantity } : i,
           ),
         }));
       },
@@ -71,7 +85,14 @@ export const useCartStore = create<CartStore>()(
 
       totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
       subtotal: () =>
-        get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        get().items.reduce((sum, i) => {
+          // Use exact bundle pack price to avoid rounding drift
+          if (i.bundlePackPrice != null && i.bundlePackQty != null && i.bundlePackQty > 0) {
+            const packs = i.quantity / i.bundlePackQty;
+            return sum + packs * i.bundlePackPrice;
+          }
+          return sum + i.price * i.quantity;
+        }, 0),
     }),
     { name: 'rukolite-cart' },
   ),

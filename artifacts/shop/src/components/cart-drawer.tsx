@@ -1,4 +1,4 @@
-import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Trash2, Package } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
 import { formatIDR } from '@/lib/format';
 import { useLocation } from 'wouter';
@@ -31,7 +31,7 @@ export function CartDrawer() {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
           <h2 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-teal-600" />
+            <ShoppingBag className="w-5 h-5 text-primary" />
             Keranjang
           </h2>
           <button
@@ -55,61 +55,86 @@ export function CartDrawer() {
               </div>
               <button
                 onClick={closeCart}
-                className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
+                className="bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
               >
                 Lihat Produk
               </button>
             </div>
           ) : (
-            items.map((item) => (
-              <div key={item.id} className="flex gap-3">
-                {/* Image */}
-                <div className="w-16 h-16 bg-slate-100 rounded-xl overflow-hidden shrink-0">
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-300">
-                      <ShoppingBag className="w-6 h-6" />
-                    </div>
-                  )}
-                </div>
+            items.map((item) => {
+              const isBundle = !!item.bundleId;
+              return (
+                <div key={item.lineId} className="flex gap-3">
+                  {/* Image */}
+                  <div className="w-16 h-16 bg-slate-100 rounded-xl overflow-hidden shrink-0">
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-300">
+                        <ShoppingBag className="w-6 h-6" />
+                      </div>
+                    )}
+                  </div>
 
-                {/* Details */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-slate-900 text-sm line-clamp-2 leading-snug">
-                    {item.name}
-                  </p>
-                  <p className="text-teal-600 font-semibold text-sm mt-1">
-                    {formatIDR(item.price)}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="ml-auto p-1 text-slate-400 hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  {/* Details */}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-slate-900 text-sm line-clamp-2 leading-snug">
+                      {item.name}
+                    </p>
+                    <p className="text-primary font-semibold text-sm mt-1">
+                      {formatIDR(
+                        item.bundlePackPrice != null && item.bundlePackQty != null && item.bundlePackQty > 0
+                          ? (item.quantity / item.bundlePackQty) * item.bundlePackPrice
+                          : item.price * item.quantity,
+                      )}
+                    </p>
+
+                    {isBundle ? (
+                      /* Bundle items: locked quantity — qty is fixed to bundle size */
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="flex items-center gap-1.5 bg-accent text-accent-foreground text-xs font-medium px-2.5 py-1 rounded-lg">
+                          <Package className="w-3 h-3" />
+                          Paket ×{item.quantity}
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.lineId)}
+                          className="ml-auto p-1 text-slate-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      /* Regular items: quantity is editable */
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => updateQuantity(item.lineId, item.quantity - 1)}
+                          className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.lineId, item.quantity + 1)}
+                          className="w-6 h-6 rounded-md bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => removeItem(item.lineId)}
+                          className="ml-auto p-1 text-slate-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -123,7 +148,7 @@ export function CartDrawer() {
             <p className="text-xs text-slate-400">Ongkir dihitung saat checkout</p>
             <button
               onClick={handleCheckout}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl transition-colors"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-xl transition-colors"
             >
               Lanjut ke Checkout
             </button>

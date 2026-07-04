@@ -31,7 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
   pending_payment: 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200 hover:bg-amber-50',
   payment_review: 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200 hover:bg-blue-50',
   paid: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-50',
-  processing: 'bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-200 hover:bg-teal-50',
+  processing: 'bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-200 hover:bg-indigo-50',
   shipped: 'bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-200 hover:bg-purple-50',
   completed: 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-200 hover:bg-green-50',
   cancelled: 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-50',
@@ -66,7 +66,7 @@ export default function OrdersPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full appearance-none border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow pr-9"
+            className="w-full appearance-none border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow pr-9"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>

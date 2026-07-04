@@ -4,9 +4,10 @@ import { useCartStore } from '@/lib/cart-store';
 
 interface HeaderProps {
   storeName?: string;
+  logoUrl?: string | null;
 }
 
-export function Header({ storeName = 'Tokko' }: HeaderProps) {
+export function Header({ storeName = 'Tokko', logoUrl }: HeaderProps) {
   const { totalItems, openCart } = useCartStore();
   const count = totalItems();
 
@@ -17,9 +18,17 @@ export function Header({ storeName = 'Tokko' }: HeaderProps) {
           href="/"
           className="flex items-center gap-2 group"
         >
-          <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center group-hover:bg-teal-700 transition-colors">
-            <Store className="w-4 h-4 text-white" />
-          </div>
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={storeName}
+              className="w-8 h-8 rounded-lg object-cover shrink-0"
+            />
+          ) : (
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:bg-primary/90 transition-colors">
+              <Store className="w-4 h-4 text-white" />
+            </div>
+          )}
           <span className="font-bold text-slate-900 text-lg tracking-tight">
             {storeName}
           </span>
@@ -27,12 +36,12 @@ export function Header({ storeName = 'Tokko' }: HeaderProps) {
 
         <button
           onClick={openCart}
-          className="relative p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+          className="relative p-2 text-slate-600 hover:text-primary hover:bg-accent rounded-lg transition-colors"
           aria-label="Keranjang belanja"
         >
           <ShoppingBag className="w-5 h-5" />
           {count > 0 && (
-            <span className="absolute -top-1 -right-1 bg-teal-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">
+            <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">
               {count > 9 ? '9+' : count}
             </span>
           )}

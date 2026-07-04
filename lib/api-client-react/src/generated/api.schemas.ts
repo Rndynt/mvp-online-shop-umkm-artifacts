@@ -12,6 +12,31 @@ export interface ProductImage {
   sortOrder: number;
 }
 
+export interface ProductBundle {
+  id: string;
+  quantity: number;
+  price: number;
+  label?: string | null;
+  badge?: string | null;
+  isFeatured: boolean;
+  sortOrder: number;
+}
+
+export interface ProductFeature {
+  id: string;
+  imageUrl?: string | null;
+  title: string;
+  description?: string | null;
+  sortOrder: number;
+}
+
+export interface ProductFaq {
+  id: string;
+  question: string;
+  answer: string;
+  sortOrder: number;
+}
+
 export interface AdminProduct {
   id: string;
   name: string;
@@ -25,6 +50,28 @@ export interface AdminProduct {
   isActive: boolean;
   sortOrder?: number;
   images: ProductImage[];
+  bundles: ProductBundle[];
+  features: ProductFeature[];
+  faqs: ProductFaq[];
+}
+
+export interface ProductBundleInput {
+  quantity: number;
+  price: number;
+  label?: string | null;
+  badge?: string | null;
+  isFeatured?: boolean;
+}
+
+export interface ProductFeatureInput {
+  imageUrl?: string | null;
+  title: string;
+  description?: string | null;
+}
+
+export interface ProductFaqInput {
+  question: string;
+  answer: string;
 }
 
 export interface AdminProductInput {
@@ -38,6 +85,9 @@ export interface AdminProductInput {
   stockQuantity: number;
   isActive?: boolean;
   imageUrl?: string | null;
+  bundles?: ProductBundleInput[];
+  features?: ProductFeatureInput[];
+  faqs?: ProductFaqInput[];
 }
 
 export type AdminOrderStatusInputStatus = typeof AdminOrderStatusInputStatus[keyof typeof AdminOrderStatusInputStatus];
@@ -104,6 +154,9 @@ export interface ProductDetail {
   stockQuantity: number;
   images: ProductImage[];
   isActive: boolean;
+  bundles: ProductBundle[];
+  features: ProductFeature[];
+  faqs: ProductFaq[];
 }
 
 export interface ShippingMethod {
@@ -120,6 +173,8 @@ export interface StorefrontResponse {
   slug: string;
   logoUrl?: string | null;
   primaryColor: string;
+  secondaryColor?: string;
+  tertiaryColor?: string;
   announcementText?: string | null;
   currency: string;
   country: string;
@@ -133,6 +188,8 @@ export interface CheckoutItem {
   productId: string;
   /** @minimum 1 */
   quantity: number;
+  /** Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing. */
+  bundleId?: string | null;
 }
 
 export interface CheckoutCustomer {
@@ -238,6 +295,32 @@ export interface PaymentConfirmationRequest {
 export interface PaymentConfirmationResponse {
   success: boolean;
   paymentStatus: string;
+}
+
+export interface UploadUrlRequest {
+  /**
+     * Original file name.
+     * @minLength 1
+     */
+  name: string;
+  /**
+     * File size in bytes.
+     * @minimum 1
+     */
+  size: number;
+  /**
+     * MIME type of the file (e.g. `image/jpeg`).
+     * @minLength 1
+     */
+  contentType: string;
+}
+
+export interface UploadUrlResponse {
+  /** Presigned GCS URL for PUT upload. */
+  uploadURL: string;
+  /** Normalized object path (e.g. `/objects/uploads/uuid`). Store this in your database. */
+  objectPath: string;
+  metadata?: UploadUrlRequest;
 }
 
 export type GetStorefront200 = {

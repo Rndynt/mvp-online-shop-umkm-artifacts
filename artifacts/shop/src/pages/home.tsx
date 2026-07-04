@@ -1,8 +1,6 @@
-import { useGetStorefront, useListProducts } from '@workspace/api-client-react';
+import { useListProducts } from '@workspace/api-client-react';
 import { ProductCard } from '@/components/product-card';
-import { Header } from '@/components/header';
-import { CartDrawer } from '@/components/cart-drawer';
-import { AnnouncementBar } from '@/components/announcement-bar';
+import { Layout } from '@/components/layout';
 import { ShoppingBag } from 'lucide-react';
 
 function ProductSkeleton() {
@@ -20,20 +18,12 @@ function ProductSkeleton() {
 }
 
 export default function HomePage() {
-  const { data: storefrontResp } = useGetStorefront();
   const { data: productsResp, isLoading, error } = useListProducts();
 
-  const storefront = storefrontResp?.data;
   const products = productsResp?.data ?? [];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {storefront?.announcementText && (
-        <AnnouncementBar text={storefront.announcementText} />
-      )}
-      <Header storeName={storefront?.name} />
-
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Layout>
         {/* Hero */}
         <div className="text-center py-8 mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 tracking-tight">
@@ -42,7 +32,7 @@ export default function HomePage() {
           <p className="text-slate-500 text-base max-w-md mx-auto leading-relaxed">
             Temukan produk berkualitas tinggi dengan harga terjangkau, dikirim langsung ke pintu rumah Anda.
           </p>
-          <p className="mt-4 inline-block bg-teal-50 text-teal-700 text-sm font-medium px-4 py-1.5 rounded-full ring-1 ring-teal-200">
+          <p className="mt-4 inline-block bg-accent text-accent-foreground text-sm font-medium px-4 py-1.5 rounded-full ring-1 ring-accent">
             Gunakan kode <strong>HEMAT10</strong> untuk diskon 10%!
           </p>
         </div>
@@ -78,19 +68,12 @@ export default function HomePage() {
                 price={product.price}
                 compareAtPrice={product.compareAtPrice ?? null}
                 shortDescription={product.shortDescription ?? null}
-                images={product.images ?? []}
+                images={(product.images ?? []).map((img) => ({ url: img.url, alt: img.alt ?? null }))}
                 stockQuantity={product.stockQuantity}
               />
             ))}
           </div>
         )}
-      </main>
-
-      <footer className="border-t border-slate-200 mt-16 py-8 text-center text-sm text-slate-400">
-        <p>© 2025 {storefront?.name ?? 'Tokko'} — Belanja mudah, aman, dan terpercaya</p>
-      </footer>
-
-      <CartDrawer />
-    </div>
+    </Layout>
   );
 }

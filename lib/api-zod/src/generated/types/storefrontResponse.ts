@@ -13,6 +13,8 @@ export interface StorefrontResponse {
   slug: string;
   logoUrl?: string | null;
   primaryColor: string;
+  secondaryColor?: string;
+  tertiaryColor?: string;
   announcementText?: string | null;
   currency: string;
   country: string;

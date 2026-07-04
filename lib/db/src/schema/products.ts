@@ -31,7 +31,50 @@ export const productImagesTable = pgTable("product_images", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const productBundlesTable = pgTable("product_bundles", {
+  id: text("id").primaryKey(),
+  productId: text("product_id")
+    .notNull()
+    .references(() => productsTable.id, { onDelete: "cascade" }),
+  quantity: integer("quantity").notNull(),
+  price: integer("price").notNull(),
+  label: text("label"),
+  badge: text("badge"),
+  isFeatured: boolean("is_featured").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const productFeaturesTable = pgTable("product_features", {
+  id: text("id").primaryKey(),
+  productId: text("product_id")
+    .notNull()
+    .references(() => productsTable.id, { onDelete: "cascade" }),
+  imageUrl: text("image_url"),
+  title: text("title").notNull(),
+  description: text("description"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const productFaqsTable = pgTable("product_faqs", {
+  id: text("id").primaryKey(),
+  productId: text("product_id")
+    .notNull()
+    .references(() => productsTable.id, { onDelete: "cascade" }),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type InsertProduct = typeof productsTable.$inferInsert;
 export type InsertProductImage = typeof productImagesTable.$inferInsert;
+export type InsertProductBundle = typeof productBundlesTable.$inferInsert;
+export type InsertProductFeature = typeof productFeaturesTable.$inferInsert;
+export type InsertProductFaq = typeof productFaqsTable.$inferInsert;
 export type Product = typeof productsTable.$inferSelect;
 export type ProductImage = typeof productImagesTable.$inferSelect;
+export type ProductBundle = typeof productBundlesTable.$inferSelect;
+export type ProductFeature = typeof productFeaturesTable.$inferSelect;
+export type ProductFaq = typeof productFaqsTable.$inferSelect;

@@ -26,6 +26,8 @@ export const GetStorefrontResponse = zod.object({
   "slug": zod.string(),
   "logoUrl": zod.string().nullish(),
   "primaryColor": zod.string(),
+  "secondaryColor": zod.string().optional(),
+  "tertiaryColor": zod.string().optional(),
   "announcementText": zod.string().nullish(),
   "currency": zod.string(),
   "country": zod.string(),
@@ -92,7 +94,29 @@ export const GetProductBySlugResponse = zod.object({
   "alt": zod.string().nullish(),
   "sortOrder": zod.number()
 })),
-  "isActive": zod.boolean()
+  "isActive": zod.boolean(),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
+}))
 })
 })
 
@@ -121,7 +145,8 @@ export const ListShippingMethodsResponse = zod.object({
 export const CreateCheckoutBody = zod.object({
   "items": zod.array(zod.object({
   "productId": zod.string(),
-  "quantity": zod.number().min(1)
+  "quantity": zod.number().min(1),
+  "bundleId": zod.string().nullish().describe('Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing.')
 })).min(1),
   "customer": zod.object({
   "email": zod.string().email(),
@@ -261,6 +286,28 @@ export const AdminListProductsResponse = zod.object({
   "url": zod.string(),
   "alt": zod.string().nullish(),
   "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
 }))
 }))
 })
@@ -279,7 +326,23 @@ export const AdminCreateProductBody = zod.object({
   "sku": zod.string().nullish(),
   "stockQuantity": zod.number(),
   "isActive": zod.boolean().optional(),
-  "imageUrl": zod.string().nullish()
+  "imageUrl": zod.string().nullish(),
+  "bundles": zod.array(zod.object({
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean().optional()
+})).optional(),
+  "features": zod.array(zod.object({
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "faqs": zod.array(zod.object({
+  "question": zod.string(),
+  "answer": zod.string()
+})).optional()
 })
 
 export const AdminCreateProductResponse = zod.object({
@@ -299,6 +362,28 @@ export const AdminCreateProductResponse = zod.object({
   "id": zod.string(),
   "url": zod.string(),
   "alt": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
   "sortOrder": zod.number()
 }))
 })
@@ -330,6 +415,28 @@ export const AdminGetProductResponse = zod.object({
   "url": zod.string(),
   "alt": zod.string().nullish(),
   "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
 }))
 })
 })
@@ -352,7 +459,23 @@ export const AdminUpdateProductBody = zod.object({
   "sku": zod.string().nullish(),
   "stockQuantity": zod.number(),
   "isActive": zod.boolean().optional(),
-  "imageUrl": zod.string().nullish()
+  "imageUrl": zod.string().nullish(),
+  "bundles": zod.array(zod.object({
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean().optional()
+})).optional(),
+  "features": zod.array(zod.object({
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "faqs": zod.array(zod.object({
+  "question": zod.string(),
+  "answer": zod.string()
+})).optional()
 })
 
 export const AdminUpdateProductResponse = zod.object({
@@ -372,6 +495,28 @@ export const AdminUpdateProductResponse = zod.object({
   "id": zod.string(),
   "url": zod.string(),
   "alt": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
   "sortOrder": zod.number()
 }))
 })
@@ -530,5 +675,61 @@ export const AdminUpdateOrderStatusResponse = zod.object({
   "createdAt": zod.coerce.date()
 })
 })
+
+
+/**
+ * Returns a presigned GCS URL for direct upload. The client sends JSON
+ * metadata here, then uploads the file directly to the returned URL.
+ * @summary Request a presigned URL for file upload
+ */
+
+
+
+
+
+export const RequestUploadUrlBody = zod.object({
+  "name": zod.string().min(1).describe('Original file name.'),
+  "size": zod.number().min(1).describe('File size in bytes.'),
+  "contentType": zod.string().min(1).describe('MIME type of the file (e.g. `image\/jpeg`).')
+})
+
+
+
+
+
+
+export const RequestUploadUrlResponse = zod.object({
+  "uploadURL": zod.string().url().describe('Presigned GCS URL for PUT upload.'),
+  "objectPath": zod.string().describe('Normalized object path (e.g. `\/objects\/uploads\/uuid`). Store this in your database.'),
+  "metadata": zod.object({
+  "name": zod.string().min(1).describe('Original file name.'),
+  "size": zod.number().min(1).describe('File size in bytes.'),
+  "contentType": zod.string().min(1).describe('MIME type of the file (e.g. `image\/jpeg`).')
+}).optional()
+})
+
+
+/**
+ * Unconditionally public — no authentication or ACL checks.
+ * Searches PUBLIC_OBJECT_SEARCH_PATHS for the given file path.
+ * @summary Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
+ */
+export const GetPublicObjectParams = zod.object({
+  "filePath": zod.coerce.string().describe('Relative file path within the public search paths.')
+})
+
+export const GetPublicObjectResponse = zod.unknown()
+
+
+/**
+ * Serves object entities uploaded via presigned URLs. These can optionally
+ * be protected with authentication or ACL checks based on the use case.
+ * @summary Serve an object entity from PRIVATE_OBJECT_DIR
+ */
+export const GetStorageObjectParams = zod.object({
+  "objectPath": zod.coerce.string().describe('Object path within the private object dir (e.g. `uploads\/some-uuid`).')
+})
+
+export const GetStorageObjectResponse = zod.unknown()
 
 

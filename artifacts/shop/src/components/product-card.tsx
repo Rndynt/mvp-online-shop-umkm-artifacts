@@ -75,7 +75,7 @@ export function ProductCard({
 
         {/* Info */}
         <div className="p-4 flex flex-col gap-2 flex-1">
-          <h3 className="font-semibold text-slate-900 line-clamp-2 leading-snug group-hover:text-teal-700 transition-colors">
+          <h3 className="font-semibold text-slate-900 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
             {name}
           </h3>
           {shortDescription && (
@@ -93,7 +93,7 @@ export function ProductCard({
             <button
               onClick={handleAddToCart}
               disabled={outOfStock}
-              className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              className="w-full bg-primary hover:bg-primary/90 disabled:bg-slate-200 disabled:text-slate-400 text-white text-sm font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-1.5"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               {outOfStock ? 'Stok Habis' : 'Tambah ke Keranjang'}
