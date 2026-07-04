@@ -11,7 +11,6 @@ import OrderConfirmationPage from '@/pages/order-confirmation';
 import TemplatePreviewPage from '@/pages/template-preview';
 import TrackOrderPage from '@/pages/track-order';
 import ContactPage from '@/pages/contact';
-import AboutPage from '@/pages/about';
 
 function ScrollToTop() {
   const [path] = useLocation();
@@ -34,7 +33,6 @@ function Router() {
         <Route path="/orders/:orderCode" component={OrderConfirmationPage} />
         <Route path="/track-order" component={TrackOrderPage} />
         <Route path="/contact" component={ContactPage} />
-        <Route path="/about" component={AboutPage} />
         <Route component={NotFound} />
       </Switch>
     </>

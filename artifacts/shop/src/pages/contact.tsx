@@ -1,22 +1,46 @@
 import { useGetStorefront } from '@workspace/api-client-react';
 import { Layout } from '@/components/layout';
-import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { Store, Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 
 export default function ContactPage() {
   const { data } = useGetStorefront();
   const store = data?.data;
 
   const waNumber = store?.contactPhone?.replace(/\D/g, '');
-  const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : null;
+  const waLink = waNumber
+    ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}`
+    : null;
 
   return (
     <Layout>
       <div className="max-w-lg mx-auto py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">Hubungi Kami</h1>
-          <p className="text-sm text-slate-500 mt-1">Ada pertanyaan? Kami siap membantu kamu.</p>
+
+        {/* Store identity */}
+        <div className="flex items-center gap-4 mb-6">
+          {store?.logoUrl ? (
+            <img
+              src={store.logoUrl}
+              alt={store.name}
+              className="w-14 h-14 rounded-2xl object-cover border border-slate-100 shrink-0"
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shrink-0">
+              <Store className="w-7 h-7 text-white" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">{store?.name ?? 'Hubungi Kami'}</h1>
+            {store?.tagline ? (
+              <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">{store.tagline}</p>
+            ) : (
+              <p className="text-sm text-slate-500 mt-0.5">Ada pertanyaan? Kami siap membantu.</p>
+            )}
+          </div>
         </div>
 
+        <div className="border-t border-slate-100 mb-6" />
+
+        {/* Contact channels */}
         <div className="flex flex-col gap-3">
           {waLink && (
             <a

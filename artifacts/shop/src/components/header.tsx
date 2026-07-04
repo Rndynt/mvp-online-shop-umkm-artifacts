@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Store, Menu, X, Home, Package, Search, Phone, Info } from 'lucide-react';
+import { ShoppingBag, Store, Menu, X, Home, Package, Search, Phone } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useCartStore } from '@/lib/cart-store';
 
@@ -13,7 +13,6 @@ const NAV_ITEMS = [
   { href: '/products', label: 'Semua Produk', Icon: Package },
   { href: '/track-order', label: 'Lacak Pesanan', Icon: Search },
   { href: '/contact', label: 'Kontak', Icon: Phone },
-  { href: '/about', label: 'Tentang Toko', Icon: Info },
 ] as const;
 
 export function Header({ storeName = 'Tokko', logoUrl }: HeaderProps) {
