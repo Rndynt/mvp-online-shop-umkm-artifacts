@@ -63,20 +63,33 @@ function FloatingTemplateSwitcher({ active }: { active: TemplateId }) {
 }
 
 export default function HomePage() {
-  const { data: productsResp, isLoading, error } = useListProducts();
-  const { data: storefrontResp } = useGetStorefront();
+  const { data: productsResp, isLoading: productsLoading, error } = useListProducts();
+  const { data: storefrontResp, isLoading: storefrontLoading } = useGetStorefront();
   const products = productsResp?.data ?? [];
 
   const override = useTemplateOverride();
   const storeTemplate = storefrontResp?.data?.homepageTemplate === 'basic-1' ? 'basic-1' : 'basic';
+
+  // Kalau ada override lewat query param, langsung pakai (tidak perlu tunggu
+  // storefront). Kalau tidak, tunggu data storefront selesai dimuat dulu
+  // sebelum menentukan template — supaya tidak sempat "flash" ke template
+  // default (basic) sebelum template asli yang tersimpan diketahui.
+  if (!override && storefrontLoading) {
+    return (
+      <Layout>
+        <div className="min-h-[70vh]" aria-hidden="true" />
+      </Layout>
+    );
+  }
+
   const template: TemplateId = override ?? storeTemplate;
 
   return (
     <Layout>
       {template === 'basic-1' ? (
-        <BasicTemplate1 products={products} isLoading={isLoading} error={error} />
+        <BasicTemplate1 products={products} isLoading={productsLoading} error={error} />
       ) : (
-        <BasicTemplate products={products} isLoading={isLoading} error={error} />
+        <BasicTemplate products={products} isLoading={productsLoading} error={error} />
       )}
       <FloatingTemplateSwitcher active={template} />
     </Layout>
