@@ -55,7 +55,7 @@ export default function ShippingSettingsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Metode Pengiriman</h1>
           <p className="text-slate-500 text-sm mt-0.5">Atur opsi pengiriman yang tersedia di checkout</p>
         </div>
-        <button className="inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors w-full sm:w-auto">
+        <button className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors w-full sm:w-auto">
           <Plus className="w-4 h-4" />
           Tambah Metode
         </button>
@@ -71,7 +71,7 @@ export default function ShippingSettingsPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-semibold text-slate-800 text-sm">{m.name}</p>
                 <Badge className={m.active
-                  ? 'bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-200 hover:bg-teal-50'
+                  ? 'bg-accent text-accent-foreground ring-1 ring-inset ring-accent hover:bg-accent'
                   : 'bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200 hover:bg-slate-100'
                 }>
                   {m.active ? 'Aktif' : 'Nonaktif'}
@@ -100,9 +100,9 @@ export default function ShippingSettingsPage() {
         ))}
       </div>
 
-      <div className="mt-4 bg-teal-50 border border-teal-200 rounded-xl p-4 text-sm text-teal-700">
+      <div className="mt-4 bg-accent border border-accent rounded-xl p-4 text-sm text-accent-foreground">
         <p className="font-medium mb-0.5">Gratis Ongkir Otomatis</p>
-        <p className="text-xs text-teal-600">Pelanggan mendapat gratis ongkir otomatis untuk pembelian di atas Rp 200.000. Diatur di storefront banner.</p>
+        <p className="text-xs text-primary">Pelanggan mendapat gratis ongkir otomatis untuk pembelian di atas Rp 200.000. Diatur di storefront banner.</p>
       </div>
     </div>
   );

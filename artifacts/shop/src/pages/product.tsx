@@ -55,7 +55,7 @@ export default function ProductPage() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="text-slate-700 font-medium mb-2">Produk tidak ditemukan</p>
-            <button onClick={() => navigate('/')} className="text-teal-600 text-sm underline">
+            <button onClick={() => navigate('/')} className="text-primary text-sm underline">
               Kembali ke toko
             </button>
           </div>
@@ -111,7 +111,7 @@ export default function ProductPage() {
 
   return (
     <Layout mainClassName="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      <Link href="/" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-teal-600 mb-6 transition-colors">
+      <Link href="/" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-primary mb-6 transition-colors">
         <ChevronLeft className="w-4 h-4" />
         Kembali ke Toko
       </Link>
@@ -139,7 +139,7 @@ export default function ProductPage() {
                   key={img.id}
                   onClick={() => setActiveImg(idx)}
                   className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-colors ${
-                    activeImg === idx ? 'border-teal-600' : 'border-slate-200 hover:border-slate-300'
+                    activeImg === idx ? 'border-primary' : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <img src={img.url} alt={img.alt ?? ''} className="w-full h-full object-cover" />
@@ -186,7 +186,7 @@ export default function ProductPage() {
             <div className="mb-5">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-sm font-semibold text-slate-800">Pilih Paket</span>
-                <span className="text-xs text-teal-600 font-medium">Beli lebih banyak, hemat lebih besar</span>
+                <span className="text-xs text-primary font-medium">Beli lebih banyak, hemat lebih besar</span>
               </div>
               <div className="space-y-2">
                 {bundles.map((bundle) => {
@@ -198,17 +198,17 @@ export default function ProductPage() {
                       onClick={() => setSelectedBundleId(bundle.id)}
                       className={`w-full flex items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors ${
                         isSelected
-                          ? 'border-teal-600 bg-teal-50'
+                          ? 'border-primary bg-accent'
                           : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <span
                           className={`w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
-                            isSelected ? 'border-teal-600' : 'border-slate-300'
+                            isSelected ? 'border-primary' : 'border-slate-300'
                           }`}
                         >
-                          {isSelected && <span className="w-2 h-2 rounded-full bg-teal-600" />}
+                          {isSelected && <span className="w-2 h-2 rounded-full bg-primary" />}
                         </span>
                         <div>
                           <div className="text-sm font-semibold text-slate-900">
@@ -258,7 +258,7 @@ export default function ProductPage() {
           <button
             onClick={handleAddToCart}
             disabled={outOfStock}
-            className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-primary hover:bg-primary/90 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
           >
             {added ? (
               <><Check className="w-5 h-5" /> Ditambahkan!</>
@@ -269,15 +269,15 @@ export default function ProductPage() {
 
           <div className="grid grid-cols-3 gap-2 mt-5">
             <div className="flex flex-col items-center gap-1.5 text-center bg-slate-50 rounded-lg py-3 px-1">
-              <Truck className="w-5 h-5 text-teal-600" />
+              <Truck className="w-5 h-5 text-primary" />
               <span className="text-[11px] text-slate-600 leading-tight">Pengiriman Cepat</span>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center bg-slate-50 rounded-lg py-3 px-1">
-              <ShieldCheck className="w-5 h-5 text-teal-600" />
+              <ShieldCheck className="w-5 h-5 text-primary" />
               <span className="text-[11px] text-slate-600 leading-tight">Garansi 30 Hari</span>
             </div>
             <div className="flex flex-col items-center gap-1.5 text-center bg-slate-50 rounded-lg py-3 px-1">
-              <Lock className="w-5 h-5 text-teal-600" />
+              <Lock className="w-5 h-5 text-primary" />
               <span className="text-[11px] text-slate-600 leading-tight">Pembayaran Aman</span>
             </div>
           </div>

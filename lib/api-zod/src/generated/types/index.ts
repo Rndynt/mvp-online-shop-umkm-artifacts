@@ -57,3 +57,5 @@ export * from './productListItem';
 export * from './shippingMethod';
 export * from './storefrontResponse';
 export * from './submitPaymentConfirmation200';
+export * from './uploadUrlRequest';
+export * from './uploadUrlResponse';

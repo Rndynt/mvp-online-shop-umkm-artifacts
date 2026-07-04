@@ -54,8 +54,8 @@ function CopyButton({ text }: { text: string }) {
     });
   }
   return (
-    <button onClick={copy} className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors">
-      {copied ? <Check className="w-3.5 h-3.5 text-teal-600" /> : <Copy className="w-3.5 h-3.5" />}
+    <button onClick={copy} className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-primary hover:bg-accent transition-colors">
+      {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
     </button>
   );
 }
@@ -68,7 +68,7 @@ export default function DiscountsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Kode Promo</h1>
           <p className="text-slate-500 text-sm mt-0.5">Buat dan kelola kode diskon untuk pelanggan</p>
         </div>
-        <button className="inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors w-full sm:w-auto">
+        <button className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors w-full sm:w-auto">
           <Plus className="w-4 h-4" />
           Buat Kode
         </button>
@@ -80,8 +80,8 @@ export default function DiscountsPage() {
           <div key={c.id} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center shrink-0">
-                  <Tag className="w-3.5 h-3.5 text-teal-600" />
+                <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center shrink-0">
+                  <Tag className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -96,7 +96,7 @@ export default function DiscountsPage() {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <Badge className={c.active
-                  ? 'bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-200 hover:bg-teal-50'
+                  ? 'bg-accent text-accent-foreground ring-1 ring-inset ring-accent hover:bg-accent'
                   : 'bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200 hover:bg-slate-100'
                 }>
                   {c.active ? 'Aktif' : 'Nonaktif'}
@@ -156,7 +156,7 @@ export default function DiscountsPage() {
                 </td>
                 <td className="px-5 py-4">
                   <Badge className={c.active
-                    ? 'bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-200 hover:bg-teal-50'
+                    ? 'bg-accent text-accent-foreground ring-1 ring-inset ring-accent hover:bg-accent'
                     : 'bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200 hover:bg-slate-100'
                   }>
                     {c.active ? 'Aktif' : 'Nonaktif'}

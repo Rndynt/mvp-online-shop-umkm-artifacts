@@ -32,7 +32,7 @@ export default function HomePage() {
           <p className="text-slate-500 text-base max-w-md mx-auto leading-relaxed">
             Temukan produk berkualitas tinggi dengan harga terjangkau, dikirim langsung ke pintu rumah Anda.
           </p>
-          <p className="mt-4 inline-block bg-teal-50 text-teal-700 text-sm font-medium px-4 py-1.5 rounded-full ring-1 ring-teal-200">
+          <p className="mt-4 inline-block bg-accent text-accent-foreground text-sm font-medium px-4 py-1.5 rounded-full ring-1 ring-accent">
             Gunakan kode <strong>HEMAT10</strong> untuk diskon 10%!
           </p>
         </div>

@@ -9,6 +9,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Loader2, Plus, Trash2, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ImageDropzone } from '@workspace/object-storage-web';
 
 function slugify(value: string) {
   return value
@@ -19,7 +20,7 @@ function slugify(value: string) {
 }
 
 const inputCls =
-  'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow bg-white';
+  'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-white';
 
 function Field({
   label,
@@ -58,7 +59,7 @@ function AddButton({ onClick, label }: { onClick: () => void; label: string }) {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 text-xs font-medium text-teal-700 hover:text-teal-800 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-colors"
+      className="inline-flex items-center gap-1.5 text-xs font-medium text-accent-foreground hover:text-accent-foreground bg-accent hover:bg-accent px-3 py-1.5 rounded-lg transition-colors"
     >
       <Plus className="w-3.5 h-3.5" />
       {label}
@@ -131,7 +132,7 @@ function BundleEditor({
   return (
     <div className="space-y-3">
       {bundles.map((b) => (
-        <div key={b._key} className={cn('rounded-xl border p-4 space-y-3', b.isFeatured ? 'border-teal-400 bg-teal-50/40' : 'border-slate-200 bg-slate-50/40')}>
+        <div key={b._key} className={cn('rounded-xl border p-4 space-y-3', b.isFeatured ? 'border-primary bg-accent/40' : 'border-slate-200 bg-slate-50/40')}>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -249,22 +250,15 @@ function FeatureEditor({
               className={cn(inputCls, 'resize-none')}
             />
           </Field>
-          <Field label="URL Gambar" hint="opsional">
-            <input
-              value={f.imageUrl ?? ''}
-              onChange={(e) => update(f._key, { imageUrl: e.target.value || null })}
-              placeholder="https://..."
-              className={inputCls}
+          <Field label="Gambar" hint="opsional">
+            <ImageDropzone
+              value={f.imageUrl ?? undefined}
+              onUploaded={(url) => update(f._key, { imageUrl: url })}
+              onClear={() => update(f._key, { imageUrl: null })}
+              heightClassName="h-32"
+              label="Seret & lepas gambar keunggulan, atau klik untuk memilih"
             />
           </Field>
-          {f.imageUrl && (
-            <img
-              src={f.imageUrl}
-              alt="preview"
-              className="w-full h-32 object-cover rounded-lg border border-slate-200"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-          )}
         </div>
       ))}
     </div>
@@ -481,7 +475,7 @@ export default function ProductFormPage() {
   if (isEdit && isLoadingExisting) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-5 h-5 text-teal-600 animate-spin" />
+        <Loader2 className="w-5 h-5 text-primary animate-spin" />
       </div>
     );
   }
@@ -490,7 +484,7 @@ export default function ProductFormPage() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
       <button
         onClick={() => navigate('/')}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-teal-600 mb-5 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary mb-5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Kembali
@@ -604,22 +598,14 @@ export default function ProductFormPage() {
 
         {/* ── Gambar ── */}
         <Card title="Gambar Produk">
-          <Field label="URL Gambar">
-            <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://..."
-              className={inputCls}
+          <Field label="Gambar">
+            <ImageDropzone
+              value={imageUrl || undefined}
+              onUploaded={(url) => setImageUrl(url)}
+              onClear={() => setImageUrl('')}
+              label="Seret & lepas gambar produk di sini, atau klik untuk memilih"
             />
           </Field>
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt="Preview"
-              className="w-full h-44 object-cover rounded-lg border border-slate-200 mt-1"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
-          )}
         </Card>
 
         {/* ── Bundle Harga ── */}
@@ -669,7 +655,7 @@ export default function ProductFormPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex-1 inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
+            className="flex-1 inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}

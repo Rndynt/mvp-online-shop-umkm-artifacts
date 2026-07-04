@@ -47,6 +47,8 @@ export async function getStorefront() {
     slug: store.slug,
     logoUrl: store.logoUrl,
     primaryColor: store.primaryColor,
+    secondaryColor: store.secondaryColor,
+    tertiaryColor: store.tertiaryColor,
     announcementText: store.announcementText,
     currency: store.currency,
     country: store.country,
@@ -81,6 +83,10 @@ export async function getSettings() {
     postalCode: store.postalCode ?? "",
     country: store.country,
     currency: store.currency,
+    logoUrl: store.logoUrl ?? "",
+    primaryColor: store.primaryColor ?? "",
+    secondaryColor: store.secondaryColor ?? "",
+    tertiaryColor: store.tertiaryColor ?? "",
   };
 }
 
@@ -96,6 +102,10 @@ export interface UpdateSettingsInput {
   postalCode?: string;
   country?: string;
   currency?: string;
+  logoUrl?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  tertiaryColor?: string;
 }
 
 export async function updateSettings(input: UpdateSettingsInput) {
@@ -120,6 +130,10 @@ export async function updateSettings(input: UpdateSettingsInput) {
       city: input.city?.trim() || null,
       province: input.province?.trim() || null,
       postalCode: input.postalCode?.trim() || null,
+      logoUrl: input.logoUrl?.trim() || undefined,
+      primaryColor: input.primaryColor?.trim() || undefined,
+      secondaryColor: input.secondaryColor?.trim() || undefined,
+      tertiaryColor: input.tertiaryColor?.trim() || undefined,
     })
     .where(eq(storesTable.id, store.id));
 

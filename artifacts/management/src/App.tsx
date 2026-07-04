@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 import { Toaster } from 'sonner';
+import { applyThemeToDocument, resolveThemeColors } from '@workspace/shared';
 import { Layout } from '@/components/layout';
 import ProductsPage from '@/pages/products';
 import ProductFormPage from '@/pages/product-form';
@@ -38,6 +40,23 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    fetch('/api/admin/settings')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.data) {
+          applyThemeToDocument(
+            resolveThemeColors({
+              primary: json.data.primaryColor,
+              secondary: json.data.secondaryColor,
+              tertiary: json.data.tertiaryColor,
+            }),
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>

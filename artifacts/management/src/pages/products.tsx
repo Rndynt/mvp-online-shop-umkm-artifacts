@@ -56,7 +56,7 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
     <Badge
       className={
         isActive
-          ? 'bg-teal-50 text-teal-700 hover:bg-teal-50 ring-1 ring-inset ring-teal-200'
+          ? 'bg-accent text-accent-foreground hover:bg-accent ring-1 ring-inset ring-accent'
           : 'bg-slate-100 text-slate-500 hover:bg-slate-100 ring-1 ring-inset ring-slate-200'
       }
     >
@@ -94,7 +94,7 @@ export default function ProductsPage() {
         </div>
         <button
           onClick={() => navigate('/products/new')}
-          className="inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Tambah Produk

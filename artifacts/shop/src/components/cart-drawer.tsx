@@ -31,7 +31,7 @@ export function CartDrawer() {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
           <h2 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-teal-600" />
+            <ShoppingBag className="w-5 h-5 text-primary" />
             Keranjang
           </h2>
           <button
@@ -55,7 +55,7 @@ export function CartDrawer() {
               </div>
               <button
                 onClick={closeCart}
-                className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
+                className="bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
               >
                 Lihat Produk
               </button>
@@ -85,7 +85,7 @@ export function CartDrawer() {
                     <p className="font-medium text-slate-900 text-sm line-clamp-2 leading-snug">
                       {item.name}
                     </p>
-                    <p className="text-teal-600 font-semibold text-sm mt-1">
+                    <p className="text-primary font-semibold text-sm mt-1">
                       {formatIDR(
                         item.bundlePackPrice != null && item.bundlePackQty != null && item.bundlePackQty > 0
                           ? (item.quantity / item.bundlePackQty) * item.bundlePackPrice
@@ -96,7 +96,7 @@ export function CartDrawer() {
                     {isBundle ? (
                       /* Bundle items: locked quantity — qty is fixed to bundle size */
                       <div className="flex items-center gap-2 mt-2">
-                        <div className="flex items-center gap-1.5 bg-teal-50 text-teal-700 text-xs font-medium px-2.5 py-1 rounded-lg">
+                        <div className="flex items-center gap-1.5 bg-accent text-accent-foreground text-xs font-medium px-2.5 py-1 rounded-lg">
                           <Package className="w-3 h-3" />
                           Paket ×{item.quantity}
                         </div>
@@ -148,7 +148,7 @@ export function CartDrawer() {
             <p className="text-xs text-slate-400">Ongkir dihitung saat checkout</p>
             <button
               onClick={handleCheckout}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl transition-colors"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 rounded-xl transition-colors"
             >
               Lanjut ke Checkout
             </button>

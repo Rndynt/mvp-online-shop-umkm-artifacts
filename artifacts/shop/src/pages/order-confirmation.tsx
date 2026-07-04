@@ -22,7 +22,7 @@ const STATUS_INFO: Record<string, { label: string; color: string; icon: React.Re
   paid: { label: 'Pembayaran Diterima', color: 'text-green-600 bg-green-50 ring-green-200', icon: <CheckCircle2 className="w-4 h-4" /> },
   processing: { label: 'Sedang Diproses', color: 'text-blue-600 bg-blue-50 ring-blue-200', icon: <Package className="w-4 h-4" /> },
   shipped: { label: 'Dalam Pengiriman', color: 'text-purple-600 bg-purple-50 ring-purple-200', icon: <Truck className="w-4 h-4" /> },
-  completed: { label: 'Selesai', color: 'text-teal-600 bg-teal-50 ring-teal-200', icon: <CheckCircle2 className="w-4 h-4" /> },
+  completed: { label: 'Selesai', color: 'text-primary bg-accent ring-accent', icon: <CheckCircle2 className="w-4 h-4" /> },
   cancelled: { label: 'Dibatalkan', color: 'text-red-600 bg-red-50 ring-red-200', icon: <Clock className="w-4 h-4" /> },
 };
 
@@ -46,7 +46,7 @@ function QRISDisplay({ amount, qrPayload }: { amount: number; qrPayload: string 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <QrCode className="w-5 h-5 text-teal-600" />
+        <QrCode className="w-5 h-5 text-primary" />
         <h3 className="font-semibold text-slate-900">Instruksi Pembayaran QRIS</h3>
       </div>
       <div className="bg-amber-50 rounded-xl p-3 mb-5 text-sm text-amber-700 ring-1 ring-amber-200 flex items-start gap-2">
@@ -59,7 +59,7 @@ function QRISDisplay({ amount, qrPayload }: { amount: number; qrPayload: string 
       </div>
       <button
         onClick={() => setShowQr((s) => !s)}
-        className="w-full flex items-center justify-between text-sm text-slate-600 hover:text-teal-600 mb-3 transition-colors"
+        className="w-full flex items-center justify-between text-sm text-slate-600 hover:text-primary mb-3 transition-colors"
       >
         <span>Lihat QR Code</span>
         {showQr ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -88,7 +88,7 @@ function QRISDisplay({ amount, qrPayload }: { amount: number; qrPayload: string 
 function PaymentConfirmationForm({ orderCode, onSuccess }: { orderCode: string; onSuccess: () => void }) {
   const submitConfirmation = useSubmitPaymentConfirmation();
   const { register, handleSubmit, formState: { errors } } = useForm<ConfirmForm>();
-  const inputCls = 'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500';
+  const inputCls = 'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary';
 
   async function onSubmit(data: ConfirmForm) {
     try {
@@ -102,7 +102,7 @@ function PaymentConfirmationForm({ orderCode, onSuccess }: { orderCode: string; 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
       <div className="flex items-center gap-2 mb-2">
-        <Send className="w-5 h-5 text-teal-600" />
+        <Send className="w-5 h-5 text-primary" />
         <h3 className="font-semibold text-slate-900">Konfirmasi Pembayaran</h3>
       </div>
       <p className="text-sm text-slate-500">Sudah transfer? Isi form ini agar tim kami segera memverifikasi.</p>
@@ -128,7 +128,7 @@ function PaymentConfirmationForm({ orderCode, onSuccess }: { orderCode: string; 
       <button
         type="submit"
         disabled={submitConfirmation.isPending}
-        className="w-full bg-teal-600 hover:bg-teal-700 disabled:bg-teal-400 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+        className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/40 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
       >
         {submitConfirmation.isPending
           ? <><Loader2 className="w-4 h-4 animate-spin" /> Mengirim...</>
@@ -165,7 +165,7 @@ export default function OrderConfirmationPage() {
       <Layout mainClassName="max-w-3xl mx-auto px-4 py-12">
         <div className="text-center">
           <p className="text-slate-700 font-medium mb-2">Pesanan tidak ditemukan</p>
-          <Link href="/" className="text-teal-600 text-sm underline">Kembali ke toko</Link>
+          <Link href="/" className="text-primary text-sm underline">Kembali ke toko</Link>
         </div>
       </Layout>
     );
@@ -179,8 +179,8 @@ export default function OrderConfirmationPage() {
   return (
       <Layout mainClassName="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-4 ring-1 ring-teal-100">
-            <CheckCircle2 className="w-8 h-8 text-teal-600" />
+          <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-4 ring-1 ring-accent">
+            <CheckCircle2 className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-1">Pesanan Berhasil Dibuat!</h1>
           <p className="text-slate-500 text-sm">
@@ -222,7 +222,7 @@ export default function OrderConfirmationPage() {
           {/* Order items */}
           <div className="bg-white rounded-2xl border border-slate-200 p-5">
             <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <Package className="w-4 h-4 text-teal-600" /> Item Pesanan
+              <Package className="w-4 h-4 text-primary" /> Item Pesanan
             </h3>
             <div className="space-y-3">
               {order.items.map((item) => (
@@ -246,7 +246,7 @@ export default function OrderConfirmationPage() {
               </div>
               <div className="flex justify-between font-bold text-slate-900 text-base pt-2 border-t border-slate-200">
                 <span>Total</span>
-                <span className="text-teal-700">{formatIDR(order.totalAmount)}</span>
+                <span className="text-accent-foreground">{formatIDR(order.totalAmount)}</span>
               </div>
             </div>
           </div>
@@ -255,7 +255,7 @@ export default function OrderConfirmationPage() {
           {address && (
             <div className="bg-white rounded-2xl border border-slate-200 p-5">
               <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-teal-600" /> Alamat Pengiriman
+                <MapPin className="w-4 h-4 text-primary" /> Alamat Pengiriman
               </h3>
               <p className="text-sm text-slate-700 leading-relaxed">
                 {address.firstName} {address.lastName}<br />
@@ -270,7 +270,7 @@ export default function OrderConfirmationPage() {
           {/* Payment info */}
           <div className="bg-white rounded-2xl border border-slate-200 p-5">
             <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-teal-600" /> Info Pembayaran
+              <CreditCard className="w-4 h-4 text-primary" /> Info Pembayaran
             </h3>
             <div className="text-sm space-y-1.5">
               <div className="flex justify-between text-slate-600">
@@ -295,7 +295,7 @@ export default function OrderConfirmationPage() {
           </div>
 
           <div className="text-center pt-2">
-            <Link href="/" className="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors">
+            <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-accent-foreground text-sm font-medium transition-colors">
               ← Lanjut Belanja
             </Link>
           </div>

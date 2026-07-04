@@ -2,3 +2,4 @@
 - [RukoLite DB schema](rukolite-db-schema.md) — drizzle-zod removed; use `$inferInsert`/`$inferSelect` for type exports to avoid Zod version conflicts
 - [RukoLite seed](rukolite-seed.md) — run via `pnpm --filter @workspace/db run seed`; tsx in catalog, idempotency guard prevents double-seed
 - [RukoLite duplicate workflow ports](rukolite-workflow-duplication.md) — after import, legacy + artifact-managed workflows can collide on ports; remove legacy plain-named ones
+- [RukoLite shared theming system](rukolite-theming-system.md) — theme colors applied as CSS vars via `@theme inline`; components must use `bg-primary`/etc, never hardcoded Tailwind colors

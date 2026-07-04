@@ -4,6 +4,7 @@ import { Header } from '@/components/header';
 import { AnnouncementBar } from '@/components/announcement-bar';
 import { Footer } from '@/components/footer';
 import { CartDrawer } from '@/components/cart-drawer';
+import { useStoreTheme } from '@/hooks/use-store-theme';
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,12 +15,18 @@ export function Layout({ children, mainClassName = 'max-w-5xl mx-auto px-4 sm:px
   const { data: storefrontResp } = useGetStorefront();
   const storefront = storefrontResp?.data;
 
+  useStoreTheme({
+    primary: storefront?.primaryColor ?? undefined,
+    secondary: storefront?.secondaryColor ?? undefined,
+    tertiary: storefront?.tertiaryColor ?? undefined,
+  });
+
   return (
     <div className="min-h-screen bg-slate-50">
       {storefront?.announcementText && (
         <AnnouncementBar text={storefront.announcementText} />
       )}
-      <Header storeName={storefront?.name} />
+      <Header storeName={storefront?.name} logoUrl={storefront?.logoUrl} />
 
       <main className={mainClassName}>{children}</main>
 

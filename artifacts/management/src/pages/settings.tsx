@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Check } from 'lucide-react';
+import { ImageDropzone } from '@workspace/object-storage-web';
+import { DEFAULT_THEME, THEME_PRESETS, applyThemeToDocument, resolveThemeColors } from '@workspace/shared';
 
 const inputCls =
-  'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow bg-white';
+  'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-white';
 
 function Card({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
@@ -42,6 +44,10 @@ interface StoreSettings {
   postalCode: string;
   country: string;
   currency: string;
+  logoUrl: string;
+  primaryColor: string;
+  secondaryColor: string;
+  tertiaryColor: string;
 }
 
 const EMPTY: StoreSettings = {
@@ -56,7 +62,35 @@ const EMPTY: StoreSettings = {
   postalCode: '',
   country: 'Indonesia',
   currency: 'IDR',
+  logoUrl: '',
+  primaryColor: DEFAULT_THEME.primary,
+  secondaryColor: DEFAULT_THEME.secondary,
+  tertiaryColor: DEFAULT_THEME.tertiary,
 };
+
+function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="text-sm font-medium text-slate-700 block mb-1.5">{label}</label>
+      <div className="flex items-center gap-2">
+        <label className="relative w-10 h-10 rounded-lg border border-slate-300 overflow-hidden shrink-0 cursor-pointer">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="absolute -top-1 -left-1 w-12 h-12 cursor-pointer"
+          />
+        </label>
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 uppercase focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-white"
+          maxLength={7}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const [form, setForm] = useState<StoreSettings>(EMPTY);
@@ -67,7 +101,23 @@ export default function SettingsPage() {
     fetch('/api/admin/settings')
       .then((r) => r.json())
       .then((json) => {
-        if (json.data) setForm({ ...EMPTY, ...json.data });
+        if (json.data) {
+          const merged = {
+            ...EMPTY,
+            ...json.data,
+            primaryColor: json.data.primaryColor || EMPTY.primaryColor,
+            secondaryColor: json.data.secondaryColor || EMPTY.secondaryColor,
+            tertiaryColor: json.data.tertiaryColor || EMPTY.tertiaryColor,
+          };
+          setForm(merged);
+          applyThemeToDocument(
+            resolveThemeColors({
+              primary: merged.primaryColor,
+              secondary: merged.secondaryColor,
+              tertiary: merged.tertiaryColor,
+            }),
+          );
+        }
       })
       .catch(() => toast.error('Gagal memuat pengaturan'))
       .finally(() => setLoading(false));
@@ -76,6 +126,35 @@ export default function SettingsPage() {
   function set(field: keyof StoreSettings) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  }
+
+  function setColor(field: 'primaryColor' | 'secondaryColor' | 'tertiaryColor') {
+    return (value: string) => {
+      setForm((prev) => {
+        const next = { ...prev, [field]: value };
+        applyThemeToDocument(
+          resolveThemeColors({
+            primary: next.primaryColor,
+            secondary: next.secondaryColor,
+            tertiary: next.tertiaryColor,
+          }),
+        );
+        return next;
+      });
+    };
+  }
+
+  function applyPreset(presetColors: { primary: string; secondary: string; tertiary: string }) {
+    setForm((prev) => {
+      const next = {
+        ...prev,
+        primaryColor: presetColors.primary,
+        secondaryColor: presetColors.secondary,
+        tertiaryColor: presetColors.tertiary,
+      };
+      applyThemeToDocument(resolveThemeColors(presetColors));
+      return next;
+    });
   }
 
   async function handleSave() {
@@ -106,7 +185,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-5 h-5 text-teal-600 animate-spin" />
+        <Loader2 className="w-5 h-5 text-primary animate-spin" />
       </div>
     );
   }
@@ -194,11 +273,78 @@ export default function SettingsPage() {
           </Field>
         </Card>
 
+        <Card title="Logo Toko" description="Ditampilkan di header storefront dan panel manajemen">
+          <Field label="Logo">
+            <div className="max-w-xs">
+              <ImageDropzone
+                value={form.logoUrl || undefined}
+                onUploaded={(url) => setForm((prev) => ({ ...prev, logoUrl: url }))}
+                onClear={() => setForm((prev) => ({ ...prev, logoUrl: '' }))}
+                heightClassName="h-32"
+                label="Seret & lepas logo di sini, atau klik untuk memilih"
+              />
+            </div>
+          </Field>
+        </Card>
+
+        <Card title="Warna Tema" description="Pilih preset atau kustomisasi warna primer, sekunder, dan tersier toko Anda">
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-2">Preset Warna</label>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+              {THEME_PRESETS.map((preset) => {
+                const isActive =
+                  form.primaryColor?.toLowerCase() === preset.colors.primary.toLowerCase() &&
+                  form.tertiaryColor?.toLowerCase() === preset.colors.tertiary.toLowerCase();
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => applyPreset(preset.colors)}
+                    className={cn(
+                      'relative flex flex-col items-center gap-1.5 rounded-lg border-2 p-2.5 transition-colors',
+                      isActive ? 'border-primary bg-accent' : 'border-slate-200 hover:border-slate-300',
+                    )}
+                  >
+                    {isActive && (
+                      <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-white" />
+                      </span>
+                    )}
+                    <div className="flex -space-x-1.5">
+                      <span
+                        className="w-5 h-5 rounded-full border-2 border-white shadow-sm"
+                        style={{ backgroundColor: preset.colors.primary }}
+                      />
+                      <span
+                        className="w-5 h-5 rounded-full border-2 border-white shadow-sm"
+                        style={{ backgroundColor: preset.colors.secondary }}
+                      />
+                      <span
+                        className="w-5 h-5 rounded-full border-2 border-white shadow-sm"
+                        style={{ backgroundColor: preset.colors.tertiary }}
+                      />
+                    </div>
+                    <span className="text-[11px] text-slate-600 font-medium leading-tight text-center">
+                      {preset.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <ColorField label="Warna Primer" value={form.primaryColor} onChange={setColor('primaryColor')} />
+            <ColorField label="Warna Sekunder" value={form.secondaryColor} onChange={setColor('secondaryColor')} />
+            <ColorField label="Warna Tersier" value={form.tertiaryColor} onChange={setColor('tertiaryColor')} />
+          </div>
+        </Card>
+
         <div className="flex gap-3 pb-8">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
           >
             {saving ? (
               <>
