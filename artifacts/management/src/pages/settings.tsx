@@ -7,7 +7,7 @@ import { DEFAULT_THEME, THEME_PRESETS, applyThemeToDocument, resolveThemeColors 
 import { TabsNav } from '@/components/ui/tabs-nav';
 
 const inputCls =
-  'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow bg-white';
+  'w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/60 transition-colors bg-white';
 
 function Card({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (

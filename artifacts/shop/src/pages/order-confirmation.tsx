@@ -88,7 +88,7 @@ function QRISDisplay({ amount, qrPayload }: { amount: number; qrPayload: string 
 function PaymentConfirmationForm({ orderCode, onSuccess }: { orderCode: string; onSuccess: () => void }) {
   const submitConfirmation = useSubmitPaymentConfirmation();
   const { register, handleSubmit, formState: { errors } } = useForm<ConfirmForm>();
-  const inputCls = 'w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary';
+  const inputCls = 'w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/60 transition-colors';
 
   async function onSubmit(data: ConfirmForm) {
     try {
