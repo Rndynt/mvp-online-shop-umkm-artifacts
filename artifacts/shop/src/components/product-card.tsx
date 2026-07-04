@@ -8,9 +8,9 @@ interface ProductCardProps {
   name: string;
   slug: string;
   price: number;
-  compareAtPrice: number | null;
-  shortDescription: string | null;
-  images: Array<{ url: string; alt: string | null }>;
+  compareAtPrice?: number | null;
+  shortDescription?: string | null;
+  images: Array<{ url: string; alt?: string | null }>;
   stockQuantity: number;
 }
 
@@ -37,7 +37,7 @@ export function ProductCard({
       name,
       slug,
       price,
-      compareAtPrice,
+      compareAtPrice: compareAtPrice ?? null,
       imageUrl: image?.url ?? null,
     });
     openCart();
