@@ -94,23 +94,23 @@ export function Footer({
   const hasContact = contact?.email || contact?.phone;
 
   return (
-    <footer className="bg-slate-900 text-slate-300 mt-16">
+    <footer className="bg-primary/8 text-slate-700 mt-16 border-t border-primary/15">
       {/* Main content */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
 
         {/* Col 1 — Branding & info */}
         <div className="sm:col-span-1 flex flex-col gap-4">
           <div>
-            <h2 className="text-white text-lg font-bold tracking-tight">{storeName}</h2>
-            {tagline && <p className="mt-1 text-sm text-slate-400 leading-relaxed">{tagline}</p>}
+            <h2 className="text-slate-900 text-lg font-bold tracking-tight">{storeName}</h2>
+            {tagline && <p className="mt-1 text-sm text-slate-500 leading-relaxed">{tagline}</p>}
           </div>
 
           {(hasAddress || hasContact) && (
             <ul className="flex flex-col gap-2.5 text-sm">
               {hasAddress && (
                 <li className="flex items-start gap-2.5">
-                  <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />
-                  <span className="text-slate-400 leading-relaxed">
+                  <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary/60" />
+                  <span className="text-slate-600 leading-relaxed">
                     {[address?.line1, address?.city, address?.province, address?.postalCode]
                       .filter(Boolean)
                       .join(', ')}
@@ -119,16 +119,16 @@ export function Footer({
               )}
               {contact?.phone && (
                 <li className="flex items-center gap-2.5">
-                  <Phone className="w-4 h-4 shrink-0 text-slate-500" />
-                  <a href={`tel:${contact.phone}`} className="text-slate-400 hover:text-white transition-colors">
+                  <Phone className="w-4 h-4 shrink-0 text-primary/60" />
+                  <a href={`tel:${contact.phone}`} className="text-slate-600 hover:text-primary transition-colors">
                     {contact.phone}
                   </a>
                 </li>
               )}
               {contact?.email && (
                 <li className="flex items-center gap-2.5">
-                  <Mail className="w-4 h-4 shrink-0 text-slate-500" />
-                  <a href={`mailto:${contact.email}`} className="text-slate-400 hover:text-white transition-colors">
+                  <Mail className="w-4 h-4 shrink-0 text-primary/60" />
+                  <a href={`mailto:${contact.email}`} className="text-slate-600 hover:text-primary transition-colors">
                     {contact.email}
                   </a>
                 </li>
@@ -139,7 +139,7 @@ export function Footer({
 
         {/* Col 2 — Tersedia di */}
         <div>
-          <h3 className="text-white text-sm font-semibold mb-4 uppercase tracking-widest">Tersedia di</h3>
+          <h3 className="text-slate-900 text-sm font-semibold mb-4 uppercase tracking-widest">Tersedia di</h3>
           <div className="flex flex-wrap gap-2.5">
             {MARKETPLACES.map(({ id, label, Icon }) => (
               <div key={id} className="w-14 h-14 rounded-xl overflow-hidden opacity-90 hover:opacity-100 transition-opacity" title={label}>
@@ -151,7 +151,7 @@ export function Footer({
 
         {/* Col 3 — Metode pembayaran */}
         <div>
-          <h3 className="text-white text-sm font-semibold mb-4 uppercase tracking-widest">Metode Pembayaran</h3>
+          <h3 className="text-slate-900 text-sm font-semibold mb-4 uppercase tracking-widest">Metode Pembayaran</h3>
           <div className="flex flex-wrap gap-2">
             {PAYMENTS.map((p) => (
               <PaymentChip key={p.label} label={p.label} bg={p.bg} color={p.color} />
@@ -161,8 +161,8 @@ export function Footer({
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <div className="border-t border-primary/15">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
           <p>© {new Date().getFullYear()} {storeName}. All rights reserved.</p>
           <p>Powered by RukoLite</p>
         </div>
