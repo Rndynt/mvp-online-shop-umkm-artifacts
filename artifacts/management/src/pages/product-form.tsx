@@ -7,6 +7,7 @@ import {
   useAdminUpdateProduct,
 } from '@workspace/api-client-react';
 import { Switch } from '@/components/ui/switch';
+import { TabsNav } from '@/components/ui/tabs-nav';
 import { ArrowLeft, Loader2, Plus, Trash2, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ImageDropzone } from '@workspace/object-storage-web';
@@ -472,6 +473,8 @@ export default function ProductFormPage() {
     }
   }
 
+  const [tab, setTab] = useState<'dasar' | 'media' | 'detail'>('dasar');
+
   if (isEdit && isLoadingExisting) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -479,6 +482,12 @@ export default function ProductFormPage() {
       </div>
     );
   }
+
+  const TABS = [
+    { id: 'dasar' as const, label: 'Info & Harga' },
+    { id: 'media' as const, label: 'Media' },
+    { id: 'detail' as const, label: 'Detail & Paket' },
+  ];
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
@@ -490,7 +499,7 @@ export default function ProductFormPage() {
         Kembali
       </button>
 
-      <div className="mb-6">
+      <div className="mb-5">
         <h1 className="text-2xl font-bold text-slate-900">
           {isEdit ? 'Edit Produk' : 'Produk Baru'}
         </h1>
@@ -499,159 +508,166 @@ export default function ProductFormPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* ── Info ── */}
-        <Card title="Info Produk">
-          <Field label="Nama Produk">
-            <input
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              placeholder="cth. Tas Kanvas Handy"
-              className={inputCls}
-              required
-            />
-          </Field>
-          <Field label="Slug (URL)" hint="otomatis dari nama">
-            <input
-              value={slug}
-              onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }}
-              placeholder="tas-kanvas-handy"
-              className={inputCls}
-              required
-            />
-          </Field>
-          <Field label="Deskripsi Singkat">
-            <input
-              value={shortDescription}
-              onChange={(e) => setShortDescription(e.target.value)}
-              placeholder="Satu kalimat singkat tentang produk"
-              className={inputCls}
-            />
-          </Field>
-          <Field label="Deskripsi Lengkap">
-            <textarea
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Jelaskan bahan, ukuran, keunggulan produk..."
-              className={cn(inputCls, 'resize-none')}
-            />
-          </Field>
-        </Card>
+      <TabsNav tabs={TABS} active={tab} onChange={(id) => setTab(id as typeof tab)} className="mb-5" />
 
-        {/* ── Harga ── */}
-        <Card title="Harga">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Harga Jual">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium pointer-events-none">Rp</span>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* ── Tab: Info & Harga ── */}
+        {tab === 'dasar' && (
+          <>
+            <Card title="Info Produk">
+              <Field label="Nama Produk">
                 <input
-                  type="number"
-                  min={0}
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="0"
-                  className={cn(inputCls, 'pl-9')}
+                  value={name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  placeholder="cth. Tas Kanvas Handy"
+                  className={inputCls}
                   required
                 />
-              </div>
-            </Field>
-            <Field label="Harga Coret" hint="opsional">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium pointer-events-none">Rp</span>
+              </Field>
+              <Field label="Slug (URL)" hint="otomatis dari nama">
                 <input
-                  type="number"
-                  min={0}
-                  value={compareAtPrice}
-                  onChange={(e) => setCompareAtPrice(e.target.value)}
-                  placeholder="0"
-                  className={cn(inputCls, 'pl-9')}
+                  value={slug}
+                  onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }}
+                  placeholder="tas-kanvas-handy"
+                  className={inputCls}
+                  required
                 />
+              </Field>
+              <Field label="Deskripsi Singkat">
+                <input
+                  value={shortDescription}
+                  onChange={(e) => setShortDescription(e.target.value)}
+                  placeholder="Satu kalimat singkat tentang produk"
+                  className={inputCls}
+                />
+              </Field>
+              <Field label="Deskripsi Lengkap">
+                <textarea
+                  rows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Jelaskan bahan, ukuran, keunggulan produk..."
+                  className={cn(inputCls, 'resize-none')}
+                />
+              </Field>
+            </Card>
+
+            <Card title="Harga">
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Harga Jual">
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium pointer-events-none">Rp</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      placeholder="0"
+                      className={cn(inputCls, 'pl-9')}
+                      required
+                    />
+                  </div>
+                </Field>
+                <Field label="Harga Coret" hint="opsional">
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium pointer-events-none">Rp</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={compareAtPrice}
+                      onChange={(e) => setCompareAtPrice(e.target.value)}
+                      placeholder="0"
+                      className={cn(inputCls, 'pl-9')}
+                    />
+                  </div>
+                </Field>
               </div>
-            </Field>
-          </div>
-        </Card>
+            </Card>
 
-        {/* ── Inventori ── */}
-        <Card title="Inventori">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="SKU">
-              <input
-                value={sku}
-                onChange={(e) => setSku(e.target.value)}
-                placeholder="cth. TKH-001"
-                className={inputCls}
+            <Card title="Inventori">
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="SKU">
+                  <input
+                    value={sku}
+                    onChange={(e) => setSku(e.target.value)}
+                    placeholder="cth. TKH-001"
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Stok">
+                  <input
+                    type="number"
+                    min={0}
+                    value={stockQuantity}
+                    onChange={(e) => setStockQuantity(e.target.value)}
+                    className={inputCls}
+                    required
+                  />
+                </Field>
+              </div>
+            </Card>
+
+            <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 flex items-center justify-between shadow-sm">
+              <div>
+                <p className="text-sm font-medium text-slate-700">Tampilkan di toko</p>
+                <p className="text-xs text-slate-500 mt-0.5">Produk nonaktif tidak muncul di storefront</p>
+              </div>
+              <Switch checked={isActive} onCheckedChange={setIsActive} />
+            </div>
+          </>
+        )}
+
+        {/* ── Tab: Media ── */}
+        {tab === 'media' && (
+          <Card title="Gambar Produk">
+            <Field label="Gambar">
+              <ImageDropzone
+                value={imageUrl || undefined}
+                onUploaded={(url) => setImageUrl(url)}
+                onClear={() => setImageUrl('')}
+                label="Seret & lepas gambar produk di sini, atau klik untuk memilih"
               />
             </Field>
-            <Field label="Stok">
-              <input
-                type="number"
-                min={0}
-                value={stockQuantity}
-                onChange={(e) => setStockQuantity(e.target.value)}
-                className={inputCls}
-                required
-              />
-            </Field>
-          </div>
-        </Card>
+          </Card>
+        )}
 
-        {/* ── Gambar ── */}
-        <Card title="Gambar Produk">
-          <Field label="Gambar">
-            <ImageDropzone
-              value={imageUrl || undefined}
-              onUploaded={(url) => setImageUrl(url)}
-              onClear={() => setImageUrl('')}
-              label="Seret & lepas gambar produk di sini, atau klik untuk memilih"
-            />
-          </Field>
-        </Card>
+        {/* ── Tab: Detail & Paket ── */}
+        {tab === 'detail' && (
+          <>
+            <Card
+              title="Bundle Harga"
+              action={<AddButton onClick={addBundle} label="Tambah Paket" />}
+            >
+              <p className="text-xs text-slate-500 -mt-1">
+                Jika ada bundle, harga satuan digantikan oleh pilihan paket di halaman produk. Tandai ⭐ untuk paket yang disorot.
+              </p>
+              <BundleEditor bundles={bundles} onChange={setBundles} />
+            </Card>
 
-        {/* ── Bundle Harga ── */}
-        <Card
-          title="Bundle Harga"
-          action={<AddButton onClick={addBundle} label="Tambah Paket" />}
-        >
-          <p className="text-xs text-slate-500 -mt-1">
-            Jika ada bundle, harga satuan digantikan oleh pilihan paket di halaman produk. Tandai ⭐ untuk paket yang disorot.
-          </p>
-          <BundleEditor bundles={bundles} onChange={setBundles} />
-        </Card>
+            <Card
+              title="Fitur Produk"
+              action={<AddButton onClick={addFeature} label="Tambah Fitur" />}
+            >
+              <p className="text-xs text-slate-500 -mt-1">
+                Tampil sebagai section bergambar di bawah detail produk — cocok untuk highlight keunggulan.
+              </p>
+              <FeatureEditor features={features} onChange={setFeatures} />
+            </Card>
 
-        {/* ── Fitur Produk ── */}
-        <Card
-          title="Fitur Produk"
-          action={<AddButton onClick={addFeature} label="Tambah Fitur" />}
-        >
-          <p className="text-xs text-slate-500 -mt-1">
-            Tampil sebagai section bergambar di bawah detail produk — cocok untuk highlight keunggulan.
-          </p>
-          <FeatureEditor features={features} onChange={setFeatures} />
-        </Card>
+            <Card
+              title="FAQ"
+              action={<AddButton onClick={addFaq} label="Tambah FAQ" />}
+            >
+              <p className="text-xs text-slate-500 -mt-1">
+                Pertanyaan umum yang muncul sebagai accordion di bawah halaman produk.
+              </p>
+              <FaqEditor faqs={faqs} onChange={setFaqs} />
+            </Card>
+          </>
+        )}
 
-        {/* ── FAQ ── */}
-        <Card
-          title="FAQ"
-          action={<AddButton onClick={addFaq} label="Tambah FAQ" />}
-        >
-          <p className="text-xs text-slate-500 -mt-1">
-            Pertanyaan umum yang muncul sebagai accordion di bawah halaman produk.
-          </p>
-          <FaqEditor faqs={faqs} onChange={setFaqs} />
-        </Card>
-
-        {/* ── Status ── */}
-        <div className="bg-white rounded-xl border border-slate-200 px-5 py-4 flex items-center justify-between shadow-sm">
-          <div>
-            <p className="text-sm font-medium text-slate-700">Tampilkan di toko</p>
-            <p className="text-xs text-slate-500 mt-0.5">Produk nonaktif tidak muncul di storefront</p>
-          </div>
-          <Switch checked={isActive} onCheckedChange={setIsActive} />
-        </div>
-
-        {/* ── Submit ── */}
-        <div className="flex gap-3 pb-8">
+        {/* ── Submit — always visible ── */}
+        <div className="flex gap-3 pb-8 pt-2">
           <button
             type="submit"
             disabled={submitting}
