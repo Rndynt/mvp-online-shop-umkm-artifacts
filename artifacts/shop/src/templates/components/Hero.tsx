@@ -28,7 +28,7 @@ export function Hero({
        * viewport-width trick (left-1/2 -translate-x-1/2 w-screen) so the
        * background spans edge-to-edge while inner content stays centered.
        */
-      <div className="relative left-1/2 -translate-x-1/2 w-screen mb-12 overflow-hidden">
+      <div className="relative left-1/2 -translate-x-1/2 w-screen mb-12 overflow-hidden -mt-8">
         <div
           className="relative bg-primary px-4 pt-16 pb-24 sm:pt-24 sm:pb-32 text-center text-white"
           style={{ clipPath: 'polygon(0 0, 100% 0, 100% 88%, 0 100%)' }}

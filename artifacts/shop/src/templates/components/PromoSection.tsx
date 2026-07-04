@@ -24,7 +24,7 @@ const DEFAULT_PROMOS: PromoItem[] = [
     description: 'Diskon besar-besaran untuk produk pilihan. Stok terbatas, jangan sampai kehabisan!',
     badge: 'Diskon 25%',
     code: 'AKHIRBULAN25',
-    gradient: 'from-primary to-primary/70',
+    gradient: 'from-rose-500 to-orange-500',
     icon: 'zap',
     darkText: false,
   },
@@ -34,9 +34,9 @@ const DEFAULT_PROMOS: PromoItem[] = [
     description: 'Belanja minimum Rp 100.000 sudah dapat gratis ongkir ke seluruh wilayah Indonesia.',
     badge: 'Gratis Ongkir',
     code: 'ONGKIRGRATIS',
-    gradient: 'from-secondary to-secondary/70',
+    gradient: 'from-emerald-500 to-teal-600',
     icon: 'gift',
-    darkText: true,
+    darkText: false,
   },
   {
     id: 'new-member',
@@ -44,9 +44,9 @@ const DEFAULT_PROMOS: PromoItem[] = [
     description: 'Khusus untuk kamu yang baru bergabung. Nikmati diskon 10% untuk pembelian pertama.',
     badge: 'Diskon 10%',
     code: 'HEMAT10',
-    gradient: 'from-accent to-accent/70',
+    gradient: 'from-violet-500 to-purple-600',
     icon: 'tag',
-    darkText: true,
+    darkText: false,
   },
 ];
 
