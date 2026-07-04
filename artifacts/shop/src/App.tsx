@@ -6,6 +6,7 @@ import HomePage from '@/pages/home';
 import ProductPage from '@/pages/product';
 import CheckoutPage from '@/pages/checkout';
 import OrderConfirmationPage from '@/pages/order-confirmation';
+import TemplatePreviewPage from '@/pages/template-preview';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,6 +18,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
+      <Route path="/preview/:templateId" component={TemplatePreviewPage} />
       <Route path="/products/:slug" component={ProductPage} />
       <Route path="/checkout" component={CheckoutPage} />
       <Route path="/orders/:orderCode" component={OrderConfirmationPage} />
