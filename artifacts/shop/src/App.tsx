@@ -8,12 +8,6 @@ import CheckoutPage from '@/pages/checkout';
 import OrderConfirmationPage from '@/pages/order-confirmation';
 import TemplatePreviewPage from '@/pages/template-preview';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: 1, staleTime: 60_000 },
-  },
-});
-
 function Router() {
   return (
     <Switch>
@@ -27,7 +21,7 @@ function Router() {
   );
 }
 
-function App() {
+function App({ queryClient }: { queryClient: QueryClient }) {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
