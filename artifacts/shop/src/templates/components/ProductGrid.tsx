@@ -52,6 +52,8 @@ export interface ProductGridProps {
   subtitle?: string;
   emptyMessage?: string;
   className?: string;
+  /** HTML id for in-page anchor links (e.g. hero CTA → #produk) */
+  id?: string;
 }
 
 export function ProductGrid({
@@ -63,9 +65,10 @@ export function ProductGrid({
   subtitle,
   emptyMessage = 'Belum ada produk tersedia',
   className = '',
+  id,
 }: ProductGridProps) {
   return (
-    <section className={className}>
+    <section id={id} className={className}>
       {(title || subtitle) && (
         <div className="mb-5">
           {title && <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{title}</h2>}

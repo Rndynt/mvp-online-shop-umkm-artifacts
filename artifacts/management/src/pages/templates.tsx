@@ -14,6 +14,11 @@ const TEMPLATE_OPTIONS = [
     name: 'Template Basic 1',
     description: 'Hero modern dengan gradasi warna, section "Produk Terlaris" terpisah, dan testimoni pelanggan.',
   },
+  {
+    id: 'bold',
+    name: 'Template Bold',
+    description: 'Hero full-width mencolok, section promo & campaign dengan kode diskon, grid produk, dan ulasan pelanggan.',
+  },
 ] as const;
 
 type TemplateId = (typeof TEMPLATE_OPTIONS)[number]['id'];
@@ -82,9 +87,58 @@ function Basic1Thumbnail() {
   );
 }
 
+function BoldThumbnail() {
+  return (
+    <div className="w-full h-full bg-slate-50 flex flex-col overflow-hidden">
+      {/* Full-width hero */}
+      <div className="bg-primary px-3 py-3 flex flex-col items-center gap-1">
+        <div className="h-1.5 w-1/3 bg-white/60 rounded-full" />
+        <div className="h-2 w-2/3 bg-white/90 rounded" />
+        <div className="h-1.5 w-1/2 bg-white/60 rounded" />
+        <div className="h-2.5 w-1/3 bg-white rounded-full mt-0.5" />
+      </div>
+      {/* Promo cards */}
+      <div className="flex gap-1 px-2 py-1.5">
+        <div className="flex-1 rounded bg-primary/70 p-1 space-y-0.5">
+          <div className="h-1 w-3/4 bg-white/70 rounded" />
+          <div className="h-1 w-full bg-white/40 rounded" />
+          <div className="h-1.5 w-2/3 bg-white/30 rounded mt-0.5" />
+        </div>
+        <div className="flex-1 rounded bg-secondary/70 p-1 space-y-0.5">
+          <div className="h-1 w-3/4 bg-white/70 rounded" />
+          <div className="h-1 w-full bg-white/40 rounded" />
+          <div className="h-1.5 w-2/3 bg-white/30 rounded mt-0.5" />
+        </div>
+        <div className="flex-1 rounded bg-accent/70 p-1 space-y-0.5">
+          <div className="h-1 w-3/4 bg-white/70 rounded" />
+          <div className="h-1 w-full bg-white/40 rounded" />
+          <div className="h-1.5 w-2/3 bg-white/30 rounded mt-0.5" />
+        </div>
+      </div>
+      {/* Product grid */}
+      <div className="flex gap-1 px-2 pb-1">
+        <MiniProductCard />
+        <MiniProductCard />
+        <MiniProductCard />
+        <MiniProductCard />
+      </div>
+      {/* Testimonials */}
+      <div className="flex gap-1 px-2 pb-2 mt-auto">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex-1 bg-white rounded p-1 space-y-0.5 border border-slate-100">
+            <div className="h-1 w-full bg-yellow-300 rounded" />
+            <div className="h-1 w-2/3 bg-slate-200 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const THUMBNAILS: Record<TemplateId, () => React.ReactElement> = {
   basic: BasicThumbnail,
   'basic-1': Basic1Thumbnail,
+  bold: BoldThumbnail,
 };
 
 export default function TemplatesPage() {
@@ -99,7 +153,8 @@ export default function TemplatesPage() {
       .then((json) => {
         if (json.data) {
           setSettings(json.data);
-          setSelected(json.data.homepageTemplate === 'basic-1' ? 'basic-1' : 'basic');
+          const t = json.data.homepageTemplate;
+          setSelected(t === 'basic-1' ? 'basic-1' : t === 'bold' ? 'bold' : 'basic');
         }
       });
   }

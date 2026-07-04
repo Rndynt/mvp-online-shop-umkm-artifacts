@@ -1,15 +1,70 @@
 import type { ReactNode } from 'react';
 
-export type HeroVariant = 'basic' | 'modern';
+export type HeroVariant = 'basic' | 'modern' | 'fullwidth';
 
 export interface HeroProps {
   title: ReactNode;
   subtitle?: ReactNode;
   badgeText?: ReactNode;
+  /** CTA label for the fullwidth variant (default: 'Belanja Sekarang') */
+  ctaLabel?: string;
+  /** Anchor href for the fullwidth CTA button (default: '#produk') */
+  ctaHref?: string;
   variant?: HeroVariant;
 }
 
-export function Hero({ title, subtitle, badgeText, variant = 'basic' }: HeroProps) {
+export function Hero({
+  title,
+  subtitle,
+  badgeText,
+  ctaLabel = 'Belanja Sekarang',
+  ctaHref = '#produk',
+  variant = 'basic',
+}: HeroProps) {
+  if (variant === 'fullwidth') {
+    return (
+      /*
+       * Full-bleed hero — breaks out of the parent container using the
+       * viewport-width trick (left-1/2 -translate-x-1/2 w-screen) so the
+       * background spans edge-to-edge while inner content stays centered.
+       */
+      <div className="relative left-1/2 -translate-x-1/2 w-screen mb-12 overflow-hidden">
+        <div
+          className="relative bg-primary px-4 pt-16 pb-24 sm:pt-24 sm:pb-32 text-center text-white"
+          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 88%, 0 100%)' }}
+        >
+          {/* Decorative blobs */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute -top-16 -left-16 w-72 h-72 rounded-full bg-white/5 blur-3xl" />
+            <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-black/10 blur-3xl" />
+            <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full bg-primary-foreground/5 blur-2xl" />
+          </div>
+          <div className="relative max-w-3xl mx-auto">
+            {badgeText && (
+              <span className="mb-6 inline-block rounded-full bg-white/20 px-4 py-1.5 text-sm font-semibold ring-1 ring-white/30 backdrop-blur-sm">
+                {badgeText}
+              </span>
+            )}
+            <h1 className="mb-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-white/80 sm:text-xl">
+                {subtitle}
+              </p>
+            )}
+            <a
+              href={ctaHref}
+              className="inline-block rounded-full bg-white px-8 py-3.5 text-sm font-bold text-primary shadow-lg transition-colors hover:bg-white/90 sm:text-base"
+            >
+              {ctaLabel} →
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (variant === 'modern') {
     return (
       <div className="relative text-center py-12 sm:py-16 mb-10 rounded-3xl overflow-hidden bg-gradient-to-br from-primary/10 via-white to-secondary/40">

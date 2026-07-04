@@ -70,7 +70,7 @@ export async function getStorefront() {
 // Admin settings
 // ---------------------------------------------------------------------------
 
-export const HOMEPAGE_TEMPLATES = ["basic", "basic-1"] as const;
+export const HOMEPAGE_TEMPLATES = ["basic", "basic-1", "bold"] as const;
 export type HomepageTemplate = (typeof HOMEPAGE_TEMPLATES)[number];
 
 export async function getSettings() {

@@ -3,13 +3,15 @@ import { useListProducts, useGetStorefront } from '@workspace/api-client-react';
 import { Layout } from '@/components/layout';
 import { BasicTemplate } from '@/templates/basic/BasicTemplate';
 import { BasicTemplate1 } from '@/templates/basic-1/BasicTemplate1';
+import { BoldTemplate } from '@/templates/bold/BoldTemplate';
 import { LayoutTemplate, X } from 'lucide-react';
 
-type TemplateId = 'basic' | 'basic-1';
+type TemplateId = 'basic' | 'basic-1' | 'bold';
 
 const TEMPLATE_LABELS: Record<TemplateId, string> = {
   basic: 'Template Basic',
   'basic-1': 'Template Basic 1',
+  bold: 'Template Bold',
 };
 
 /**
@@ -20,7 +22,7 @@ const TEMPLATE_LABELS: Record<TemplateId, string> = {
 function useTemplateOverride(): TemplateId | null {
   const params = new URLSearchParams(window.location.search);
   const value = params.get('template');
-  return value === 'basic-1' || value === 'basic' ? value : null;
+  return value === 'basic-1' || value === 'basic' || value === 'bold' ? value : null;
 }
 
 function HomeSkeleton() {
@@ -56,7 +58,7 @@ function FloatingTemplateSwitcher({ active }: { active: TemplateId }) {
         <div className="bg-white border border-slate-200 rounded-xl shadow-lg p-3 w-56">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-slate-400">Lihat versi homepage</span>
-            <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-slate-600">
+            <button onClick={() => setOpen(false)} aria-label="Tutup pemilih template" className="text-slate-400 hover:text-slate-600">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -92,7 +94,9 @@ export default function HomePage() {
   const products = productsResp?.data ?? [];
 
   const override = useTemplateOverride();
-  const storeTemplate = storefrontResp?.data?.homepageTemplate === 'basic-1' ? 'basic-1' : 'basic';
+  const raw = storefrontResp?.data?.homepageTemplate;
+  const storeTemplate: TemplateId =
+    raw === 'basic-1' ? 'basic-1' : raw === 'bold' ? 'bold' : 'basic';
 
   // Kalau ada override lewat query param, langsung pakai (tidak perlu tunggu
   // storefront). Kalau tidak, tunggu data storefront selesai dimuat dulu
@@ -112,6 +116,8 @@ export default function HomePage() {
     <Layout>
       {template === 'basic-1' ? (
         <BasicTemplate1 products={products} isLoading={productsLoading} error={error} />
+      ) : template === 'bold' ? (
+        <BoldTemplate products={products} isLoading={productsLoading} error={error} />
       ) : (
         <BasicTemplate products={products} isLoading={productsLoading} error={error} />
       )}
