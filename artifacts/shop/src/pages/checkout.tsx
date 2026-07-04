@@ -3,8 +3,7 @@ import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Header } from '@/components/header';
-import { CartDrawer } from '@/components/cart-drawer';
+import { Layout } from '@/components/layout';
 import { useCartStore } from '@/lib/cart-store';
 import { formatIDR } from '@/lib/format';
 import { useListShippingMethods, useCreateCheckout } from '@workspace/api-client-react';
@@ -127,24 +126,19 @@ export default function CheckoutPage() {
 
   if (items.length === 0 && step === 0) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Header />
+      <Layout>
         <div className="max-w-xl mx-auto px-4 py-16 text-center">
           <p className="text-slate-700 font-medium mb-3">Keranjang belanja Anda kosong</p>
           <Link href="/" className="inline-block bg-teal-600 text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-teal-700 transition-colors">
             Lihat Produk
           </Link>
         </div>
-        <CartDrawer />
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header />
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <Layout mainClassName="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <Link href="/" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-teal-600 mb-6 transition-colors">
           <ChevronLeft className="w-4 h-4" />
           Kembali Belanja
@@ -414,9 +408,6 @@ export default function CheckoutPage() {
             </div>
           </div>
         </div>
-      </main>
-
-      <CartDrawer />
-    </div>
+      </Layout>
   );
 }

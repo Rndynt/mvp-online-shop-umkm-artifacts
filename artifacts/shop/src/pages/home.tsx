@@ -1,8 +1,6 @@
-import { useGetStorefront, useListProducts } from '@workspace/api-client-react';
+import { useListProducts } from '@workspace/api-client-react';
 import { ProductCard } from '@/components/product-card';
-import { Header } from '@/components/header';
-import { CartDrawer } from '@/components/cart-drawer';
-import { AnnouncementBar } from '@/components/announcement-bar';
+import { Layout } from '@/components/layout';
 import { ShoppingBag } from 'lucide-react';
 
 function ProductSkeleton() {
@@ -20,20 +18,12 @@ function ProductSkeleton() {
 }
 
 export default function HomePage() {
-  const { data: storefrontResp } = useGetStorefront();
   const { data: productsResp, isLoading, error } = useListProducts();
 
-  const storefront = storefrontResp?.data;
   const products = productsResp?.data ?? [];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {storefront?.announcementText && (
-        <AnnouncementBar text={storefront.announcementText} />
-      )}
-      <Header storeName={storefront?.name} />
-
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Layout>
         {/* Hero */}
         <div className="text-center py-8 mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3 tracking-tight">
@@ -84,13 +74,6 @@ export default function HomePage() {
             ))}
           </div>
         )}
-      </main>
-
-      <footer className="border-t border-slate-200 mt-16 py-8 text-center text-sm text-slate-400">
-        <p>© 2025 {storefront?.name ?? 'Tokko'} — Belanja mudah, aman, dan terpercaya</p>
-      </footer>
-
-      <CartDrawer />
-    </div>
+    </Layout>
   );
 }

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useGetProductBySlug } from '@workspace/api-client-react';
-import { Header } from '@/components/header';
-import { CartDrawer } from '@/components/cart-drawer';
+import { Layout } from '@/components/layout';
 import { formatIDR, discountPercent } from '@/lib/format';
 import { useCartStore } from '@/lib/cart-store';
 import { ChevronLeft, Minus, Plus, ShoppingBag, Check } from 'lucide-react';
@@ -20,9 +19,8 @@ export default function ProductPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Header />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+      <Layout mainClassName="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        <div className="animate-pulse">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="aspect-square bg-slate-200 rounded-2xl" />
             <div className="space-y-4">
@@ -34,15 +32,13 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
-        <CartDrawer />
-      </div>
+      </Layout>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Header />
+      <Layout>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <p className="text-slate-700 font-medium mb-2">Produk tidak ditemukan</p>
@@ -51,8 +47,7 @@ export default function ProductPage() {
             </button>
           </div>
         </div>
-        <CartDrawer />
-      </div>
+      </Layout>
     );
   }
 
@@ -79,10 +74,7 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header />
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <Layout mainClassName="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <Link href="/" className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-teal-600 mb-6 transition-colors">
           <ChevronLeft className="w-4 h-4" />
           Kembali ke Toko
@@ -195,13 +187,6 @@ export default function ProductPage() {
             )}
           </div>
         </div>
-      </main>
-
-      <footer className="border-t border-slate-200 mt-16 py-8 text-center text-sm text-slate-400">
-        <p>© 2025 RukoLite — Belanja mudah, aman, dan terpercaya</p>
-      </footer>
-
-      <CartDrawer />
-    </div>
+      </Layout>
   );
 }

@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { useGetOrderByCode, useSubmitPaymentConfirmation } from '@workspace/api-client-react';
-import { Header } from '@/components/header';
-import { CartDrawer } from '@/components/cart-drawer';
+import { Layout } from '@/components/layout';
 import { formatIDR } from '@/lib/format';
 import {
   CheckCircle2, Clock, Package, Truck, MapPin, CreditCard,
@@ -150,28 +149,24 @@ export default function OrderConfirmationPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Header />
-        <div className="max-w-3xl mx-auto px-4 py-12 animate-pulse space-y-4">
+      <Layout mainClassName="max-w-3xl mx-auto px-4 py-12">
+        <div className="animate-pulse space-y-4">
           <div className="h-8 bg-slate-200 rounded w-1/3" />
           <div className="h-48 bg-slate-200 rounded-2xl" />
           <div className="h-64 bg-slate-200 rounded-2xl" />
         </div>
-        <CartDrawer />
-      </div>
+      </Layout>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-slate-50">
-        <Header />
-        <div className="max-w-3xl mx-auto px-4 py-12 text-center">
+      <Layout mainClassName="max-w-3xl mx-auto px-4 py-12">
+        <div className="text-center">
           <p className="text-slate-700 font-medium mb-2">Pesanan tidak ditemukan</p>
           <Link href="/" className="text-teal-600 text-sm underline">Kembali ke toko</Link>
         </div>
-        <CartDrawer />
-      </div>
+      </Layout>
     );
   }
 
@@ -181,10 +176,7 @@ export default function OrderConfirmationPage() {
   const isPendingPayment = order.status === 'pending_payment';
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header />
-
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <Layout mainClassName="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-4 ring-1 ring-teal-100">
             <CheckCircle2 className="w-8 h-8 text-teal-600" />
@@ -307,13 +299,6 @@ export default function OrderConfirmationPage() {
             </Link>
           </div>
         </div>
-      </main>
-
-      <footer className="border-t border-slate-200 mt-16 py-8 text-center text-sm text-slate-400">
-        <p>© 2025 RukoLite — Terima kasih telah berbelanja!</p>
-      </footer>
-
-      <CartDrawer />
-    </div>
+      </Layout>
   );
 }
