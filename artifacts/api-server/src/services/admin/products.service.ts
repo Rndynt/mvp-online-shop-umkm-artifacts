@@ -1,5 +1,11 @@
 import { db } from "@workspace/db";
-import { productsTable, productImagesTable } from "@workspace/db/schema";
+import {
+  productsTable,
+  productImagesTable,
+  productBundlesTable,
+  productFeaturesTable,
+  productFaqsTable,
+} from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
 import { AppError } from "../../lib/errors";
 import { generateId } from "../../lib/utils";
@@ -19,11 +25,28 @@ export async function serializeProduct(productId: string) {
 
   if (!product) return null;
 
-  const images = await db
-    .select()
-    .from(productImagesTable)
-    .where(eq(productImagesTable.productId, productId))
-    .orderBy(productImagesTable.sortOrder);
+  const [images, bundles, features, faqs] = await Promise.all([
+    db
+      .select()
+      .from(productImagesTable)
+      .where(eq(productImagesTable.productId, productId))
+      .orderBy(productImagesTable.sortOrder),
+    db
+      .select()
+      .from(productBundlesTable)
+      .where(eq(productBundlesTable.productId, productId))
+      .orderBy(productBundlesTable.sortOrder),
+    db
+      .select()
+      .from(productFeaturesTable)
+      .where(eq(productFeaturesTable.productId, productId))
+      .orderBy(productFeaturesTable.sortOrder),
+    db
+      .select()
+      .from(productFaqsTable)
+      .where(eq(productFaqsTable.productId, productId))
+      .orderBy(productFaqsTable.sortOrder),
+  ]);
 
   return {
     id: product.id,
@@ -43,12 +66,53 @@ export async function serializeProduct(productId: string) {
       alt: img.alt,
       sortOrder: img.sortOrder,
     })),
+    bundles: bundles.map((b) => ({
+      id: b.id,
+      quantity: b.quantity,
+      price: b.price,
+      label: b.label,
+      badge: b.badge,
+      isFeatured: b.isFeatured,
+      sortOrder: b.sortOrder,
+    })),
+    features: features.map((f) => ({
+      id: f.id,
+      imageUrl: f.imageUrl,
+      title: f.title,
+      description: f.description,
+      sortOrder: f.sortOrder,
+    })),
+    faqs: faqs.map((f) => ({
+      id: f.id,
+      question: f.question,
+      answer: f.answer,
+      sortOrder: f.sortOrder,
+    })),
   };
 }
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+export interface ProductBundleInput {
+  quantity: number;
+  price: number;
+  label?: string | null;
+  badge?: string | null;
+  isFeatured?: boolean;
+}
+
+export interface ProductFeatureInput {
+  imageUrl?: string | null;
+  title: string;
+  description?: string | null;
+}
+
+export interface ProductFaqInput {
+  question: string;
+  answer: string;
+}
 
 export interface ProductInput {
   name: string;
@@ -61,6 +125,56 @@ export interface ProductInput {
   stockQuantity: number;
   isActive?: boolean;
   imageUrl?: string | null;
+  bundles?: ProductBundleInput[];
+  features?: ProductFeatureInput[];
+  faqs?: ProductFaqInput[];
+}
+
+function validateBundles(raw: unknown): ProductBundleInput[] | undefined {
+  if (raw == null) return undefined;
+  if (!Array.isArray(raw)) throw new AppError("VALIDATION_ERROR", "bundles harus berupa array");
+  return raw.map((item, idx) => {
+    const b = item as Partial<ProductBundleInput>;
+    if (typeof b.quantity !== "number" || b.quantity < 1)
+      throw new AppError("VALIDATION_ERROR", `bundles[${idx}].quantity harus angka >= 1`);
+    if (typeof b.price !== "number" || b.price < 0)
+      throw new AppError("VALIDATION_ERROR", `bundles[${idx}].price harus angka non-negatif`);
+    return {
+      quantity: b.quantity,
+      price: b.price,
+      label: b.label ?? null,
+      badge: b.badge ?? null,
+      isFeatured: b.isFeatured ?? false,
+    };
+  });
+}
+
+function validateFeatures(raw: unknown): ProductFeatureInput[] | undefined {
+  if (raw == null) return undefined;
+  if (!Array.isArray(raw)) throw new AppError("VALIDATION_ERROR", "features harus berupa array");
+  return raw.map((item, idx) => {
+    const f = item as Partial<ProductFeatureInput>;
+    if (!f.title || typeof f.title !== "string")
+      throw new AppError("VALIDATION_ERROR", `features[${idx}].title wajib diisi`);
+    return {
+      imageUrl: f.imageUrl ?? null,
+      title: f.title,
+      description: f.description ?? null,
+    };
+  });
+}
+
+function validateFaqs(raw: unknown): ProductFaqInput[] | undefined {
+  if (raw == null) return undefined;
+  if (!Array.isArray(raw)) throw new AppError("VALIDATION_ERROR", "faqs harus berupa array");
+  return raw.map((item, idx) => {
+    const f = item as Partial<ProductFaqInput>;
+    if (!f.question || typeof f.question !== "string")
+      throw new AppError("VALIDATION_ERROR", `faqs[${idx}].question wajib diisi`);
+    if (!f.answer || typeof f.answer !== "string")
+      throw new AppError("VALIDATION_ERROR", `faqs[${idx}].answer wajib diisi`);
+    return { question: f.question, answer: f.answer };
+  });
 }
 
 function validateProductInput(body: unknown): ProductInput {
@@ -87,7 +201,59 @@ function validateProductInput(body: unknown): ProductInput {
     stockQuantity: input.stockQuantity,
     isActive: input.isActive ?? true,
     imageUrl: input.imageUrl ?? null,
+    bundles: validateBundles(input.bundles),
+    features: validateFeatures(input.features),
+    faqs: validateFaqs(input.faqs),
   };
+}
+
+async function replaceBundles(productId: string, bundles: ProductBundleInput[] | undefined) {
+  if (bundles === undefined) return;
+  await db.delete(productBundlesTable).where(eq(productBundlesTable.productId, productId));
+  if (bundles.length === 0) return;
+  await db.insert(productBundlesTable).values(
+    bundles.map((b, idx) => ({
+      id: generateId(),
+      productId,
+      quantity: b.quantity,
+      price: b.price,
+      label: b.label ?? null,
+      badge: b.badge ?? null,
+      isFeatured: b.isFeatured ?? false,
+      sortOrder: idx,
+    })),
+  );
+}
+
+async function replaceFeatures(productId: string, features: ProductFeatureInput[] | undefined) {
+  if (features === undefined) return;
+  await db.delete(productFeaturesTable).where(eq(productFeaturesTable.productId, productId));
+  if (features.length === 0) return;
+  await db.insert(productFeaturesTable).values(
+    features.map((f, idx) => ({
+      id: generateId(),
+      productId,
+      imageUrl: f.imageUrl ?? null,
+      title: f.title,
+      description: f.description ?? null,
+      sortOrder: idx,
+    })),
+  );
+}
+
+async function replaceFaqs(productId: string, faqs: ProductFaqInput[] | undefined) {
+  if (faqs === undefined) return;
+  await db.delete(productFaqsTable).where(eq(productFaqsTable.productId, productId));
+  if (faqs.length === 0) return;
+  await db.insert(productFaqsTable).values(
+    faqs.map((f, idx) => ({
+      id: generateId(),
+      productId,
+      question: f.question,
+      answer: f.answer,
+      sortOrder: idx,
+    })),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -151,6 +317,12 @@ export async function createProduct(body: unknown) {
       sortOrder: 0,
     });
   }
+
+  await Promise.all([
+    replaceBundles(productId, input.bundles),
+    replaceFeatures(productId, input.features),
+    replaceFaqs(productId, input.faqs),
+  ]);
 
   const product = await serializeProduct(productId);
   return product!;
@@ -224,6 +396,12 @@ export async function updateProduct(productId: string, body: unknown) {
       });
     }
   }
+
+  await Promise.all([
+    replaceBundles(productId, input.bundles),
+    replaceFeatures(productId, input.features),
+    replaceFaqs(productId, input.faqs),
+  ]);
 
   const product = await serializeProduct(productId);
   return product!;

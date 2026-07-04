@@ -92,7 +92,29 @@ export const GetProductBySlugResponse = zod.object({
   "alt": zod.string().nullish(),
   "sortOrder": zod.number()
 })),
-  "isActive": zod.boolean()
+  "isActive": zod.boolean(),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
+}))
 })
 })
 
@@ -261,6 +283,28 @@ export const AdminListProductsResponse = zod.object({
   "url": zod.string(),
   "alt": zod.string().nullish(),
   "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
 }))
 }))
 })
@@ -279,7 +323,23 @@ export const AdminCreateProductBody = zod.object({
   "sku": zod.string().nullish(),
   "stockQuantity": zod.number(),
   "isActive": zod.boolean().optional(),
-  "imageUrl": zod.string().nullish()
+  "imageUrl": zod.string().nullish(),
+  "bundles": zod.array(zod.object({
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean().optional()
+})).optional(),
+  "features": zod.array(zod.object({
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "faqs": zod.array(zod.object({
+  "question": zod.string(),
+  "answer": zod.string()
+})).optional()
 })
 
 export const AdminCreateProductResponse = zod.object({
@@ -299,6 +359,28 @@ export const AdminCreateProductResponse = zod.object({
   "id": zod.string(),
   "url": zod.string(),
   "alt": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
   "sortOrder": zod.number()
 }))
 })
@@ -330,6 +412,28 @@ export const AdminGetProductResponse = zod.object({
   "url": zod.string(),
   "alt": zod.string().nullish(),
   "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
 }))
 })
 })
@@ -352,7 +456,23 @@ export const AdminUpdateProductBody = zod.object({
   "sku": zod.string().nullish(),
   "stockQuantity": zod.number(),
   "isActive": zod.boolean().optional(),
-  "imageUrl": zod.string().nullish()
+  "imageUrl": zod.string().nullish(),
+  "bundles": zod.array(zod.object({
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean().optional()
+})).optional(),
+  "features": zod.array(zod.object({
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "faqs": zod.array(zod.object({
+  "question": zod.string(),
+  "answer": zod.string()
+})).optional()
 })
 
 export const AdminUpdateProductResponse = zod.object({
@@ -372,6 +492,28 @@ export const AdminUpdateProductResponse = zod.object({
   "id": zod.string(),
   "url": zod.string(),
   "alt": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "bundles": zod.array(zod.object({
+  "id": zod.string(),
+  "quantity": zod.number(),
+  "price": zod.number(),
+  "label": zod.string().nullish(),
+  "badge": zod.string().nullish(),
+  "isFeatured": zod.boolean(),
+  "sortOrder": zod.number()
+})),
+  "features": zod.array(zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "sortOrder": zod.number()
+})),
+  "faqs": zod.array(zod.object({
+  "id": zod.string(),
+  "question": zod.string(),
+  "answer": zod.string(),
   "sortOrder": zod.number()
 }))
 })

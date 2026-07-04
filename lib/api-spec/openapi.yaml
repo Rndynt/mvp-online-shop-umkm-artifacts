@@ -467,7 +467,7 @@ components:
   schemas:
     AdminProduct:
       type: object
-      required: [id, name, slug, price, stockQuantity, isActive, images]
+      required: [id, name, slug, price, stockQuantity, isActive, images, bundles, features, faqs]
       properties:
         id:
           type: string
@@ -499,6 +499,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProductImage"
+        bundles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductBundle"
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductFeature"
+        faqs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductFaq"
 
     AdminProductInput:
       type: object
@@ -529,6 +541,108 @@ components:
         imageUrl:
           type: string
           nullable: true
+        bundles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductBundleInput"
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductFeatureInput"
+        faqs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductFaqInput"
+
+    ProductBundle:
+      type: object
+      required: [id, quantity, price, isFeatured, sortOrder]
+      properties:
+        id:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: integer
+        label:
+          type: string
+          nullable: true
+        badge:
+          type: string
+          nullable: true
+        isFeatured:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    ProductBundleInput:
+      type: object
+      required: [quantity, price]
+      properties:
+        quantity:
+          type: integer
+        price:
+          type: integer
+        label:
+          type: string
+          nullable: true
+        badge:
+          type: string
+          nullable: true
+        isFeatured:
+          type: boolean
+
+    ProductFeature:
+      type: object
+      required: [id, title, sortOrder]
+      properties:
+        id:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+
+    ProductFeatureInput:
+      type: object
+      required: [title]
+      properties:
+        imageUrl:
+          type: string
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+
+    ProductFaq:
+      type: object
+      required: [id, question, answer, sortOrder]
+      properties:
+        id:
+          type: string
+        question:
+          type: string
+        answer:
+          type: string
+        sortOrder:
+          type: integer
+
+    ProductFaqInput:
+      type: object
+      required: [question, answer]
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
 
     AdminOrderStatusInput:
       type: object
@@ -623,7 +737,7 @@ components:
 
     ProductDetail:
       type: object
-      required: [id, name, slug, price, stockQuantity, images, isActive]
+      required: [id, name, slug, price, stockQuantity, images, isActive, bundles, features, faqs]
       properties:
         id:
           type: string
@@ -650,6 +764,18 @@ components:
             $ref: "#/components/schemas/ProductImage"
         isActive:
           type: boolean
+        bundles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductBundle"
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductFeature"
+        faqs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductFaq"
 
     ShippingMethod:
       type: object

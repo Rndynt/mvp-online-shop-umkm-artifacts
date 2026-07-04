@@ -5,6 +5,9 @@
  * RukoLite Online Shop UMKM MVP API
  * OpenAPI spec version: 0.1.0
  */
+import type { ProductBundleInput } from './productBundleInput';
+import type { ProductFaqInput } from './productFaqInput';
+import type { ProductFeatureInput } from './productFeatureInput';
 
 export interface AdminProductInput {
   name: string;
@@ -17,4 +20,7 @@ export interface AdminProductInput {
   stockQuantity: number;
   isActive?: boolean;
   imageUrl?: string | null;
+  bundles?: ProductBundleInput[];
+  features?: ProductFeatureInput[];
+  faqs?: ProductFaqInput[];
 }

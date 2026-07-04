@@ -12,6 +12,31 @@ export interface ProductImage {
   sortOrder: number;
 }
 
+export interface ProductBundle {
+  id: string;
+  quantity: number;
+  price: number;
+  label?: string | null;
+  badge?: string | null;
+  isFeatured: boolean;
+  sortOrder: number;
+}
+
+export interface ProductFeature {
+  id: string;
+  imageUrl?: string | null;
+  title: string;
+  description?: string | null;
+  sortOrder: number;
+}
+
+export interface ProductFaq {
+  id: string;
+  question: string;
+  answer: string;
+  sortOrder: number;
+}
+
 export interface AdminProduct {
   id: string;
   name: string;
@@ -25,6 +50,28 @@ export interface AdminProduct {
   isActive: boolean;
   sortOrder?: number;
   images: ProductImage[];
+  bundles: ProductBundle[];
+  features: ProductFeature[];
+  faqs: ProductFaq[];
+}
+
+export interface ProductBundleInput {
+  quantity: number;
+  price: number;
+  label?: string | null;
+  badge?: string | null;
+  isFeatured?: boolean;
+}
+
+export interface ProductFeatureInput {
+  imageUrl?: string | null;
+  title: string;
+  description?: string | null;
+}
+
+export interface ProductFaqInput {
+  question: string;
+  answer: string;
 }
 
 export interface AdminProductInput {
@@ -38,6 +85,9 @@ export interface AdminProductInput {
   stockQuantity: number;
   isActive?: boolean;
   imageUrl?: string | null;
+  bundles?: ProductBundleInput[];
+  features?: ProductFeatureInput[];
+  faqs?: ProductFaqInput[];
 }
 
 export type AdminOrderStatusInputStatus = typeof AdminOrderStatusInputStatus[keyof typeof AdminOrderStatusInputStatus];
@@ -104,6 +154,9 @@ export interface ProductDetail {
   stockQuantity: number;
   images: ProductImage[];
   isActive: boolean;
+  bundles: ProductBundle[];
+  features: ProductFeature[];
+  faqs: ProductFaq[];
 }
 
 export interface ShippingMethod {

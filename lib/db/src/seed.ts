@@ -3,6 +3,9 @@ import {
   storesTable,
   productsTable,
   productImagesTable,
+  productBundlesTable,
+  productFeaturesTable,
+  productFaqsTable,
   shippingMethodsTable,
   discountsTable,
 } from "./schema/index.js";
@@ -61,6 +64,28 @@ async function main() {
           sortOrder: 1,
         },
       ],
+      bundles: [
+        { quantity: 1, price: 159000, label: "1 Tas", badge: null, isFeatured: false },
+        { quantity: 2, price: 289000, label: "2 Tas", badge: "Hemat 9%", isFeatured: true },
+        { quantity: 3, price: 399000, label: "3 Tas", badge: "Hemat 16%", isFeatured: false },
+      ],
+      features: [
+        {
+          imageUrl: "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1000&q=80",
+          title: "Kanvas Tebal 12oz",
+          description: "Bahan kanvas premium yang tahan lama dan tidak mudah robek, cocok dipakai setiap hari.",
+        },
+        {
+          imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=1000&q=80",
+          title: "Kompartemen Luas",
+          description: "Satu kompartemen utama besar plus kantung dalam untuk menyimpan barang dengan rapi.",
+        },
+      ],
+      faqs: [
+        { question: "Apakah tas ini bisa dicuci?", answer: "Bisa, cuci dengan tangan menggunakan air dingin dan jangan diperas terlalu keras." },
+        { question: "Berapa lama pengiriman?", answer: "Estimasi pengiriman 1-3 hari kerja tergantung metode pengiriman yang dipilih." },
+        { question: "Apakah ada garansi?", answer: "Ya, garansi 30 hari untuk kerusakan produksi." },
+      ],
     },
     {
       id: id(),
@@ -84,6 +109,27 @@ async function main() {
           alt: "Pouch detail interior",
           sortOrder: 1,
         },
+      ],
+      bundles: [
+        { quantity: 1, price: 89000, label: "1 Pouch", badge: null, isFeatured: false },
+        { quantity: 2, price: 159000, label: "2 Pouch", badge: "Hemat 11%", isFeatured: true },
+        { quantity: 3, price: 219000, label: "3 Pouch", badge: "Hemat 18%", isFeatured: false },
+      ],
+      features: [
+        {
+          imageUrl: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1000&q=80",
+          title: "Ritsleting Anti-Seret",
+          description: "Menggunakan ritsleting YKK premium yang halus dan tahan lama.",
+        },
+        {
+          imageUrl: "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1000&q=80",
+          title: "Lapisan Suede Lembut",
+          description: "Bagian dalam dilapisi suede halus yang melindungi barang berharga dari goresan.",
+        },
+      ],
+      faqs: [
+        { question: "Ukuran mana yang paling laris?", answer: "Ukuran M paling banyak dipilih karena pas untuk kabel dan alat tulis sehari-hari." },
+        { question: "Apakah tahan air?", answer: "Bahan kulit PU tahan terhadap cipratan air ringan, namun tidak disarankan terkena air berlebihan." },
       ],
     },
     {
@@ -109,6 +155,27 @@ async function main() {
           sortOrder: 1,
         },
       ],
+      bundles: [
+        { quantity: 1, price: 175000, label: "1 Tumbler", badge: null, isFeatured: false },
+        { quantity: 2, price: 319000, label: "2 Tumbler", badge: "Hemat 9%", isFeatured: true },
+        { quantity: 3, price: 449000, label: "3 Tumbler", badge: "Hemat 15%", isFeatured: false },
+      ],
+      features: [
+        {
+          imageUrl: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=1000&q=80",
+          title: "Insulasi Vacuum Ganda",
+          description: "Menjaga minuman dingin hingga 24 jam dan panas hingga 12 jam dengan dinding vacuum ganda.",
+        },
+        {
+          imageUrl: "https://images.unsplash.com/photo-1610725664285-7c57e6eea3ee?w=1000&q=80",
+          title: "Desain Ramping",
+          description: "Muat di cup holder mobil dan mudah dibawa ke mana saja.",
+        },
+      ],
+      faqs: [
+        { question: "Apakah aman untuk air panas?", answer: "Ya, tumbler ini aman digunakan untuk minuman panas maupun dingin." },
+        { question: "Bagaimana cara membersihkannya?", answer: "Cuci dengan air sabun hangat, mulut lebar memudahkan pembersihan menyeluruh." },
+      ],
     },
     {
       id: id(),
@@ -133,11 +200,32 @@ async function main() {
           sortOrder: 1,
         },
       ],
+      bundles: [
+        { quantity: 1, price: 65000, label: "1 Notebook", badge: null, isFeatured: false },
+        { quantity: 2, price: 119000, label: "2 Notebook", badge: "Hemat 8%", isFeatured: true },
+        { quantity: 3, price: 165000, label: "3 Notebook", badge: "Hemat 15%", isFeatured: false },
+      ],
+      features: [
+        {
+          imageUrl: "https://images.unsplash.com/photo-1517842645767-c639042777db?w=1000&q=80",
+          title: "Kertas Ivory 90gsm",
+          description: "Anti-bleed-through, nyaman untuk menulis dengan berbagai jenis pena termasuk fountain pen.",
+        },
+        {
+          imageUrl: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=1000&q=80",
+          title: "Layflat Binding",
+          description: "Buku terbuka rata sepenuhnya, memudahkan menulis di halaman manapun.",
+        },
+      ],
+      faqs: [
+        { question: "Apakah cocok untuk bullet journal?", answer: "Sangat cocok, pola dot grid 5mm ideal untuk bullet journal dan sketsa." },
+        { question: "Berapa jumlah halaman?", answer: "160 halaman (80 lembar) dengan kertas ivory 90gsm." },
+      ],
     },
   ];
 
   for (const product of products) {
-    const { images, ...productData } = product;
+    const { images, bundles, features, faqs, ...productData } = product;
     await db.insert(productsTable).values({
       ...productData,
       storeId,
@@ -152,6 +240,34 @@ async function main() {
         ...img,
       });
     }
+
+    for (const [idx, bundle] of bundles.entries()) {
+      await db.insert(productBundlesTable).values({
+        id: id(),
+        productId: productData.id,
+        sortOrder: idx,
+        ...bundle,
+      });
+    }
+
+    for (const [idx, feature] of features.entries()) {
+      await db.insert(productFeaturesTable).values({
+        id: id(),
+        productId: productData.id,
+        sortOrder: idx,
+        ...feature,
+      });
+    }
+
+    for (const [idx, faq] of faqs.entries()) {
+      await db.insert(productFaqsTable).values({
+        id: id(),
+        productId: productData.id,
+        sortOrder: idx,
+        ...faq,
+      });
+    }
+
     console.log(`✔ Product: ${productData.name}`);
   }
 
