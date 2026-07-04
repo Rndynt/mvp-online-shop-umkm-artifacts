@@ -42,7 +42,7 @@ export default function ProductPage() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [product?.id]);
 
   if (isLoading) {
     return (
