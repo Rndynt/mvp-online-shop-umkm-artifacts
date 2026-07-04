@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Check, Loader2 } from 'lucide-react';
@@ -82,7 +82,7 @@ function Basic1Thumbnail() {
   );
 }
 
-const THUMBNAILS: Record<TemplateId, () => JSX.Element> = {
+const THUMBNAILS: Record<TemplateId, () => React.ReactElement> = {
   basic: BasicThumbnail,
   'basic-1': Basic1Thumbnail,
 };

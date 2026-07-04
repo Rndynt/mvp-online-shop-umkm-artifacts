@@ -141,7 +141,7 @@ export function applyThemeToDocument(colors: ThemeColors, root?: StyleSettable):
   }
   // Persist for the next page load (shop's inline restore script reads this).
   try {
-    globalThis.localStorage?.setItem(THEME_CACHE_KEY, JSON.stringify(vars));
+    (globalThis as { localStorage?: { setItem(k: string, v: string): void } }).localStorage?.setItem(THEME_CACHE_KEY, JSON.stringify(vars));
   } catch {
     // localStorage unavailable (private browsing, storage full) — ignore silently.
   }
