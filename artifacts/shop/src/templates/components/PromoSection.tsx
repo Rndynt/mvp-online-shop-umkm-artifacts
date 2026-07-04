@@ -1,22 +1,44 @@
 import { useState } from 'react';
-import { Copy, Check, Tag, Zap, Gift } from 'lucide-react';
+import { Copy, Check, Tag, Zap, Gift, ArrowRight, Star, ShieldCheck } from 'lucide-react';
 
-export interface PromoItem {
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+type IconName = 'zap' | 'tag' | 'gift' | 'star' | 'shield';
+const ICON_MAP = { zap: Zap, tag: Tag, gift: Gift, star: Star, shield: ShieldCheck } as const;
+
+interface BasePromo {
   id: string;
   title: string;
   description: string;
   badge: string;
-  code: string;
-  icon: 'zap' | 'tag' | 'gift';
-  /** Tailwind color for the icon accent (e.g. 'text-rose-500 bg-rose-50') */
+  icon: IconName;
   iconClass?: string;
 }
 
-const ICON_MAP = { zap: Zap, tag: Tag, gift: Gift } as const;
+interface CodePromo extends BasePromo {
+  type: 'code';
+  code: string;
+}
+
+interface CtaPromo extends BasePromo {
+  type: 'cta';
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+interface VisualPromo extends BasePromo {
+  type: 'visual';
+  highlights: string[];
+}
+
+export type PromoItem = CodePromo | CtaPromo | VisualPromo;
+
+// ─── Default promos ───────────────────────────────────────────────────────────
 
 const DEFAULT_PROMOS: PromoItem[] = [
   {
     id: 'flash-sale',
+    type: 'code',
     title: 'Flash Sale Akhir Bulan',
     description: 'Diskon besar-besaran untuk produk pilihan. Stok terbatas!',
     badge: 'Diskon 25%',
@@ -26,6 +48,7 @@ const DEFAULT_PROMOS: PromoItem[] = [
   },
   {
     id: 'free-shipping',
+    type: 'code',
     title: 'Gratis Ongkir Seluruh Indonesia',
     description: 'Belanja minimum Rp 100.000 gratis ongkir ke seluruh Indonesia.',
     badge: 'Gratis Ongkir',
@@ -35,6 +58,7 @@ const DEFAULT_PROMOS: PromoItem[] = [
   },
   {
     id: 'new-member',
+    type: 'code',
     title: 'Promo Member Baru',
     description: 'Khusus untuk kamu yang baru bergabung. Diskon 10% pembelian pertama.',
     badge: 'Diskon 10%',
@@ -42,42 +66,77 @@ const DEFAULT_PROMOS: PromoItem[] = [
     icon: 'tag',
     iconClass: 'text-violet-600 bg-violet-50',
   },
+  {
+    id: 'new-arrivals',
+    type: 'cta',
+    title: 'Koleksi Terbaru Sudah Datang',
+    description: 'Produk-produk baru pilihan sudah tersedia. Jangan sampai kehabisan!',
+    badge: 'New',
+    icon: 'star',
+    iconClass: 'text-rose-500 bg-rose-50',
+    ctaLabel: 'Lihat Koleksi',
+    ctaHref: '#produk',
+  },
+  {
+    id: 'guarantee',
+    type: 'visual',
+    title: 'Belanja Aman & Terjamin',
+    description: 'Setiap pembelian dilindungi jaminan kepuasan pelanggan kami.',
+    badge: 'Terpercaya',
+    icon: 'shield',
+    iconClass: 'text-emerald-600 bg-emerald-50',
+    highlights: ['Garansi uang kembali 7 hari', 'Pengiriman aman & terlacak', 'CS responsif siap bantu'],
+  },
 ];
 
-function PromoCard({ promo }: { promo: PromoItem }) {
+// ─── Card variants ────────────────────────────────────────────────────────────
+
+function CardShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 shrink-0 w-72 sm:w-auto">
+      {children}
+    </div>
+  );
+}
+
+function CardHeader({ icon, badge, iconClass }: { icon: IconName; badge: string; iconClass?: string }) {
+  const Icon = ICON_MAP[icon];
+  const cls = iconClass ?? 'text-slate-600 bg-slate-100';
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${cls}`}>
+        <Icon className="h-[18px] w-[18px]" />
+      </div>
+      <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
+        {badge}
+      </span>
+    </div>
+  );
+}
+
+function CardBody({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="flex-1">
+      <h3 className="text-sm font-bold text-slate-900 leading-snug mb-1">{title}</h3>
+      <p className="text-xs text-slate-500 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+function CodeCard({ promo }: { promo: CodePromo }) {
   const [copied, setCopied] = useState(false);
-  const Icon = ICON_MAP[promo.icon];
-  const iconClass = promo.iconClass ?? 'text-slate-600 bg-slate-100';
 
   function copyCode() {
     navigator.clipboard.writeText(promo.code).then(
-      () => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      },
+      () => { setCopied(true); setTimeout(() => setCopied(false), 2000); },
       () => {},
     );
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 shrink-0 w-72 sm:w-auto">
-      {/* Header row */}
-      <div className="flex items-start justify-between gap-3">
-        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconClass}`}>
-          <Icon className="h-4.5 w-4.5" />
-        </div>
-        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
-          {promo.badge}
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1">
-        <h3 className="text-sm font-bold text-slate-900 leading-snug mb-1">{promo.title}</h3>
-        <p className="text-xs text-slate-500 leading-relaxed">{promo.description}</p>
-      </div>
-
-      {/* Code */}
+    <CardShell>
+      <CardHeader icon={promo.icon} badge={promo.badge} iconClass={promo.iconClass} />
+      <CardBody title={promo.title} description={promo.description} />
       <button
         type="button"
         onClick={copyCode}
@@ -99,9 +158,50 @@ function PromoCard({ promo }: { promo: PromoItem }) {
           )}
         </span>
       </button>
-    </div>
+    </CardShell>
   );
 }
+
+function CtaCard({ promo }: { promo: CtaPromo }) {
+  return (
+    <CardShell>
+      <CardHeader icon={promo.icon} badge={promo.badge} iconClass={promo.iconClass} />
+      <CardBody title={promo.title} description={promo.description} />
+      <a
+        href={promo.ctaHref}
+        className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700 active:scale-95"
+      >
+        {promo.ctaLabel}
+        <ArrowRight className="h-3.5 w-3.5" />
+      </a>
+    </CardShell>
+  );
+}
+
+function VisualCard({ promo }: { promo: VisualPromo }) {
+  return (
+    <CardShell>
+      <CardHeader icon={promo.icon} badge={promo.badge} iconClass={promo.iconClass} />
+      <CardBody title={promo.title} description={promo.description} />
+      <ul className="flex flex-col gap-1.5">
+        {promo.highlights.map((h, i) => (
+          <li key={i} className="flex items-center gap-2 text-xs text-slate-600">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
+            {h}
+          </li>
+        ))}
+      </ul>
+    </CardShell>
+  );
+}
+
+function PromoCard({ promo }: { promo: PromoItem }) {
+  if (promo.type === 'code') return <CodeCard promo={promo} />;
+  if (promo.type === 'cta') return <CtaCard promo={promo} />;
+  return <VisualCard promo={promo} />;
+}
+
+// ─── Section ──────────────────────────────────────────────────────────────────
 
 export interface PromoSectionProps {
   promos?: PromoItem[];
@@ -113,7 +213,7 @@ export interface PromoSectionProps {
 export function PromoSection({
   promos = DEFAULT_PROMOS,
   title = 'Promo & Campaign',
-  subtitle = 'Gunakan kode promo berikut saat checkout untuk hemat lebih banyak',
+  subtitle = 'Penawaran spesial yang sayang untuk dilewatkan',
   className = '',
 }: PromoSectionProps) {
   return (
