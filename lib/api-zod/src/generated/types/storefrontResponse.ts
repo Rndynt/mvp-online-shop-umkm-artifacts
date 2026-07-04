@@ -20,6 +20,11 @@ export interface StorefrontResponse {
   homepageTemplate?: string;
   currency: string;
   country: string;
+  tagline?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
   activePaymentMethods: string[];

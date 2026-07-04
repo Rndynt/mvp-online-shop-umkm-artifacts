@@ -928,6 +928,21 @@ components:
           type: string
         country:
           type: string
+        tagline:
+          type: string
+          nullable: true
+        addressLine1:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        province:
+          type: string
+          nullable: true
+        postalCode:
+          type: string
+          nullable: true
         contactEmail:
           type: string
           nullable: true
