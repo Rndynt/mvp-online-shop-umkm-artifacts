@@ -129,8 +129,9 @@ interface StyleSettable {
 export const THEME_CACHE_KEY = "rukolite_theme_v1";
 
 /** Applies the theme's CSS variables directly onto a DOM element (defaults to <html>).
- *  Also persists the resolved vars to localStorage so the inline restore script in
- *  index.html can apply them on the next page load before React hydrates. */
+ *  The initial theme is bootstrapped via synchronous XHR in each app's index.html
+ *  before first paint — this function handles subsequent updates (e.g. after the
+ *  storefront API responds or the store owner saves new colors in Settings). */
 export function applyThemeToDocument(colors: ThemeColors, root?: StyleSettable): void {
   const doc = (globalThis as { document?: { documentElement?: StyleSettable } }).document;
   const target = root ?? doc?.documentElement;
@@ -138,12 +139,6 @@ export function applyThemeToDocument(colors: ThemeColors, root?: StyleSettable):
   const vars = buildThemeCssVars(colors);
   for (const [key, value] of Object.entries(vars)) {
     target.style.setProperty(key, value);
-  }
-  // Persist for the next page load (shop's inline restore script reads this).
-  try {
-    (globalThis as { localStorage?: { setItem(k: string, v: string): void } }).localStorage?.setItem(THEME_CACHE_KEY, JSON.stringify(vars));
-  } catch {
-    // localStorage unavailable (private browsing, storage full) — ignore silently.
   }
 }
 
