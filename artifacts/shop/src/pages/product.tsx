@@ -198,7 +198,7 @@ export default function ProductPage() {
                       onClick={() => setSelectedBundleId(bundle.id)}
                       className={`w-full flex items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors ${
                         isSelected
-                          ? 'border-primary bg-accent'
+                          ? 'border-primary bg-primary/10'
                           : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >

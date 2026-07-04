@@ -156,7 +156,7 @@ export default function CheckoutPage() {
                     i < step
                       ? 'bg-primary text-white'
                       : i === step
-                      ? 'bg-primary text-white ring-4 ring-accent'
+                      ? 'bg-primary text-white ring-4 ring-primary/30'
                       : 'bg-slate-200 text-slate-400'
                   }`}
                 >
@@ -250,7 +250,7 @@ export default function CheckoutPage() {
                     <label
                       key={method.id}
                       className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-colors ${
-                        selectedShipping === method.id ? 'border-primary bg-accent' : 'border-slate-200 hover:border-slate-300'
+                        selectedShipping === method.id ? 'border-primary bg-primary/10' : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -309,7 +309,7 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-2xl border border-slate-200 p-6">
                 <h2 className="font-semibold text-slate-900 mb-4">Metode Pembayaran</h2>
 
-                <label className="flex items-center justify-between p-4 rounded-xl border-2 border-primary bg-accent cursor-pointer mb-6">
+                <label className="flex items-center justify-between p-4 rounded-xl border-2 border-primary bg-primary/10 cursor-pointer mb-6">
                   <div className="flex items-center gap-3">
                     <input type="radio" checked readOnly className="accent-primary" />
                     <div>
