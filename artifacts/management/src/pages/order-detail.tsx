@@ -373,7 +373,7 @@ export default function OrderDetailPage() {
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                   <span className="text-xs text-slate-400 font-medium">Jumlah</span>
-                  <span className="text-sm font-bold text-accent-foreground">{formatRupiah(order.totalAmount)}</span>
+                  <span className="text-sm font-bold text-slate-900">{formatRupiah(order.totalAmount)}</span>
                 </div>
               </div>
             </SectionCard>

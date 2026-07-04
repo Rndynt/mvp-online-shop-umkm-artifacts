@@ -406,7 +406,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between font-bold text-slate-900 pt-2 border-t border-slate-200 text-base">
                   <span>Total</span>
-                  <span className="text-accent-foreground">{formatIDR(total)}</span>
+                  <span className="text-slate-900">{formatIDR(total)}</span>
                 </div>
               </div>
             </div>

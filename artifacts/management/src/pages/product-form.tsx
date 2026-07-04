@@ -59,7 +59,7 @@ function AddButton({ onClick, label }: { onClick: () => void; label: string }) {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 text-xs font-medium text-accent-foreground hover:text-accent-foreground bg-accent hover:bg-accent px-3 py-1.5 rounded-lg transition-colors"
+      className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary bg-primary/8 hover:bg-primary/12 px-3 py-1.5 rounded-lg transition-colors"
     >
       <Plus className="w-3.5 h-3.5" />
       {label}

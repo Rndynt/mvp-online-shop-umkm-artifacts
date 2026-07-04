@@ -75,7 +75,7 @@ export function ProductCard({
 
         {/* Info */}
         <div className="p-4 flex flex-col gap-2 flex-1">
-          <h3 className="font-semibold text-slate-900 line-clamp-2 leading-snug group-hover:text-accent-foreground transition-colors">
+          <h3 className="font-semibold text-slate-900 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
             {name}
           </h3>
           {shortDescription && (

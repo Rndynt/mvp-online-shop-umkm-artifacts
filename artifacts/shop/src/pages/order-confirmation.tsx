@@ -22,7 +22,7 @@ const STATUS_INFO: Record<string, { label: string; color: string; icon: React.Re
   paid: { label: 'Pembayaran Diterima', color: 'text-green-600 bg-green-50 ring-green-200', icon: <CheckCircle2 className="w-4 h-4" /> },
   processing: { label: 'Sedang Diproses', color: 'text-blue-600 bg-blue-50 ring-blue-200', icon: <Package className="w-4 h-4" /> },
   shipped: { label: 'Dalam Pengiriman', color: 'text-purple-600 bg-purple-50 ring-purple-200', icon: <Truck className="w-4 h-4" /> },
-  completed: { label: 'Selesai', color: 'text-primary bg-accent ring-accent', icon: <CheckCircle2 className="w-4 h-4" /> },
+  completed: { label: 'Selesai', color: 'text-green-600 bg-green-50 ring-green-200', icon: <CheckCircle2 className="w-4 h-4" /> },
   cancelled: { label: 'Dibatalkan', color: 'text-red-600 bg-red-50 ring-red-200', icon: <Clock className="w-4 h-4" /> },
 };
 
@@ -179,7 +179,7 @@ export default function OrderConfirmationPage() {
   return (
       <Layout mainClassName="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-4 ring-1 ring-accent">
+          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 ring-1 ring-primary/20">
             <CheckCircle2 className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 mb-1">Pesanan Berhasil Dibuat!</h1>
@@ -246,7 +246,7 @@ export default function OrderConfirmationPage() {
               </div>
               <div className="flex justify-between font-bold text-slate-900 text-base pt-2 border-t border-slate-200">
                 <span>Total</span>
-                <span className="text-accent-foreground">{formatIDR(order.totalAmount)}</span>
+                <span className="text-slate-900">{formatIDR(order.totalAmount)}</span>
               </div>
             </div>
           </div>
@@ -295,7 +295,7 @@ export default function OrderConfirmationPage() {
           </div>
 
           <div className="text-center pt-2">
-            <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-accent-foreground text-sm font-medium transition-colors">
+            <Link href="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 text-sm font-medium transition-colors">
               ← Lanjut Belanja
             </Link>
           </div>
