@@ -40,79 +40,89 @@ function MiniProductCard({ tone = 'slate' }: { tone?: 'slate' | 'white' }) {
   );
 }
 
-function BasicThumbnail() {
+/**
+ * Shared wrapper: renders children as a centered "website canvas" (58% wide)
+ * on a gray background, simulating a desktop browser viewport preview.
+ */
+function PreviewFrame({ children, bg = 'bg-slate-100' }: { children: React.ReactNode; bg?: string }) {
   return (
-    <div className="w-full h-full bg-slate-50 flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center gap-1 px-3 py-2 text-center">
-        <div className="h-2 w-3/5 bg-slate-400 rounded" />
-        <div className="h-1.5 w-2/5 bg-slate-300 rounded" />
-        <div className="h-1.5 w-1/3 bg-slate-200 rounded mt-0.5" />
-        <div className="h-3 w-1/3 bg-primary/70 rounded-full mt-1" />
-      </div>
-      <div className="flex gap-1 px-3 pb-2">
-        <MiniProductCard />
-        <MiniProductCard />
-        <MiniProductCard />
-        <MiniProductCard />
+    <div className={`w-full h-full ${bg} flex items-stretch justify-center`}>
+      <div className="w-[58%] bg-white flex flex-col overflow-hidden shadow-sm">
+        {children}
       </div>
     </div>
+  );
+}
+
+function BasicThumbnail() {
+  return (
+    <PreviewFrame>
+      <div className="flex flex-col items-center justify-center gap-1 px-2 py-3 text-center flex-1">
+        <div className="h-2 w-4/5 bg-slate-400 rounded" />
+        <div className="h-1.5 w-3/5 bg-slate-300 rounded" />
+        <div className="h-1.5 w-2/5 bg-slate-200 rounded mt-0.5" />
+        <div className="h-3 w-2/5 bg-primary/70 rounded-full mt-1" />
+      </div>
+      <div className="flex gap-1 px-2 pb-2">
+        <MiniProductCard />
+        <MiniProductCard />
+        <MiniProductCard />
+      </div>
+    </PreviewFrame>
   );
 }
 
 function Basic1Thumbnail() {
   return (
-    <div className="w-full h-full bg-gradient-to-br from-primary/25 via-slate-50 to-tertiary/25 flex flex-col">
-      <div className="flex flex-col items-center justify-center gap-1 px-3 py-2 text-center">
-        <div className="h-2 w-2/3 bg-slate-500/70 rounded" />
-        <div className="h-1.5 w-1/2 bg-slate-400/60 rounded" />
-        <div className="h-3 w-1/3 bg-tertiary/70 rounded-full mt-1" />
+    <PreviewFrame bg="bg-slate-200">
+      <div className="bg-gradient-to-br from-primary/30 via-white to-accent/20 flex flex-col items-center gap-1 px-2 py-2.5 text-center">
+        <div className="h-2 w-4/5 bg-slate-500/70 rounded" />
+        <div className="h-1.5 w-3/5 bg-slate-400/60 rounded" />
+        <div className="h-2.5 w-2/5 bg-accent/80 rounded-full mt-1" />
       </div>
-      <div className="px-3">
-        <div className="h-1 w-1/4 bg-slate-400/70 rounded mb-1" />
+      <div className="px-2 pt-1.5">
+        <div className="h-1 w-1/3 bg-slate-300 rounded mb-1" />
         <div className="flex gap-1">
-          <MiniProductCard tone="white" />
-          <MiniProductCard tone="white" />
-          <MiniProductCard tone="white" />
+          <MiniProductCard />
+          <MiniProductCard />
+          <MiniProductCard />
         </div>
       </div>
-      <div className="flex gap-1 px-3 py-2 mt-auto">
+      <div className="flex gap-1 px-2 py-1.5 mt-auto">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="flex-1 bg-white/70 rounded-md p-1 space-y-0.5">
+          <div key={i} className="flex-1 bg-slate-50 border border-slate-200 rounded p-1 space-y-0.5">
             <div className="h-1 w-full bg-slate-300 rounded" />
             <div className="h-1 w-2/3 bg-slate-200 rounded" />
           </div>
         ))}
       </div>
-    </div>
+    </PreviewFrame>
   );
 }
 
 function BoldThumbnail() {
   return (
-    <div className="w-full h-full bg-slate-50 flex flex-col overflow-hidden">
-      {/* Full-width hero */}
-      <div className="bg-primary px-3 py-3 flex flex-col items-center gap-1">
+    <PreviewFrame bg="bg-slate-200">
+      {/* Full-width hero — spans the inner canvas edge-to-edge */}
+      <div className="bg-primary flex flex-col items-center gap-1 px-2 py-2.5">
         <div className="h-1.5 w-1/3 bg-white/60 rounded-full" />
-        <div className="h-2 w-2/3 bg-white/90 rounded" />
-        <div className="h-1.5 w-1/2 bg-white/60 rounded" />
-        <div className="h-2.5 w-1/3 bg-white rounded-full mt-0.5" />
+        <div className="h-2 w-4/5 bg-white/90 rounded" />
+        <div className="h-1.5 w-3/5 bg-white/60 rounded" />
+        <div className="h-2.5 w-2/5 bg-white rounded-full mt-0.5" />
       </div>
-      {/* Promo cards */}
+      {/* Promo cards — horizontal strip */}
       <div className="flex gap-1 px-2 py-1.5">
-        <div className="flex-1 rounded bg-primary/70 p-1 space-y-0.5">
-          <div className="h-1 w-3/4 bg-white/70 rounded" />
-          <div className="h-1 w-full bg-white/40 rounded" />
-          <div className="h-1.5 w-2/3 bg-white/30 rounded mt-0.5" />
+        <div className="flex-1 rounded bg-primary/80 p-1 space-y-0.5">
+          <div className="h-1 w-3/4 bg-white/80 rounded" />
+          <div className="h-1.5 w-2/3 bg-white/40 rounded" />
         </div>
-        <div className="flex-1 rounded bg-secondary/70 p-1 space-y-0.5">
-          <div className="h-1 w-3/4 bg-white/70 rounded" />
-          <div className="h-1 w-full bg-white/40 rounded" />
-          <div className="h-1.5 w-2/3 bg-white/30 rounded mt-0.5" />
+        <div className="flex-1 rounded bg-slate-300 p-1 space-y-0.5">
+          <div className="h-1 w-3/4 bg-slate-500/60 rounded" />
+          <div className="h-1.5 w-2/3 bg-slate-400/40 rounded" />
         </div>
-        <div className="flex-1 rounded bg-accent/70 p-1 space-y-0.5">
-          <div className="h-1 w-3/4 bg-white/70 rounded" />
-          <div className="h-1 w-full bg-white/40 rounded" />
-          <div className="h-1.5 w-2/3 bg-white/30 rounded mt-0.5" />
+        <div className="flex-1 rounded bg-amber-400 p-1 space-y-0.5">
+          <div className="h-1 w-3/4 bg-amber-900/50 rounded" />
+          <div className="h-1.5 w-2/3 bg-amber-900/30 rounded" />
         </div>
       </div>
       {/* Product grid */}
@@ -120,18 +130,17 @@ function BoldThumbnail() {
         <MiniProductCard />
         <MiniProductCard />
         <MiniProductCard />
-        <MiniProductCard />
       </div>
       {/* Testimonials */}
       <div className="flex gap-1 px-2 pb-2 mt-auto">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="flex-1 bg-white rounded p-1 space-y-0.5 border border-slate-100">
+          <div key={i} className="flex-1 bg-slate-50 border border-slate-200 rounded p-1 space-y-0.5">
             <div className="h-1 w-full bg-yellow-300 rounded" />
             <div className="h-1 w-2/3 bg-slate-200 rounded" />
           </div>
         ))}
       </div>
-    </div>
+    </PreviewFrame>
   );
 }
 
