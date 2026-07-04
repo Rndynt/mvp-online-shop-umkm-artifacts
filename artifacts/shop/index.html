@@ -13,6 +13,27 @@
     <meta name="twitter:title" content="RukoLite Shop" />
     <meta name="twitter:description" content="RukoLite Shop — built on Replit. Update this description to reflect the app." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!--
+      Theme restore — runs synchronously before first paint to eliminate the
+      flash of the default teal color when the store has a custom theme set.
+      Reads the CSS var snapshot saved by applyThemeToDocument (THEME_CACHE_KEY).
+      Must stay plain <script> (not type="module") so it blocks rendering until done.
+    -->
+    <script>
+      (function () {
+        try {
+          var cached = localStorage.getItem('rukolite_theme_v1');
+          if (!cached) return;
+          var vars = JSON.parse(cached);
+          var style = document.documentElement.style;
+          for (var key in vars) {
+            if (Object.prototype.hasOwnProperty.call(vars, key)) {
+              style.setProperty(key, vars[key]);
+            }
+          }
+        } catch (e) { /* ignore: private browsing, corrupted cache, etc. */ }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
