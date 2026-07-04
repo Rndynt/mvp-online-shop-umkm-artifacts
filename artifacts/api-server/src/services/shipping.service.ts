@@ -1,6 +1,6 @@
 import { db } from "@workspace/db";
 import { shippingMethodsTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { requireActiveStore } from "./store.service";
 
 export async function listShippingMethods() {
@@ -9,8 +9,7 @@ export async function listShippingMethods() {
   const methods = await db
     .select()
     .from(shippingMethodsTable)
-    .where(eq(shippingMethodsTable.storeId, store.id))
-    .where(eq(shippingMethodsTable.isActive, true))
+    .where(and(eq(shippingMethodsTable.storeId, store.id), eq(shippingMethodsTable.isActive, true)))
     .orderBy(shippingMethodsTable.sortOrder);
 
   return methods.map((m) => ({
@@ -19,6 +18,5 @@ export async function listShippingMethods() {
     name: m.name,
     description: m.description,
     price: m.price,
-    estimatedDays: m.estimatedDays,
   }));
 }

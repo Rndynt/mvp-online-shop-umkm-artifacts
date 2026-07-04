@@ -78,7 +78,7 @@ export default function HomePage() {
                 price={product.price}
                 compareAtPrice={product.compareAtPrice ?? null}
                 shortDescription={product.shortDescription ?? null}
-                images={product.images ?? []}
+                images={(product.images ?? []).map((img) => ({ url: img.url, alt: img.alt ?? null }))}
                 stockQuantity={product.stockQuantity}
               />
             ))}

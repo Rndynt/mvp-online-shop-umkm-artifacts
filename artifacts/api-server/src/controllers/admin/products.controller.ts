@@ -7,7 +7,7 @@ export async function list(_req: Request, res: Response): Promise<void> {
 }
 
 export async function get(req: Request, res: Response): Promise<void> {
-  const data = await productsService.getProduct(req.params.id);
+  const data = await productsService.getProduct(String(req.params.id));
   res.json({ data });
 }
 
@@ -17,11 +17,11 @@ export async function create(req: Request, res: Response): Promise<void> {
 }
 
 export async function update(req: Request, res: Response): Promise<void> {
-  const data = await productsService.updateProduct(req.params.id, req.body);
+  const data = await productsService.updateProduct(String(req.params.id), req.body);
   res.json({ data });
 }
 
 export async function remove(req: Request, res: Response): Promise<void> {
-  const data = await productsService.deleteProduct(req.params.id);
+  const data = await productsService.deleteProduct(String(req.params.id));
   res.json({ data });
 }

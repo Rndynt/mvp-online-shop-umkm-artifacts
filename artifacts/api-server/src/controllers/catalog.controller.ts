@@ -7,6 +7,6 @@ export async function list(_req: Request, res: Response): Promise<void> {
 }
 
 export async function getBySlug(req: Request, res: Response): Promise<void> {
-  const data = await catalogService.getProductBySlug(req.params.slug);
+  const data = await catalogService.getProductBySlug(String(req.params.slug));
   res.json({ data });
 }

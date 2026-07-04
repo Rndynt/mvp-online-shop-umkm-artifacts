@@ -143,7 +143,7 @@ export default function OrderConfirmationPage() {
   const params = useParams<{ orderCode: string }>();
   const [confirmSent, setConfirmSent] = useState(false);
   const { data: resp, isLoading, error, refetch } = useGetOrderByCode(params.orderCode!, {
-    query: { refetchInterval: 30_000 },
+    query: { refetchInterval: 30_000, queryKey: ['getOrderByCode', params.orderCode] },
   });
 
   const order = resp?.data;

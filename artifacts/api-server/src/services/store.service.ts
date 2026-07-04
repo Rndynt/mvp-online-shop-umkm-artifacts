@@ -1,6 +1,6 @@
 import { db } from "@workspace/db";
 import { storesTable, shippingMethodsTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { AppError } from "../lib/errors";
 
 export type Store = typeof storesTable.$inferSelect;
@@ -38,8 +38,7 @@ export async function getStorefront() {
   const shippingMethods = await db
     .select()
     .from(shippingMethodsTable)
-    .where(eq(shippingMethodsTable.storeId, store.id))
-    .where(eq(shippingMethodsTable.isActive, true))
+    .where(and(eq(shippingMethodsTable.storeId, store.id), eq(shippingMethodsTable.isActive, true)))
     .orderBy(shippingMethodsTable.sortOrder);
 
   return {
@@ -72,14 +71,14 @@ export async function getSettings() {
   const store = await requireActiveStore();
   return {
     name: store.name,
-    tagline: (store as any).tagline ?? "",
+    tagline: store.tagline ?? "",
     contactEmail: store.contactEmail ?? "",
     contactPhone: store.contactPhone ?? "",
-    website: (store as any).website ?? "",
-    addressLine1: (store as any).addressLine1 ?? "",
-    city: (store as any).city ?? "",
-    province: (store as any).province ?? "",
-    postalCode: (store as any).postalCode ?? "",
+    website: store.website ?? "",
+    addressLine1: store.addressLine1 ?? "",
+    city: store.city ?? "",
+    province: store.province ?? "",
+    postalCode: store.postalCode ?? "",
     country: store.country,
     currency: store.currency,
   };
@@ -115,14 +114,12 @@ export async function updateSettings(input: UpdateSettingsInput) {
       country: input.country?.trim() || store.country,
       currency: input.currency?.trim() || store.currency,
       updatedAt: new Date(),
-      ...({
-        tagline: input.tagline?.trim() || null,
-        website: input.website?.trim() || null,
-        addressLine1: input.addressLine1?.trim() || null,
-        city: input.city?.trim() || null,
-        province: input.province?.trim() || null,
-        postalCode: input.postalCode?.trim() || null,
-      } as any),
+      tagline: input.tagline?.trim() || null,
+      website: input.website?.trim() || null,
+      addressLine1: input.addressLine1?.trim() || null,
+      city: input.city?.trim() || null,
+      province: input.province?.trim() || null,
+      postalCode: input.postalCode?.trim() || null,
     })
     .where(eq(storesTable.id, store.id));
 
