@@ -80,7 +80,7 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-// ── Local input types (mirrors API spec) ─────────────────────────────────────
+// ── Local input types ─────────────────────────────────────────────────────────
 
 interface ProductBundleInput {
   quantity: number;
@@ -101,7 +101,7 @@ interface ProductFaqInput {
   answer: string;
 }
 
-// ── Bundle row ───────────────────────────────────────────────────────────────
+// ── Bundle editor ─────────────────────────────────────────────────────────────
 
 type BundleRow = ProductBundleInput & { _key: number };
 
@@ -199,7 +199,7 @@ function BundleEditor({
   );
 }
 
-// ── Feature row ──────────────────────────────────────────────────────────────
+// ── Feature editor ────────────────────────────────────────────────────────────
 
 type FeatureRow = ProductFeatureInput & { _key: number };
 
@@ -266,7 +266,7 @@ function FeatureEditor({
   );
 }
 
-// ── FAQ row ──────────────────────────────────────────────────────────────────
+// ── FAQ editor ────────────────────────────────────────────────────────────────
 
 type FaqRow = ProductFaqInput & { _key: number };
 
@@ -325,10 +325,20 @@ function FaqEditor({
   );
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+// ── Main page ─────────────────────────────────────────────────────────────────
 
 let _keyCounter = 0;
 function nextKey() { return ++_keyCounter; }
+
+type ProductTab = 'dasar' | 'media' | 'bundle' | 'fitur' | 'faq';
+
+const TABS: import('@/components/ui/tabs-nav').TabItem<ProductTab>[] = [
+  { id: 'dasar',  label: 'Info & Harga' },
+  { id: 'media',  label: 'Media' },
+  { id: 'bundle', label: 'Bundle Harga' },
+  { id: 'fitur',  label: 'Fitur Produk' },
+  { id: 'faq',    label: 'FAQ' },
+];
 
 export default function ProductFormPage() {
   const params = useParams<{ id?: string }>();
@@ -361,6 +371,7 @@ export default function ProductFormPage() {
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
+  const [tab, setTab] = useState<ProductTab>('dasar');
 
   useEffect(() => {
     const product = existingData?.data;
@@ -460,21 +471,19 @@ export default function ProductFormPage() {
     try {
       if (isEdit && params.id) {
         await updateProduct.mutateAsync({ id: params.id, data: payload });
-        toast.success('Produk berhasil diperbarui');
+        toast.success('Perubahan berhasil disimpan');
+        // Tetap di halaman edit — jangan navigate ke list
       } else {
         await createProduct.mutateAsync({ data: payload });
         toast.success('Produk berhasil ditambahkan');
+        navigate('/');
       }
-      navigate('/');
     } catch (err) {
       toast.error(`Gagal: ${err instanceof Error ? err.message : 'Terjadi kesalahan'}`);
     } finally {
       setSubmitting(false);
     }
   }
-
-  type ProductTab = 'dasar' | 'media' | 'detail';
-  const [tab, setTab] = useState<ProductTab>('dasar');
 
   if (isEdit && isLoadingExisting) {
     return (
@@ -484,34 +493,51 @@ export default function ProductFormPage() {
     );
   }
 
-  const TABS: import('@/components/ui/tabs-nav').TabItem<ProductTab>[] = [
-    { id: 'dasar', label: 'Info & Harga' },
-    { id: 'media', label: 'Media' },
-    { id: 'detail', label: 'Detail & Paket' },
-  ];
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
+      {/* ── Header ── */}
       <button
         onClick={() => navigate('/')}
         className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary mb-5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
-        Kembali
+        Kembali ke Produk
       </button>
 
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {isEdit ? 'Edit Produk' : 'Produk Baru'}
-        </h1>
-        <p className="text-slate-500 text-sm mt-0.5">
-          {isEdit ? 'Ubah detail produk di bawah ini' : 'Isi detail produk yang ingin ditambahkan'}
-        </p>
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {isEdit ? 'Edit Produk' : 'Produk Baru'}
+          </h1>
+          <p className="text-slate-500 text-sm mt-0.5">
+            {isEdit ? 'Ubah detail produk di bawah ini' : 'Isi detail produk yang ingin ditambahkan'}
+          </p>
+        </div>
+
+        {/* Tombol simpan di header — selalu terlihat tanpa scroll */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="inline-flex items-center justify-center border border-slate-300 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            form="product-form"
+            disabled={submitting}
+            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
+          >
+            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
+          </button>
+        </div>
       </div>
 
       <TabsNav tabs={TABS} active={tab} onChange={(id) => setTab(id)} className="mb-5" />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form id="product-form" onSubmit={handleSubmit} className="space-y-4 pb-8">
         {/* ── Tab: Info & Harga ── */}
         {tab === 'dasar' && (
           <>
@@ -632,59 +658,44 @@ export default function ProductFormPage() {
           </Card>
         )}
 
-        {/* ── Tab: Detail & Paket ── */}
-        {tab === 'detail' && (
-          <>
-            <Card
-              title="Bundle Harga"
-              action={<AddButton onClick={addBundle} label="Tambah Paket" />}
-            >
-              <p className="text-xs text-slate-500 -mt-1">
-                Jika ada bundle, harga satuan digantikan oleh pilihan paket di halaman produk. Tandai ⭐ untuk paket yang disorot.
-              </p>
-              <BundleEditor bundles={bundles} onChange={setBundles} />
-            </Card>
-
-            <Card
-              title="Fitur Produk"
-              action={<AddButton onClick={addFeature} label="Tambah Fitur" />}
-            >
-              <p className="text-xs text-slate-500 -mt-1">
-                Tampil sebagai section bergambar di bawah detail produk — cocok untuk highlight keunggulan.
-              </p>
-              <FeatureEditor features={features} onChange={setFeatures} />
-            </Card>
-
-            <Card
-              title="FAQ"
-              action={<AddButton onClick={addFaq} label="Tambah FAQ" />}
-            >
-              <p className="text-xs text-slate-500 -mt-1">
-                Pertanyaan umum yang muncul sebagai accordion di bawah halaman produk.
-              </p>
-              <FaqEditor faqs={faqs} onChange={setFaqs} />
-            </Card>
-          </>
+        {/* ── Tab: Bundle Harga ── */}
+        {tab === 'bundle' && (
+          <Card
+            title="Bundle Harga"
+            action={<AddButton onClick={addBundle} label="Tambah Paket" />}
+          >
+            <p className="text-xs text-slate-500 -mt-1">
+              Jika ada bundle, harga satuan digantikan oleh pilihan paket di halaman produk. Tandai ⭐ untuk paket yang disorot.
+            </p>
+            <BundleEditor bundles={bundles} onChange={setBundles} />
+          </Card>
         )}
 
-        {/* ── Submit — always visible ── */}
-        <div className="flex gap-3 pb-8 pt-2">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="flex-1 inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
+        {/* ── Tab: Fitur Produk ── */}
+        {tab === 'fitur' && (
+          <Card
+            title="Fitur Produk"
+            action={<AddButton onClick={addFeature} label="Tambah Fitur" />}
           >
-            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="inline-flex items-center justify-center border border-slate-300 text-slate-600 text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-slate-50 transition-colors"
+            <p className="text-xs text-slate-500 -mt-1">
+              Tampil sebagai section bergambar di bawah detail produk — cocok untuk highlight keunggulan.
+            </p>
+            <FeatureEditor features={features} onChange={setFeatures} />
+          </Card>
+        )}
+
+        {/* ── Tab: FAQ ── */}
+        {tab === 'faq' && (
+          <Card
+            title="FAQ"
+            action={<AddButton onClick={addFaq} label="Tambah FAQ" />}
           >
-            Batal
-          </button>
-        </div>
+            <p className="text-xs text-slate-500 -mt-1">
+              Pertanyaan umum yang muncul sebagai accordion di bawah halaman produk.
+            </p>
+            <FaqEditor faqs={faqs} onChange={setFaqs} />
+          </Card>
+        )}
       </form>
     </div>
   );
