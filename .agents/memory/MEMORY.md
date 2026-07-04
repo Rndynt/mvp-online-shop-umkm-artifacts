@@ -1,3 +1,4 @@
 - [RukoLite API contract](rukolite-api-contract.md) — all routes wrapped in `{ data: ... }`, paths are `/storefront`, `/shipping-methods`, payment enum is `manual_fake_qris`
 - [RukoLite DB schema](rukolite-db-schema.md) — drizzle-zod removed; use `$inferInsert`/`$inferSelect` for type exports to avoid Zod version conflicts
 - [RukoLite seed](rukolite-seed.md) — run via `pnpm --filter @workspace/db run seed`; tsx in catalog, idempotency guard prevents double-seed
+- [RukoLite duplicate workflow ports](rukolite-workflow-duplication.md) — after import, legacy + artifact-managed workflows can collide on ports; remove legacy plain-named ones
