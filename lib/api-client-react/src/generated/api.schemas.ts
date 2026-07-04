@@ -186,6 +186,8 @@ export interface CheckoutItem {
   productId: string;
   /** @minimum 1 */
   quantity: number;
+  /** Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing. */
+  bundleId?: string | null;
 }
 
 export interface CheckoutCustomer {

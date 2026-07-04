@@ -18,6 +18,7 @@ import type {
 
 const STATUS_INFO: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   pending_payment: { label: 'Menunggu Pembayaran', color: 'text-amber-600 bg-amber-50 ring-amber-200', icon: <Clock className="w-4 h-4" /> },
+  payment_review: { label: 'Sedang Diverifikasi', color: 'text-blue-600 bg-blue-50 ring-blue-200', icon: <CreditCard className="w-4 h-4" /> },
   paid: { label: 'Pembayaran Diterima', color: 'text-green-600 bg-green-50 ring-green-200', icon: <CheckCircle2 className="w-4 h-4" /> },
   processing: { label: 'Sedang Diproses', color: 'text-blue-600 bg-blue-50 ring-blue-200', icon: <Package className="w-4 h-4" /> },
   shipped: { label: 'Dalam Pengiriman', color: 'text-purple-600 bg-purple-50 ring-purple-200', icon: <Truck className="w-4 h-4" /> },

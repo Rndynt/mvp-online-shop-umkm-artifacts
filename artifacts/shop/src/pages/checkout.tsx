@@ -98,7 +98,7 @@ export default function CheckoutPage() {
     if (!contact || !address || !selectedShipping) return;
 
     const payload = {
-      items: items.map((i) => ({ productId: i.id, quantity: i.quantity })),
+      items: items.map((i) => ({ productId: i.id, quantity: i.quantity, bundleId: i.bundleId ?? undefined })),
       customer: contact,
       shippingAddress: {
         firstName: address.firstName,
@@ -377,7 +377,7 @@ export default function CheckoutPage() {
               <h3 className="font-semibold text-slate-900 mb-4">Ringkasan Pesanan</h3>
               <div className="space-y-3 mb-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-3">
+                  <div key={item.lineId} className="flex gap-3">
                     <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden shrink-0">
                       {item.imageUrl && (
                         <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
@@ -388,7 +388,11 @@ export default function CheckoutPage() {
                       <p className="text-xs text-slate-500 mt-0.5">×{item.quantity}</p>
                     </div>
                     <span className="text-xs font-semibold text-slate-900 shrink-0">
-                      {formatIDR(item.price * item.quantity)}
+                      {formatIDR(
+                        item.bundlePackPrice != null && item.bundlePackQty != null && item.bundlePackQty > 0
+                          ? (item.quantity / item.bundlePackQty) * item.bundlePackPrice
+                          : item.price * item.quantity,
+                      )}
                     </span>
                   </div>
                 ))}

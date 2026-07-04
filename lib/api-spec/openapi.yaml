@@ -839,6 +839,10 @@ components:
         quantity:
           type: integer
           minimum: 1
+        bundleId:
+          type: string
+          nullable: true
+          description: Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing.
 
     CheckoutCustomer:
       type: object

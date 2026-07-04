@@ -143,7 +143,8 @@ export const ListShippingMethodsResponse = zod.object({
 export const CreateCheckoutBody = zod.object({
   "items": zod.array(zod.object({
   "productId": zod.string(),
-  "quantity": zod.number().min(1)
+  "quantity": zod.number().min(1),
+  "bundleId": zod.string().nullish().describe('Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing.')
 })).min(1),
   "customer": zod.object({
   "email": zod.string().email(),

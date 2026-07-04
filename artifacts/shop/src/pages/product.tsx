@@ -74,15 +74,20 @@ export default function ProductPage() {
     if (outOfStock) return;
 
     if (hasBundles && selectedBundle) {
-      const unitPrice = Math.round(selectedBundle.price / selectedBundle.quantity);
+      // Store exact bundle pack price to avoid rounding drift in subtotals
       addItem(
         {
           id: product!.id,
           name: product!.name,
           slug: product!.slug,
-          price: unitPrice,
-          compareAtPrice: null,
+          price: selectedBundle.quantity > 0
+            ? Math.round(selectedBundle.price / selectedBundle.quantity)
+            : selectedBundle.price,
+          compareAtPrice: product!.price,
           imageUrl: images[0]?.url ?? null,
+          bundleId: selectedBundle.id,
+          bundlePackPrice: selectedBundle.price,
+          bundlePackQty: selectedBundle.quantity,
         },
         selectedBundle.quantity,
       );
