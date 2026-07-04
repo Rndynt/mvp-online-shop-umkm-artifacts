@@ -7,6 +7,7 @@ import checkoutRouter from "./checkout";
 import ordersRouter from "./orders";
 import adminProductsRouter from "./admin-products";
 import adminOrdersRouter from "./admin-orders";
+import adminSettingsRouter from "./admin-settings";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(checkoutRouter);
 router.use(ordersRouter);
 router.use(adminProductsRouter);
 router.use(adminOrdersRouter);
+router.use(adminSettingsRouter);
 
 export default router;
