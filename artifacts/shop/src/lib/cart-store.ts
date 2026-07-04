@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface CartItem {
-  /** Unique line identifier: `${productId}` for plain items, `${productId}:${bundleId}` for bundles. */
+  /** Unique line identifier: `${productId}` for plain items, `${productId}:b:${bundleId}` for bundles, `${productId}:v:${variantId}` for variants. */
   lineId: string;
   id: string;
   name: string;
@@ -18,10 +18,16 @@ export interface CartItem {
   bundlePackPrice?: number | null;
   /** Number of units in one bundle pack (bundle.quantity from API). Undefined for non-bundle items. */
   bundlePackQty?: number | null;
+  /** Variant ID if this item has a selected variant. */
+  variantId?: string | null;
+  /** Human-readable variant label, e.g. "M / Hitam". Shown in cart. */
+  variantLabel?: string | null;
 }
 
-function computeLineId(productId: string, bundleId?: string | null): string {
-  return bundleId ? `${productId}:${bundleId}` : productId;
+function computeLineId(productId: string, bundleId?: string | null, variantId?: string | null): string {
+  if (bundleId) return `${productId}:b:${bundleId}`;
+  if (variantId) return `${productId}:v:${variantId}`;
+  return productId;
 }
 
 interface CartStore {
@@ -45,7 +51,7 @@ export const useCartStore = create<CartStore>()(
       isOpen: false,
 
       addItem: (item, quantity = 1) => {
-        const lineId = computeLineId(item.id, item.bundleId);
+        const lineId = computeLineId(item.id, item.bundleId, item.variantId);
         set((state) => {
           const existing = state.items.find((i) => i.lineId === lineId);
           if (existing) {

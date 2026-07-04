@@ -122,6 +122,26 @@ export const GetProductBySlugResponse = zod.object({
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number()
+})),
+  "optionTypes": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number(),
+  "values": zod.array(zod.object({
+  "id": zod.string(),
+  "value": zod.string(),
+  "sortOrder": zod.number()
+}))
+})),
+  "variants": zod.array(zod.object({
+  "id": zod.string(),
+  "sku": zod.string().nullish(),
+  "price": zod.number().nullish().describe('null = inherit price from parent product'),
+  "stockQuantity": zod.number(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "optionValueIds": zod.array(zod.string())
 }))
 })
 })
@@ -314,6 +334,26 @@ export const AdminListProductsResponse = zod.object({
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number()
+})),
+  "optionTypes": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number(),
+  "values": zod.array(zod.object({
+  "id": zod.string(),
+  "value": zod.string(),
+  "sortOrder": zod.number()
+}))
+})),
+  "variants": zod.array(zod.object({
+  "id": zod.string(),
+  "sku": zod.string().nullish(),
+  "price": zod.number().nullish().describe('null = inherit price from parent product'),
+  "stockQuantity": zod.number(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "optionValueIds": zod.array(zod.string())
 }))
 }))
 })
@@ -348,6 +388,18 @@ export const AdminCreateProductBody = zod.object({
   "faqs": zod.array(zod.object({
   "question": zod.string(),
   "answer": zod.string()
+})).optional(),
+  "optionTypes": zod.array(zod.object({
+  "name": zod.string(),
+  "values": zod.array(zod.string())
+})).optional(),
+  "variants": zod.array(zod.object({
+  "optionCombination": zod.array(zod.string()).describe('One value string per option type, in order'),
+  "price": zod.number().nullish(),
+  "stockQuantity": zod.number(),
+  "sku": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean().optional()
 })).optional()
 })
 
@@ -391,6 +443,26 @@ export const AdminCreateProductResponse = zod.object({
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number()
+})),
+  "optionTypes": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number(),
+  "values": zod.array(zod.object({
+  "id": zod.string(),
+  "value": zod.string(),
+  "sortOrder": zod.number()
+}))
+})),
+  "variants": zod.array(zod.object({
+  "id": zod.string(),
+  "sku": zod.string().nullish(),
+  "price": zod.number().nullish().describe('null = inherit price from parent product'),
+  "stockQuantity": zod.number(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "optionValueIds": zod.array(zod.string())
 }))
 })
 })
@@ -443,6 +515,26 @@ export const AdminGetProductResponse = zod.object({
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number()
+})),
+  "optionTypes": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number(),
+  "values": zod.array(zod.object({
+  "id": zod.string(),
+  "value": zod.string(),
+  "sortOrder": zod.number()
+}))
+})),
+  "variants": zod.array(zod.object({
+  "id": zod.string(),
+  "sku": zod.string().nullish(),
+  "price": zod.number().nullish().describe('null = inherit price from parent product'),
+  "stockQuantity": zod.number(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "optionValueIds": zod.array(zod.string())
 }))
 })
 })
@@ -481,6 +573,18 @@ export const AdminUpdateProductBody = zod.object({
   "faqs": zod.array(zod.object({
   "question": zod.string(),
   "answer": zod.string()
+})).optional(),
+  "optionTypes": zod.array(zod.object({
+  "name": zod.string(),
+  "values": zod.array(zod.string())
+})).optional(),
+  "variants": zod.array(zod.object({
+  "optionCombination": zod.array(zod.string()).describe('One value string per option type, in order'),
+  "price": zod.number().nullish(),
+  "stockQuantity": zod.number(),
+  "sku": zod.string().nullish(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean().optional()
 })).optional()
 })
 
@@ -524,6 +628,26 @@ export const AdminUpdateProductResponse = zod.object({
   "question": zod.string(),
   "answer": zod.string(),
   "sortOrder": zod.number()
+})),
+  "optionTypes": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "sortOrder": zod.number(),
+  "values": zod.array(zod.object({
+  "id": zod.string(),
+  "value": zod.string(),
+  "sortOrder": zod.number()
+}))
+})),
+  "variants": zod.array(zod.object({
+  "id": zod.string(),
+  "sku": zod.string().nullish(),
+  "price": zod.number().nullish().describe('null = inherit price from parent product'),
+  "stockQuantity": zod.number(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "sortOrder": zod.number(),
+  "optionValueIds": zod.array(zod.string())
 }))
 })
 })

@@ -20,6 +20,11 @@ export default function ProductPage() {
 
   const bundles = product?.bundles ?? [];
   const hasBundles = bundles.length > 0;
+  const optionTypes = product?.optionTypes ?? [];
+  const variants = product?.variants ?? [];
+  const hasVariants = optionTypes.length > 0 && variants.length > 0;
+
+  const [selectedValues, setSelectedValues] = useState<Record<string, string>>({}); // optionTypeId → optionValueId
 
   const defaultBundleId = useMemo(() => {
     if (!hasBundles) return null;
@@ -78,17 +83,39 @@ export default function ProductPage() {
     );
   }
 
-  const pct = product.compareAtPrice ? discountPercent(product.price, product.compareAtPrice) : null;
+  // Variant resolution
+  const allSelected = hasVariants && optionTypes.every((ot) => !!selectedValues[ot.id]);
+  const selectedVariant = allSelected
+    ? variants.find((v) => optionTypes.every((ot) => v.optionValueIds.includes(selectedValues[ot.id]!)))
+    : null;
+  const variantLabel = allSelected
+    ? optionTypes.map((ot) => {
+        const val = ot.values.find((v) => v.id === selectedValues[ot.id]);
+        return val?.value ?? '';
+      }).join(' / ')
+    : null;
+
+  const effectivePrice = selectedVariant?.price ?? product.price;
+  const pct = product.compareAtPrice ? discountPercent(effectivePrice, product.compareAtPrice) : null;
   const images = product.images ?? [];
   const features = product.features ?? [];
   const faqs = product.faqs ?? [];
-  const outOfStock = product.stockQuantity === 0;
+
+  // Out-of-stock: when variants exist, only show when variant is selected and has 0 stock
+  const outOfStock = hasVariants
+    ? allSelected ? (selectedVariant?.stockQuantity ?? 0) === 0 : false
+    : product.stockQuantity === 0;
+  const effectiveStock = hasVariants
+    ? (selectedVariant?.stockQuantity ?? 0)
+    : product.stockQuantity;
 
   function handleAddToCart() {
+    if (hasVariants && !allSelected) return; // chips not fully selected
     if (outOfStock) return;
 
+    const imageUrl = (selectedVariant?.imageUrl ?? images[0]?.url) ?? null;
+
     if (hasBundles && selectedBundle) {
-      // Store exact bundle pack price to avoid rounding drift in subtotals
       addItem(
         {
           id: product!.id,
@@ -98,10 +125,12 @@ export default function ProductPage() {
             ? Math.round(selectedBundle.price / selectedBundle.quantity)
             : selectedBundle.price,
           compareAtPrice: product!.price,
-          imageUrl: images[0]?.url ?? null,
+          imageUrl,
           bundleId: selectedBundle.id,
           bundlePackPrice: selectedBundle.price,
           bundlePackQty: selectedBundle.quantity,
+          variantId: selectedVariant?.id ?? null,
+          variantLabel,
         },
         selectedBundle.quantity,
       );
@@ -111,9 +140,11 @@ export default function ProductPage() {
           id: product!.id,
           name: product!.name,
           slug: product!.slug,
-          price: product!.price,
+          price: effectivePrice,
           compareAtPrice: product!.compareAtPrice ?? null,
-          imageUrl: images[0]?.url ?? null,
+          imageUrl,
+          variantId: selectedVariant?.id ?? null,
+          variantLabel,
         },
         qty,
       );
@@ -183,7 +214,7 @@ export default function ProductPage() {
 
           {!hasBundles && (
             <div className="flex items-baseline gap-3 mb-4">
-              <span className="text-3xl font-bold text-slate-900">{formatIDR(product.price)}</span>
+              <span className="text-3xl font-bold text-slate-900">{formatIDR(effectivePrice)}</span>
               {product.compareAtPrice && (
                 <span className="text-base text-slate-400 line-through">
                   {formatIDR(product.compareAtPrice)}
@@ -192,8 +223,56 @@ export default function ProductPage() {
             </div>
           )}
 
-          <div className={`text-sm mb-5 font-medium ${outOfStock ? 'text-red-500' : 'text-green-600'}`}>
-            {outOfStock ? '⚠ Stok habis' : `✓ Tersedia (${product.stockQuantity} item)`}
+          {/* ── Variant selectors ── */}
+          {hasVariants && (
+            <div className="space-y-4 mb-5">
+              {optionTypes.map((ot) => (
+                <div key={ot.id}>
+                  <p className="text-sm font-semibold text-slate-800 mb-2">
+                    {ot.name}
+                    {selectedValues[ot.id] && (
+                      <span className="text-primary font-normal ml-1.5">
+                        — {ot.values.find((v) => v.id === selectedValues[ot.id])?.value}
+                      </span>
+                    )}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {ot.values.map((val) => {
+                      const isSelected = selectedValues[ot.id] === val.id;
+                      // Check if this value leads to any variant with stock
+                      const hasStock = variants.some((v) =>
+                        v.optionValueIds.includes(val.id) && v.stockQuantity > 0 && v.isActive
+                      );
+                      return (
+                        <button
+                          key={val.id}
+                          type="button"
+                          onClick={() => setSelectedValues((prev) => ({ ...prev, [ot.id]: val.id }))}
+                          disabled={!hasStock}
+                          className={`px-4 py-2 rounded-xl border-2 text-sm font-medium transition-all ${
+                            isSelected
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : hasStock
+                              ? 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                              : 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed line-through'
+                          }`}
+                        >
+                          {val.value}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className={`text-sm mb-5 font-medium ${outOfStock ? 'text-red-500' : hasVariants && !allSelected ? 'text-slate-400' : 'text-green-600'}`}>
+            {outOfStock
+              ? '⚠ Stok habis'
+              : hasVariants && !allSelected
+              ? 'Pilih semua opsi terlebih dahulu'
+              : `✓ Tersedia (${effectiveStock} item)`}
           </div>
 
           {hasBundles && (
@@ -248,7 +327,7 @@ export default function ProductPage() {
             </div>
           )}
 
-          {!hasBundles && !outOfStock && (
+          {!hasBundles && !outOfStock && (!hasVariants || allSelected) && (
             <div className="flex items-center gap-3 mb-4">
               <div className="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden">
                 <button
@@ -259,20 +338,20 @@ export default function ProductPage() {
                 </button>
                 <span className="w-10 text-center font-medium text-slate-900">{qty}</span>
                 <button
-                  onClick={() => setQty((q) => Math.min(product!.stockQuantity, q + 1))}
+                  onClick={() => setQty((q) => Math.min(effectiveStock, q + 1))}
                   className="w-10 h-10 flex items-center justify-center hover:bg-slate-50 transition-colors text-slate-600"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
-              <span className="text-xs text-slate-400">maks. {product.stockQuantity}</span>
+              <span className="text-xs text-slate-400">maks. {effectiveStock}</span>
             </div>
           )}
 
           <button
             ref={mainBtnRef}
             onClick={handleAddToCart}
-            disabled={outOfStock}
+            disabled={outOfStock || (hasVariants && !allSelected)}
             className="w-full bg-primary hover:bg-primary/90 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
           >
             {added ? (

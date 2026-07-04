@@ -9,6 +9,8 @@ import type { ProductBundle } from './productBundle';
 import type { ProductFaq } from './productFaq';
 import type { ProductFeature } from './productFeature';
 import type { ProductImage } from './productImage';
+import type { ProductOptionType } from './productOptionType';
+import type { ProductVariantDetail } from './productVariantDetail';
 
 export interface AdminProduct {
   id: string;
@@ -26,4 +28,6 @@ export interface AdminProduct {
   bundles: ProductBundle[];
   features: ProductFeature[];
   faqs: ProductFaq[];
+  optionTypes: ProductOptionType[];
+  variants: ProductVariantDetail[];
 }

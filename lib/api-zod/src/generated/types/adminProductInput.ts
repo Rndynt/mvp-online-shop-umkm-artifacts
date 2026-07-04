@@ -8,6 +8,8 @@
 import type { ProductBundleInput } from './productBundleInput';
 import type { ProductFaqInput } from './productFaqInput';
 import type { ProductFeatureInput } from './productFeatureInput';
+import type { ProductOptionTypeInput } from './productOptionTypeInput';
+import type { ProductVariantInput } from './productVariantInput';
 
 export interface AdminProductInput {
   name: string;
@@ -23,4 +25,6 @@ export interface AdminProductInput {
   bundles?: ProductBundleInput[];
   features?: ProductFeatureInput[];
   faqs?: ProductFaqInput[];
+  optionTypes?: ProductOptionTypeInput[];
+  variants?: ProductVariantInput[];
 }
