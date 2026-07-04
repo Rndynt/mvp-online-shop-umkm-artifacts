@@ -473,7 +473,8 @@ export default function ProductFormPage() {
     }
   }
 
-  const [tab, setTab] = useState<'dasar' | 'media' | 'detail'>('dasar');
+  type ProductTab = 'dasar' | 'media' | 'detail';
+  const [tab, setTab] = useState<ProductTab>('dasar');
 
   if (isEdit && isLoadingExisting) {
     return (
@@ -483,10 +484,10 @@ export default function ProductFormPage() {
     );
   }
 
-  const TABS = [
-    { id: 'dasar' as const, label: 'Info & Harga' },
-    { id: 'media' as const, label: 'Media' },
-    { id: 'detail' as const, label: 'Detail & Paket' },
+  const TABS: import('@/components/ui/tabs-nav').TabItem<ProductTab>[] = [
+    { id: 'dasar', label: 'Info & Harga' },
+    { id: 'media', label: 'Media' },
+    { id: 'detail', label: 'Detail & Paket' },
   ];
 
   return (
@@ -508,7 +509,7 @@ export default function ProductFormPage() {
         </p>
       </div>
 
-      <TabsNav tabs={TABS} active={tab} onChange={(id) => setTab(id as typeof tab)} className="mb-5" />
+      <TabsNav tabs={TABS} active={tab} onChange={(id) => setTab(id)} className="mb-5" />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* ── Tab: Info & Harga ── */}

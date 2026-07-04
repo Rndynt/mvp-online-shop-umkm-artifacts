@@ -183,9 +183,10 @@ export default function SettingsPage() {
     }
   }
 
-  const [tab, setTab] = useState<'toko' | 'tampilan'>('toko');
+  type SettingsTab = 'toko' | 'tampilan';
+  const [tab, setTab] = useState<SettingsTab>('toko');
 
-  const SETTINGS_TABS = [
+  const SETTINGS_TABS: import('@/components/ui/tabs-nav').TabItem<SettingsTab>[] = [
     { id: 'toko', label: 'Informasi Toko' },
     { id: 'tampilan', label: 'Tampilan & Tema' },
   ];
@@ -208,7 +209,7 @@ export default function SettingsPage() {
       <TabsNav
         tabs={SETTINGS_TABS}
         active={tab}
-        onChange={(id) => setTab(id as typeof tab)}
+        onChange={(id) => setTab(id)}
         className="mb-5"
       />
 
