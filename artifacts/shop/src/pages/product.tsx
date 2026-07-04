@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useGetProductBySlug } from '@workspace/api-client-react';
 import { Layout } from '@/components/layout';
@@ -29,6 +29,20 @@ export default function ProductPage() {
   const [selectedBundleId, setSelectedBundleId] = useState<string | null>(null);
   const effectiveBundleId = selectedBundleId ?? defaultBundleId;
   const selectedBundle = bundles.find((b) => b.id === effectiveBundleId) ?? null;
+
+  // Floating CTA — visible only when main button scrolls out of view
+  const mainBtnRef = useRef<HTMLButtonElement>(null);
+  const [showFloating, setShowFloating] = useState(false);
+  useEffect(() => {
+    const el = mainBtnRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowFloating(!entry!.isIntersecting),
+      { threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   if (isLoading) {
     return (
@@ -256,6 +270,7 @@ export default function ProductPage() {
           )}
 
           <button
+            ref={mainBtnRef}
             onClick={handleAddToCart}
             disabled={outOfStock}
             className="w-full bg-primary hover:bg-primary/90 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
@@ -342,6 +357,48 @@ export default function ProductPage() {
           </div>
         </div>
       )}
+
+      {/* ── Floating add-to-cart bar ── */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
+          showFloating && !outOfStock ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
+        <div className="bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+            {/* Thumbnail */}
+            {images[0] && (
+              <img
+                src={images[0].url}
+                alt={product.name}
+                className="w-10 h-10 rounded-lg object-cover shrink-0 border border-slate-100"
+              />
+            )}
+
+            {/* Name + price */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-slate-900 truncate">{product.name}</p>
+              <p className="text-sm font-bold text-primary">
+                {hasBundles && selectedBundle
+                  ? formatIDR(selectedBundle.price)
+                  : formatIDR(product.price)}
+              </p>
+            </div>
+
+            {/* CTA */}
+            <button
+              onClick={handleAddToCart}
+              className="shrink-0 bg-primary hover:bg-primary/90 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2 active:scale-95"
+            >
+              {added ? (
+                <><Check className="w-4 h-4" /> Ditambahkan!</>
+              ) : (
+                <><ShoppingBag className="w-4 h-4" /> Tambah</>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
     </Layout>
   );
 }
