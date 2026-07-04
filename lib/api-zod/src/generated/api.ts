@@ -29,6 +29,7 @@ export const GetStorefrontResponse = zod.object({
   "secondaryColor": zod.string().optional(),
   "tertiaryColor": zod.string().optional(),
   "announcementText": zod.string().nullish(),
+  "homepageTemplate": zod.string().optional().describe('Template homepage aktif yang dipilih toko'),
   "currency": zod.string(),
   "country": zod.string(),
   "contactEmail": zod.string().nullish(),

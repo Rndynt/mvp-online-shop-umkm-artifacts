@@ -10,6 +10,7 @@ import OrdersPage from '@/pages/orders';
 import OrderDetailPage from '@/pages/order-detail';
 import AnalyticsPage from '@/pages/analytics';
 import SettingsPage from '@/pages/settings';
+import TemplatesPage from '@/pages/templates';
 import DiscountsPage from '@/pages/discounts';
 import ShippingSettingsPage from '@/pages/shipping-settings';
 import NotFound from '@/pages/not-found';
@@ -32,6 +33,7 @@ function Router() {
         <Route path="/discounts" component={DiscountsPage} />
         <Route path="/shipping" component={ShippingSettingsPage} />
         <Route path="/analytics" component={AnalyticsPage} />
+        <Route path="/templates" component={TemplatesPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route component={NotFound} />
       </Switch>

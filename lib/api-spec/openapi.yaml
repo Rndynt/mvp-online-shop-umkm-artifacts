@@ -921,6 +921,9 @@ components:
         announcementText:
           type: string
           nullable: true
+        homepageTemplate:
+          type: string
+          description: Template homepage aktif yang dipilih toko
         currency:
           type: string
         country:

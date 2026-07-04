@@ -16,6 +16,8 @@ export interface StorefrontResponse {
   secondaryColor?: string;
   tertiaryColor?: string;
   announcementText?: string | null;
+  /** Template homepage aktif yang dipilih toko */
+  homepageTemplate?: string;
   currency: string;
   country: string;
   contactEmail?: string | null;

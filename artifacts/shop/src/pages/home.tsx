@@ -1,56 +1,84 @@
-import { useListProducts } from '@workspace/api-client-react';
+import { useState } from 'react';
+import { useListProducts, useGetStorefront } from '@workspace/api-client-react';
 import { Layout } from '@/components/layout';
 import { BasicTemplate } from '@/templates/basic/BasicTemplate';
 import { BasicTemplate1 } from '@/templates/basic-1/BasicTemplate1';
+import { LayoutTemplate, X } from 'lucide-react';
+
+type TemplateId = 'basic' | 'basic-1';
+
+const TEMPLATE_LABELS: Record<TemplateId, string> = {
+  basic: 'Template Basic',
+  'basic-1': 'Template Basic 1',
+};
 
 /**
- * Preview template lewat query param, mis. /?template=basic-1
- * Nantinya ini bisa diganti dengan pilihan template yang disimpan
- * per-toko dari sisi backend/management.
+ * Override manual lewat query param, mis. /?template=basic-1, untuk keperluan
+ * preview cepat. Jika tidak ada override, pakai template yang dipilih toko
+ * di halaman Management (tersimpan di database).
  */
-function useSelectedTemplate(): 'basic' | 'basic-1' {
+function useTemplateOverride(): TemplateId | null {
   const params = new URLSearchParams(window.location.search);
-  return params.get('template') === 'basic-1' ? 'basic-1' : 'basic';
+  const value = params.get('template');
+  return value === 'basic-1' || value === 'basic' ? value : null;
 }
 
-function TemplateSwitcher({ active }: { active: 'basic' | 'basic-1' }) {
+function FloatingTemplateSwitcher({ active }: { active: TemplateId }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-2 bg-white border border-slate-200 rounded-xl p-3">
-      <span className="text-xs font-medium text-slate-400 mr-1">Lihat versi homepage:</span>
-      <a
-        href="/?template=basic"
-        className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
-          active === 'basic' ? 'bg-primary text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-        }`}
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2">
+      {open && (
+        <div className="bg-white border border-slate-200 rounded-xl shadow-lg p-3 w-56">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-slate-400">Lihat versi homepage</span>
+            <button onClick={() => setOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {(Object.keys(TEMPLATE_LABELS) as TemplateId[]).map((id) => (
+              <a
+                key={id}
+                href={`/?template=${id}`}
+                className={`text-xs font-semibold px-3 py-2 rounded-lg transition-colors ${
+                  active === id ? 'bg-primary text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {TEMPLATE_LABELS[id]}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
+        aria-label="Ganti template homepage"
       >
-        Template Basic
-      </a>
-      <a
-        href="/?template=basic-1"
-        className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
-          active === 'basic-1' ? 'bg-primary text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-        }`}
-      >
-        Template Basic 1 (Baru)
-      </a>
+        <LayoutTemplate className="w-5 h-5" />
+      </button>
     </div>
   );
 }
 
 export default function HomePage() {
   const { data: productsResp, isLoading, error } = useListProducts();
+  const { data: storefrontResp } = useGetStorefront();
   const products = productsResp?.data ?? [];
-  const template = useSelectedTemplate();
+
+  const override = useTemplateOverride();
+  const storeTemplate = storefrontResp?.data?.homepageTemplate === 'basic-1' ? 'basic-1' : 'basic';
+  const template: TemplateId = override ?? storeTemplate;
 
   return (
     <Layout>
-      <TemplateSwitcher active={template} />
-
       {template === 'basic-1' ? (
         <BasicTemplate1 products={products} isLoading={isLoading} error={error} />
       ) : (
         <BasicTemplate products={products} isLoading={isLoading} error={error} />
       )}
+      <FloatingTemplateSwitcher active={template} />
     </Layout>
   );
 }
