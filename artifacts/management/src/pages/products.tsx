@@ -56,7 +56,7 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
     <Badge
       className={
         isActive
-          ? 'bg-accent text-accent-foreground hover:bg-accent ring-1 ring-inset ring-accent'
+          ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-50 ring-1 ring-inset ring-emerald-200'
           : 'bg-slate-100 text-slate-500 hover:bg-slate-100 ring-1 ring-inset ring-slate-200'
       }
     >

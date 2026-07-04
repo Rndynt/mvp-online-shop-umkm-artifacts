@@ -232,7 +232,7 @@ export default function OrderDetailPage() {
           {/* Customer */}
           <SectionCard icon={<User className="w-4 h-4" />} title="Informasi Pelanggan">
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-full bg-accent text-accent-foreground font-bold text-sm flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-full bg-primary/10 text-primary font-bold text-sm flex items-center justify-center shrink-0">
                 {getInitials(order.customerEmail)}
               </div>
               <div className="flex-1 min-w-0 space-y-2.5">

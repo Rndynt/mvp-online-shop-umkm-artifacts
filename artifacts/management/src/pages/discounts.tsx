@@ -80,7 +80,7 @@ export default function DiscountsPage() {
           <div key={c.id} className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
                   <Tag className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <div>
@@ -96,7 +96,7 @@ export default function DiscountsPage() {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <Badge className={c.active
-                  ? 'bg-accent text-accent-foreground ring-1 ring-inset ring-accent hover:bg-accent'
+                  ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-50'
                   : 'bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200 hover:bg-slate-100'
                 }>
                   {c.active ? 'Aktif' : 'Nonaktif'}
@@ -156,7 +156,7 @@ export default function DiscountsPage() {
                 </td>
                 <td className="px-5 py-4">
                   <Badge className={c.active
-                    ? 'bg-accent text-accent-foreground ring-1 ring-inset ring-accent hover:bg-accent'
+                    ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-50'
                     : 'bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200 hover:bg-slate-100'
                   }>
                     {c.active ? 'Aktif' : 'Nonaktif'}

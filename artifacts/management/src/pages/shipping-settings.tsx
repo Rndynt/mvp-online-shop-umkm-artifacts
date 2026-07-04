@@ -71,7 +71,7 @@ export default function ShippingSettingsPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-semibold text-slate-800 text-sm">{m.name}</p>
                 <Badge className={m.active
-                  ? 'bg-accent text-accent-foreground ring-1 ring-inset ring-accent hover:bg-accent'
+                  ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-50'
                   : 'bg-slate-100 text-slate-500 ring-1 ring-inset ring-slate-200 hover:bg-slate-100'
                 }>
                   {m.active ? 'Aktif' : 'Nonaktif'}
@@ -100,9 +100,9 @@ export default function ShippingSettingsPage() {
         ))}
       </div>
 
-      <div className="mt-4 bg-accent border border-accent rounded-xl p-4 text-sm text-accent-foreground">
-        <p className="font-medium mb-0.5">Gratis Ongkir Otomatis</p>
-        <p className="text-xs text-primary">Pelanggan mendapat gratis ongkir otomatis untuk pembelian di atas Rp 200.000. Diatur di storefront banner.</p>
+      <div className="mt-4 bg-primary/5 border border-primary/20 rounded-xl p-4 text-sm text-slate-700">
+        <p className="font-medium mb-0.5 text-slate-900">Gratis Ongkir Otomatis</p>
+        <p className="text-xs text-slate-500">Pelanggan mendapat gratis ongkir otomatis untuk pembelian di atas Rp 200.000. Diatur di storefront banner.</p>
       </div>
     </div>
   );
