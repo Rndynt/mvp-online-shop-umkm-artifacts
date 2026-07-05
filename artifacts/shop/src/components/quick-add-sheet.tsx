@@ -56,6 +56,7 @@ function QuickAddContent({ slug, onClose }: { slug: string; onClose: () => void 
         optionTypes.every((ot) => v.optionValueIds.includes(selectedValues[ot.id]!)),
       )
     : null;
+  const invalidCombination = allSelected && !selectedVariant;
 
   const variantLabel = allSelected
     ? optionTypes
@@ -87,13 +88,14 @@ function QuickAddContent({ slug, onClose }: { slug: string; onClose: () => void 
     selectedVariant?.price ?? uniformVariantPrice ?? product?.price ?? 0;
 
   const outOfStock = hasVariants
-    ? allSelected
+    ? allSelected && !invalidCombination
       ? (selectedVariant?.stockQuantity ?? 0) === 0
       : false
     : (product?.stockQuantity ?? 0) === 0;
 
   const canAdd =
     !outOfStock &&
+    !invalidCombination &&
     (!hasVariants || allSelected) &&
     !!product;
 
@@ -209,9 +211,17 @@ function QuickAddContent({ slug, onClose }: { slug: string; onClose: () => void 
               <div className="flex flex-wrap gap-2">
                 {ot.values.map((val) => {
                   const isSelected = selectedValues[ot.id] === val.id;
+                  // Check availability considering cross-option selections:
+                  // a value is enabled only if at least one active/in-stock variant
+                  // matches this value AND all already-selected values for OTHER option types.
                   const hasStock = variants.some(
                     (v) =>
-                      v.optionValueIds.includes(val.id) && v.stockQuantity > 0 && v.isActive,
+                      v.optionValueIds.includes(val.id) &&
+                      v.stockQuantity > 0 &&
+                      v.isActive &&
+                      optionTypes
+                        .filter((otherOt) => otherOt.id !== ot.id && selectedValues[otherOt.id])
+                        .every((otherOt) => v.optionValueIds.includes(selectedValues[otherOt.id]!)),
                   );
                   return (
                     <button
@@ -294,7 +304,10 @@ function QuickAddContent({ slug, onClose }: { slug: string; onClose: () => void 
       {hasVariants && !allSelected && (
         <p className="text-xs text-slate-400">Pilih semua opsi terlebih dahulu</p>
       )}
-      {outOfStock && (
+      {invalidCombination && (
+        <p className="text-xs text-amber-600 font-medium">⚠ Kombinasi ini tidak tersedia</p>
+      )}
+      {outOfStock && !invalidCombination && (
         <p className="text-xs text-red-500 font-medium">⚠ Stok habis</p>
       )}
 
@@ -305,7 +318,11 @@ function QuickAddContent({ slug, onClose }: { slug: string; onClose: () => void 
         className="w-full bg-primary hover:bg-primary/90 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
       >
         <ShoppingBag className="w-5 h-5" />
-        {outOfStock ? 'Stok Habis' : 'Tambah ke Keranjang'}
+        {invalidCombination
+          ? 'Kombinasi Tidak Tersedia'
+          : outOfStock
+            ? 'Stok Habis'
+            : 'Tambah ke Keranjang'}
       </button>
     </div>
   );
