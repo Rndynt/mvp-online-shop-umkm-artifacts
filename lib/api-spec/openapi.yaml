@@ -939,6 +939,14 @@ components:
           nullable: true
         stockQuantity:
           type: integer
+        minVariantPrice:
+          type: integer
+          nullable: true
+          description: Lowest active-variant price (null = no variants with explicit price)
+        maxVariantPrice:
+          type: integer
+          nullable: true
+          description: Highest active-variant price (null = no variants with explicit price)
         images:
           type: array
           items:

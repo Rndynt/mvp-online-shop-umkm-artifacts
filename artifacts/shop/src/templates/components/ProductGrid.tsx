@@ -10,6 +10,8 @@ export interface GridProduct {
   shortDescription?: string | null;
   images?: Array<{ url: string; alt?: string | null }>;
   stockQuantity: number;
+  minVariantPrice?: number | null;
+  maxVariantPrice?: number | null;
 }
 
 export type ProductGridColumns = 2 | 3 | 4 | 5;
@@ -104,6 +106,8 @@ export function ProductGrid({
               shortDescription={product.shortDescription ?? null}
               images={(product.images ?? []).map((img) => ({ url: img.url, alt: img.alt ?? null }))}
               stockQuantity={product.stockQuantity}
+              minVariantPrice={product.minVariantPrice ?? null}
+              maxVariantPrice={product.maxVariantPrice ?? null}
             />
           ))}
         </div>

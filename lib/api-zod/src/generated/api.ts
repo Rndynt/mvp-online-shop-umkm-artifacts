@@ -67,6 +67,8 @@ export const ListProductsResponse = zod.object({
   "price": zod.number().describe('Amount in IDR integer (e.g. 150000 = Rp 150.000)'),
   "compareAtPrice": zod.number().nullish(),
   "stockQuantity": zod.number(),
+  "minVariantPrice": zod.number().nullish().describe('Lowest active-variant price (null = no variants with explicit price)'),
+  "maxVariantPrice": zod.number().nullish().describe('Highest active-variant price (null = no variants with explicit price)'),
   "images": zod.array(zod.object({
   "id": zod.string(),
   "url": zod.string(),

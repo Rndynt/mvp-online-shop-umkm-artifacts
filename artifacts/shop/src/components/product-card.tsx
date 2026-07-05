@@ -12,6 +12,8 @@ interface ProductCardProps {
   shortDescription?: string | null;
   images: Array<{ url: string; alt?: string | null }>;
   stockQuantity: number;
+  minVariantPrice?: number | null;
+  maxVariantPrice?: number | null;
 }
 
 export function ProductCard({
@@ -23,11 +25,25 @@ export function ProductCard({
   shortDescription,
   images,
   stockQuantity,
+  minVariantPrice,
+  maxVariantPrice,
 }: ProductCardProps) {
   const { addItem, openCart } = useCartStore();
   const image = images[0];
-  const pct = compareAtPrice ? discountPercent(price, compareAtPrice) : null;
   const outOfStock = stockQuantity === 0;
+
+  // Show price range when variants have differing effective prices
+  const hasRange =
+    minVariantPrice != null &&
+    maxVariantPrice != null &&
+    minVariantPrice !== maxVariantPrice;
+  // When all variants share the same effective price, show that price; else fall back to product base price
+  const displayPrice =
+    minVariantPrice != null && minVariantPrice === maxVariantPrice
+      ? minVariantPrice
+      : price;
+  // Discount badge only makes sense for single-price products
+  const pct = !hasRange && compareAtPrice ? discountPercent(displayPrice, compareAtPrice) : null;
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
@@ -59,7 +75,7 @@ export function ProductCard({
               <ShoppingBag className="w-12 h-12" />
             </div>
           )}
-          {pct && (
+          {pct != null && (
             <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
               -{pct}%
             </span>
@@ -84,10 +100,18 @@ export function ProductCard({
             </p>
           )}
           <div className="mt-auto pt-2">
-            <div className="flex items-baseline gap-2 mb-3">
-              <span className="font-bold text-slate-900 text-base">{formatIDR(price)}</span>
-              {compareAtPrice && (
-                <span className="text-sm text-slate-400 line-through">{formatIDR(compareAtPrice)}</span>
+            <div className="flex items-baseline gap-2 mb-3 flex-wrap">
+              {hasRange ? (
+                <span className="font-bold text-slate-900 text-base">
+                  {formatIDR(minVariantPrice!)} – {formatIDR(maxVariantPrice!)}
+                </span>
+              ) : (
+                <>
+                  <span className="font-bold text-slate-900 text-base">{formatIDR(displayPrice)}</span>
+                  {compareAtPrice && (
+                    <span className="text-sm text-slate-400 line-through">{formatIDR(compareAtPrice)}</span>
+                  )}
+                </>
               )}
             </div>
             <button

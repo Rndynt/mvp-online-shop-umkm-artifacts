@@ -95,8 +95,33 @@ export default function ProductPage() {
       }).join(' / ')
     : null;
 
-  const effectivePrice = selectedVariant?.price ?? product.price;
-  const pct = product.compareAtPrice ? discountPercent(effectivePrice, product.compareAtPrice) : null;
+  // Compute variant price range from all active variants (pre-selection state)
+  const activeVariants = variants.filter((v) => v.isActive);
+  const variantEffectivePrices = hasVariants
+    ? activeVariants.map((v) => v.price ?? product.price)
+    : [];
+  const minVariantPrice = variantEffectivePrices.length > 0 ? Math.min(...variantEffectivePrices) : null;
+  const maxVariantPrice = variantEffectivePrices.length > 0 ? Math.max(...variantEffectivePrices) : null;
+  // Show range only when variants exist, none fully selected, and prices actually differ
+  const hasVariantPriceRange =
+    minVariantPrice !== null && maxVariantPrice !== null && minVariantPrice !== maxVariantPrice;
+  const showingRange = hasVariants && !allSelected && hasVariantPriceRange;
+
+  // Pre-selection single price: when all variants share the same effective price, show that
+  // (may differ from product.price if all variants override with the same value)
+  const uniformVariantPrice =
+    !showingRange && minVariantPrice !== null && minVariantPrice === maxVariantPrice
+      ? minVariantPrice
+      : null;
+
+  // Effective price: selected variant → uniform variant fallback → product base price
+  const effectivePrice = selectedVariant?.price ?? uniformVariantPrice ?? product.price;
+
+  // Discount badge: only meaningful when showing a single definitive price
+  const pct = !showingRange && product.compareAtPrice
+    ? discountPercent(effectivePrice, product.compareAtPrice)
+    : null;
+
   const images = product.images ?? [];
   const features = product.features ?? [];
   const faqs = product.faqs ?? [];
@@ -196,7 +221,7 @@ export default function ProductPage() {
 
         {/* Info */}
         <div className="flex flex-col">
-          {pct && !hasBundles && (
+          {pct != null && !hasBundles && (
             <span className="inline-block self-start bg-red-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full mb-3">
               Hemat {pct}%
             </span>
@@ -213,12 +238,23 @@ export default function ProductPage() {
           )}
 
           {!hasBundles && (
-            <div className="flex items-baseline gap-3 mb-4">
-              <span className="text-3xl font-bold text-slate-900">{formatIDR(effectivePrice)}</span>
-              {product.compareAtPrice && (
-                <span className="text-base text-slate-400 line-through">
-                  {formatIDR(product.compareAtPrice)}
-                </span>
+            <div className="flex items-baseline gap-3 mb-4 flex-wrap">
+              {showingRange ? (
+                <>
+                  <span className="text-3xl font-bold text-slate-900">
+                    {formatIDR(minVariantPrice!)} – {formatIDR(maxVariantPrice!)}
+                  </span>
+                  <span className="text-sm text-slate-400">tergantung pilihan</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-3xl font-bold text-slate-900">{formatIDR(effectivePrice)}</span>
+                  {product.compareAtPrice && (
+                    <span className="text-base text-slate-400 line-through">
+                      {formatIDR(product.compareAtPrice)}
+                    </span>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -460,7 +496,9 @@ export default function ProductPage() {
               <p className="text-sm font-bold text-primary">
                 {hasBundles && selectedBundle
                   ? formatIDR(selectedBundle.price)
-                  : formatIDR(product.price)}
+                  : showingRange
+                  ? `${formatIDR(minVariantPrice!)} – ${formatIDR(maxVariantPrice!)}`
+                  : formatIDR(effectivePrice)}
               </p>
             </div>
 

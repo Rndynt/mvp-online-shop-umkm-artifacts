@@ -184,6 +184,10 @@ export interface ProductListItem {
   price: number;
   compareAtPrice?: number | null;
   stockQuantity: number;
+  /** Lowest active-variant price (null = no variants with explicit price) */
+  minVariantPrice?: number | null;
+  /** Highest active-variant price (null = no variants with explicit price) */
+  maxVariantPrice?: number | null;
   images: ProductImage[];
 }
 

@@ -115,7 +115,28 @@ export async function listProducts() {
 
   return Promise.all(
     products.map(async (p) => {
-      const images = await getProductImages(p.id);
+      const [images, variants] = await Promise.all([
+        getProductImages(p.id),
+        db
+          .select({ price: productVariantsTable.price })
+          .from(productVariantsTable)
+          .where(
+            and(
+              eq(productVariantsTable.productId, p.id),
+              eq(productVariantsTable.isActive, true),
+            ),
+          ),
+      ]);
+
+      // Each variant's effective price: override if set, else inherit product base price
+      let minVariantPrice: number | null = null;
+      let maxVariantPrice: number | null = null;
+      if (variants.length > 0) {
+        const effectivePrices = variants.map((v) => v.price ?? p.price);
+        minVariantPrice = Math.min(...effectivePrices);
+        maxVariantPrice = Math.max(...effectivePrices);
+      }
+
       return {
         id: p.id,
         name: p.name,
@@ -124,6 +145,8 @@ export async function listProducts() {
         price: p.price,
         compareAtPrice: p.compareAtPrice,
         stockQuantity: p.stockQuantity,
+        minVariantPrice,
+        maxVariantPrice,
         images: images.map(serializeImage),
       };
     }),
