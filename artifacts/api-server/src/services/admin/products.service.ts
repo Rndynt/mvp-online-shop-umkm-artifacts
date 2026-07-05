@@ -10,7 +10,7 @@ import {
   productVariantsTable,
   productVariantOptionsTable,
 } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { AppError } from "../../lib/errors";
 import { generateId } from "../../lib/utils";
 import { requireActiveStore } from "../store.service";
@@ -359,7 +359,8 @@ async function replaceVariants(
 
 export async function listProducts() {
   const store = await requireActiveStore();
-  return db.select().from(productsTable).where(and(eq(productsTable.storeId, store.id), eq(productsTable.isActive, true))).orderBy(productsTable.sortOrder);
+  // Admins see ALL products regardless of isActive status
+  return db.select().from(productsTable).where(eq(productsTable.storeId, store.id)).orderBy(productsTable.sortOrder);
 }
 
 export async function getProduct(productId: string) {

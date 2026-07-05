@@ -98,7 +98,7 @@ export default function CheckoutPage() {
     if (!contact || !address || !selectedShipping) return;
 
     const payload = {
-      items: items.map((i) => ({ productId: i.id, quantity: i.quantity, bundleId: i.bundleId ?? undefined })),
+      items: items.map((i) => ({ productId: i.id, quantity: i.quantity, bundleId: i.bundleId ?? undefined, variantId: i.variantId ?? undefined })),
       customer: contact,
       shippingAddress: {
         firstName: address.firstName,

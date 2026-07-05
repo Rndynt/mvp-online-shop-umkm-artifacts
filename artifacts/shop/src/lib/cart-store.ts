@@ -25,9 +25,11 @@ export interface CartItem {
 }
 
 function computeLineId(productId: string, bundleId?: string | null, variantId?: string | null): string {
-  if (bundleId) return `${productId}:b:${bundleId}`;
-  if (variantId) return `${productId}:v:${variantId}`;
-  return productId;
+  // Compose both dimensions so bundle+variant combos get unique lines
+  let key = productId;
+  if (bundleId) key += `:b:${bundleId}`;
+  if (variantId) key += `:v:${variantId}`;
+  return key;
 }
 
 interface CartStore {

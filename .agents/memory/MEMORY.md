@@ -4,3 +4,4 @@
 - [RukoLite duplicate workflow ports](rukolite-workflow-duplication.md) — after import, legacy + artifact-managed workflows can collide on ports; remove legacy plain-named ones
 - [RukoLite shared theming system](rukolite-theming-system.md) — theme colors applied as CSS vars via `@theme inline`; components must use `bg-primary`/etc, never hardcoded Tailwind colors
 - [RukoLite homepage template system](rukolite-homepage-templates.md) — active template is a persisted store setting managed in Management, not just a URL query param
+- [RukoLite variant system](rukolite-variant-system.md) — Shopify-style multi-dimensional variants fully implemented; cart lineId composes both bundleId and variantId; checkout validates variant stock/price server-side
