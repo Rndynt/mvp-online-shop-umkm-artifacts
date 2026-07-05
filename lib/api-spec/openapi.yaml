@@ -465,35 +465,41 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /storage/uploads/request-url:
+  /storage/uploads:
     post:
       tags: [Storage]
-      operationId: requestUploadUrl
-      summary: Request a presigned URL for file upload
+      operationId: uploadImage
+      summary: Upload an image file to Cloudinary
       description: |
-        Returns a presigned GCS URL for direct upload. The client sends JSON
-        metadata here, then uploads the file directly to the returned URL.
+        Single-step image upload. Client sends the file as multipart/form-data
+        (field name "file"). Server streams it to Cloudinary and returns the
+        public CDN URL directly.
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UploadUrlRequest'
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
       responses:
         '200':
-          description: Presigned upload URL generated.
+          description: Image uploaded successfully.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UploadUrlResponse'
         '400':
-          description: Missing or invalid required fields.
+          description: Missing or invalid file.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Failed to generate upload URL.
+          description: Failed to upload image.
           content:
             application/json:
               schema:
@@ -1329,14 +1335,11 @@ components:
           description: MIME type of the file (e.g. `image/jpeg`).
     UploadUrlResponse:
       type: object
-      required: [uploadURL, objectPath]
+      required: [url]
       properties:
-        uploadURL:
+        url:
           type: string
           format: uri
-          description: Presigned GCS URL for PUT upload.
-        objectPath:
-          type: string
-          description: Normalized object path (e.g. `/objects/uploads/uuid`). Store this in your database.
+          description: Public Cloudinary CDN URL of the uploaded image. Store this in your database.
         metadata:
           $ref: '#/components/schemas/UploadUrlRequest'

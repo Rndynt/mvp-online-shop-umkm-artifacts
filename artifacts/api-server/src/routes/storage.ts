@@ -1,120 +1,59 @@
 import { Router, type IRouter, type Request, type Response } from "express";
-import { Readable } from "stream";
-import {
-  RequestUploadUrlBody,
-  RequestUploadUrlResponse,
-} from "@workspace/api-zod";
-import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
-import { ObjectPermission } from "../lib/objectAcl";
+import multer from "multer";
+import { RequestUploadUrlResponse } from "@workspace/api-zod";
+import { uploadBufferToCloudinary } from "../lib/cloudinary";
 
 const router: IRouter = Router();
-const objectStorageService = new ObjectStorageService();
 
-/**
- * POST /storage/uploads/request-url
- *
- * Request a presigned URL for file upload.
- * The client sends JSON metadata (name, size, contentType) — NOT the file.
- * Then uploads the file directly to the returned presigned URL.
- */
-router.post("/storage/uploads/request-url", async (req: Request, res: Response) => {
-  const parsed = RequestUploadUrlBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: "Missing or invalid required fields" });
-    return;
-  }
-
-  try {
-    const { name, size, contentType } = parsed.data;
-
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-
-    res.json(
-      RequestUploadUrlResponse.parse({
-        uploadURL,
-        objectPath,
-        metadata: { name, size, contentType },
-      }),
-    );
-  } catch (error) {
-    req.log.error({ err: error }, "Error generating upload URL");
-    res.status(500).json({ error: "Failed to generate upload URL" });
-  }
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      cb(new Error("Hanya file gambar yang diizinkan"));
+      return;
+    }
+    cb(null, true);
+  },
 });
 
 /**
- * GET /storage/public-objects/*
+ * POST /storage/uploads
  *
- * Serve public assets from PUBLIC_OBJECT_SEARCH_PATHS.
- * These are unconditionally public — no authentication or ACL checks.
- * IMPORTANT: Always provide this endpoint when object storage is set up.
+ * Single-step image upload. The client sends the file as multipart/form-data
+ * (field name "file"). The server streams it to Cloudinary and returns the
+ * public, servable CDN URL directly — no separate serving route is needed.
  */
-router.get("/storage/public-objects/*filePath", async (req: Request, res: Response) => {
-  try {
-    const raw = req.params.filePath;
-    const filePath = Array.isArray(raw) ? raw.join("/") : raw;
-    const file = await objectStorageService.searchPublicObject(filePath);
-    if (!file) {
-      res.status(404).json({ error: "File not found" });
+router.post("/storage/uploads", (req: Request, res: Response) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err) {
+      res.status(400).json({ error: err.message || "Gagal memproses file" });
       return;
     }
 
-    const response = await objectStorageService.downloadObject(file);
-
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
-  } catch (error) {
-    req.log.error({ err: error }, "Error serving public object");
-    res.status(500).json({ error: "Failed to serve public object" });
-  }
-});
-
-/**
- * GET /storage/objects/*
- *
- * Serve uploaded object entities from PRIVATE_OBJECT_DIR.
- *
- * All uploads in this app are storefront assets (product photos, store logo,
- * QRIS image) — non-sensitive images meant to be publicly viewable by anyone
- * browsing the shop. There is no user authentication system in this app, so
- * this route serves them without an auth/ACL check. If a future feature
- * introduces private, per-user files, add an auth layer above this handler
- * and gate access via objectStorageService.canAccessObjectEntity before
- * streaming.
- */
-router.get("/storage/objects/*path", async (req: Request, res: Response) => {
-  try {
-    const raw = req.params.path;
-    const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
-    const objectPath = `/objects/${wildcardPath}`;
-    const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
-    const response = await objectStorageService.downloadObject(objectFile);
-
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
-  } catch (error) {
-    if (error instanceof ObjectNotFoundError) {
-      res.status(404).json({ error: "Object not found" });
+    if (!req.file) {
+      res.status(400).json({ error: "Tidak ada file yang dikirim" });
       return;
     }
-    req.log.error({ err: error }, "Error serving object");
-    res.status(500).json({ error: "Failed to serve object" });
-  }
+
+    try {
+      const result = await uploadBufferToCloudinary(req.file.buffer, req.file.originalname);
+
+      res.json(
+        RequestUploadUrlResponse.parse({
+          url: result.url,
+          metadata: {
+            name: req.file.originalname,
+            size: req.file.size,
+            contentType: req.file.mimetype,
+          },
+        }),
+      );
+    } catch (error) {
+      req.log.error({ err: error }, "Error uploading to Cloudinary");
+      res.status(500).json({ error: "Gagal mengunggah gambar ke Cloudinary" });
+    }
+  });
 });
 
 export default router;
