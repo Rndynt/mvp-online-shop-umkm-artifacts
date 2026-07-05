@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ZCDWlxg74YJlMOFahK7cS"
+uri = "file://attached_assets/generated_images/kopio_logo.png"
+type = "image"
+title = "Kopio brand logo"
+
+[[generated]]
+id = "sqVnJPkCvLo2la_VgqWAo"
+uri = "file://attached_assets/generated_images/kopio_logo_v2.png"
+type = "image"
+title = "Kopio brand logo v2"
