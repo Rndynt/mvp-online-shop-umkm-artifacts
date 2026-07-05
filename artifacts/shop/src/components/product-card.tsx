@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import { ShoppingBag } from 'lucide-react';
 import { formatIDR, discountPercent } from '@/lib/format';
 import { useCartStore } from '@/lib/cart-store';
+import { useQuickAddStore } from '@/lib/quick-add-store';
 
 interface ProductCardProps {
   id: string;
@@ -14,6 +15,10 @@ interface ProductCardProps {
   stockQuantity: number;
   minVariantPrice?: number | null;
   maxVariantPrice?: number | null;
+  /** Product has selectable variants — quick-add sheet must be shown instead of direct add */
+  hasVariants?: boolean;
+  /** Product has multi-pack bundles — quick-add sheet must be shown instead of direct add */
+  hasBundles?: boolean;
 }
 
 export function ProductCard({
@@ -27,10 +32,14 @@ export function ProductCard({
   stockQuantity,
   minVariantPrice,
   maxVariantPrice,
+  hasVariants = false,
+  hasBundles = false,
 }: ProductCardProps) {
   const { addItem, openCart } = useCartStore();
+  const { open: openQuickAdd } = useQuickAddStore();
   const image = images[0];
   const outOfStock = stockQuantity === 0;
+  const needsSelection = hasVariants || hasBundles;
 
   // Show price range when variants have differing effective prices
   const hasRange =
@@ -48,6 +57,10 @@ export function ProductCard({
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
     if (outOfStock) return;
+    if (needsSelection) {
+      openQuickAdd(slug);
+      return;
+    }
     addItem({
       id,
       name,

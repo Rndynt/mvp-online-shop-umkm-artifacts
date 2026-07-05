@@ -12,6 +12,8 @@ export interface GridProduct {
   stockQuantity: number;
   minVariantPrice?: number | null;
   maxVariantPrice?: number | null;
+  hasVariants?: boolean;
+  hasBundles?: boolean;
 }
 
 export type ProductGridColumns = 2 | 3 | 4 | 5;
@@ -108,6 +110,8 @@ export function ProductGrid({
               stockQuantity={product.stockQuantity}
               minVariantPrice={product.minVariantPrice ?? null}
               maxVariantPrice={product.maxVariantPrice ?? null}
+              hasVariants={product.hasVariants ?? false}
+              hasBundles={product.hasBundles ?? false}
             />
           ))}
         </div>

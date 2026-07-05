@@ -4,6 +4,7 @@ import { Header } from '@/components/header';
 import { AnnouncementBar } from '@/components/announcement-bar';
 import { Footer } from '@/components/footer';
 import { CartDrawer } from '@/components/cart-drawer';
+import { QuickAddSheet } from '@/components/quick-add-sheet';
 import { useStoreTheme } from '@/hooks/use-store-theme';
 
 interface LayoutProps {
@@ -48,6 +49,7 @@ export function Layout({ children, mainClassName = 'max-w-5xl mx-auto px-4 sm:px
       />
 
       <CartDrawer />
+      <QuickAddSheet />
     </div>
   );
 }
