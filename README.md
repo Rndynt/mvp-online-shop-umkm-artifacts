@@ -20,7 +20,7 @@ Aplikasi ini terdiri dari 3 bagian yang berjalan bersamaan:
 
 ### Management (untuk pemilik toko)
 - CRUD produk (tambah, edit, hapus produk & variannya)
-- Upload foto produk & logo toko langsung ke cloud storage (drag & drop)
+- Upload foto produk & logo toko langsung ke **Cloudinary** (drag & drop, satu langkah)
 - Manajemen pesanan (lihat & ubah status pesanan masuk)
 - Pengaturan kode diskon
 - Pengaturan metode pengiriman
@@ -37,7 +37,7 @@ artifacts/
   shop-next/       Next.js 15 — storefront Kopio    → port 5000  (diakses lewat /)
   management/      React + Vite — panel admin       → port 5173  (diakses lewat /management/)
   shop/            (LEGACY) versi lama storefront berbasis Vite — sudah tidak aktif/dirutekan,
-                   dibiarkan tersimpan sebagai arsip, digantikan oleh shop-next
+                   dibiarkan tersimpan sebagai arsip kode, digantikan oleh shop-next
 lib/
   db/                    Skema database (Drizzle ORM + PostgreSQL) & script seed data demo
   shared/                Tipe TypeScript & konstanta yang dipakai bersama semua bagian
@@ -45,7 +45,7 @@ lib/
   api-client/            Klien API berbasis fetch (tidak terikat framework tertentu)
   api-client-react/      Wrapper React Query di atas api-client
   api-spec/              Dokumentasi API (OpenAPI spec)
-  object-storage-web/    Helper upload gambar (presigned URL ke Google Cloud Storage)
+  object-storage-web/    Helper upload gambar (upload langsung ke Cloudinary)
 scripts/
   post-merge.sh          Dijalankan otomatis setelah ada perubahan besar (install deps + sync skema DB)
 ```
@@ -64,7 +64,7 @@ Pembeli/Admin  →  Storefront / Management (frontend)
 
 Semua respons API dibungkus dalam format `{ data: ... }`. Frontend (storefront & management) tidak pernah bicara langsung ke database — semuanya lewat API Server, supaya validasi & keamanan terjaga di satu tempat.
 
-Upload gambar (foto produk, logo toko) memakai alur **presigned URL**: frontend minta izin unggah ke API Server → API Server balas URL sementara ke Google Cloud Storage → frontend unggah file langsung ke URL itu → gambar bisa langsung diakses publik lewat `/api/storage/objects/...`.
+Upload gambar (foto produk, logo toko, QRIS) memakai alur **satu langkah** ke **Cloudinary**: frontend kirim file langsung ke API Server (`POST /api/storage/uploads`) → API Server meneruskan file ke Cloudinary → Cloudinary balas URL CDN publik → URL itu yang disimpan di database (kolom teks biasa, bukan file). Storefront & Management cukup memuat gambar langsung dari URL Cloudinary tersebut.
 
 ### Tech Stack
 
@@ -74,7 +74,7 @@ Upload gambar (foto produk, logo toko) memakai alur **presigned URL**: frontend 
 | Management | React 19 + Vite 7, Tailwind CSS 4, React Hook Form, Radix UI |
 | API Server | Express 5, TypeScript, Drizzle ORM, Zod |
 | Database | PostgreSQL |
-| Penyimpanan file | Google Cloud Storage (via presigned URL) |
+| Penyimpanan file | Cloudinary (upload langsung, URL disimpan di database) |
 | Package manager | pnpm (workspaces, bukan Turborepo) |
 | Bahasa | TypeScript di semua bagian |
 
@@ -125,10 +125,11 @@ Buat file `.env` di root proyek (lihat `.env.example`):
 | `CORS_ORIGIN` | domain, dipisah koma | Origin yang diizinkan mengakses API |
 | `VITE_API_URL` | `/api` | Alamat dasar API untuk frontend |
 | `NODE_ENV` | `development` | Mode environment |
-| `PUBLIC_OBJECT_SEARCH_PATHS` | disediakan platform storage | Lokasi bucket untuk gambar publik |
-| `PRIVATE_OBJECT_DIR` | disediakan platform storage | Lokasi bucket untuk staging upload |
+| `CLOUDINARY_CLOUD_NAME` | (dari akun Cloudinary) | Nama cloud Cloudinary untuk upload gambar |
+| `CLOUDINARY_API_KEY` | (rahasia, dari akun Cloudinary) | API key Cloudinary |
+| `CLOUDINARY_API_SECRET` | (rahasia, dari akun Cloudinary) | API secret Cloudinary |
 
-> Untuk upload gambar (foto produk/logo), butuh bucket Google Cloud Storage — nilai `PUBLIC_OBJECT_SEARCH_PATHS` dan `PRIVATE_OBJECT_DIR` biasanya disediakan otomatis oleh platform hosting (mis. Replit Object Storage). Jika hosting sendiri, siapkan bucket GCS dan isi variabel ini secara manual.
+> Untuk upload gambar (foto produk, logo toko, QRIS), butuh akun **Cloudinary** (gratis untuk skala kecil). Buat akun di cloudinary.com, lalu ambil `Cloud Name`, `API Key`, dan `API Secret` dari dashboard dan isi ke tiga variabel di atas. Tanpa ini, fitur upload gambar tidak akan berfungsi — bagian lain aplikasi tetap normal.
 
 ## Menjalankan Proyek Secara Lokal di Termux (HP Android)
 
@@ -176,7 +177,13 @@ CORS_ORIGIN="http://localhost:3000"
 VITE_API_URL="/api"
 ```
 
-> **Penting soal upload gambar di Termux:** fitur upload foto produk/logo memakai **Replit Object Storage**, dan cara aplikasi ini mengautentikasi ke storage-nya adalah lewat sebuah service internal (`sidecar`) yang **hanya tersedia di dalam environment Replit**. Meng-copy nilai `PUBLIC_OBJECT_SEARCH_PATHS` / `PRIVATE_OBJECT_DIR` / `DEFAULT_OBJECT_STORAGE_BUCKET_ID` ke `.env` di Termux **tidak akan membuat upload gambar berfungsi** — fitur ini hanya bisa dipakai saat project dijalankan di Replit. Bagian lain aplikasi (produk, pesanan, dll tanpa foto baru) tetap berjalan normal di Termux.
+> **Soal upload gambar di Termux:** fitur upload foto produk/logo memakai **Cloudinary**, layanan pihak ketiga yang bisa diakses dari mana saja (tidak terikat ke environment Replit). Supaya berfungsi di Termux, tambahkan tiga variabel berikut ke `.env`:
+> ```
+> CLOUDINARY_CLOUD_NAME="nama-cloud-kamu"
+> CLOUDINARY_API_KEY="api-key-kamu"
+> CLOUDINARY_API_SECRET="api-secret-kamu"
+> ```
+> Ambil nilainya dari dashboard akun Cloudinary kamu (cloudinary.com). Tanpa ini, upload gambar akan gagal, tapi bagian lain aplikasi (produk, pesanan, dll) tetap berjalan normal.
 
 ### 4. Install dependencies (jika belum)
 
