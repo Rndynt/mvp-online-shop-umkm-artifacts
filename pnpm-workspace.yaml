@@ -2,7 +2,7 @@
 # SECURITY: Minimum release age for npm packages (supply-chain attack defense)
 # ============================================================================
 #
-# This setting requires that any npm package version must have been published
+# This setting requires that any package version must have been published
 # for at least 1 day (1440 minutes) before pnpm will allow installing it.
 # This is a critical defense against supply-chain attacks. In most cases,
 # malicious npm releases are discovered and pulled within hours, so a 1-day
@@ -140,14 +140,14 @@ overrides:
   "rollup>@rollup/rollup-win32-x64-msvc": "-"
   "@expo/ngrok-bin>@expo/ngrok-bin-darwin-arm64": "-"
   "@expo/ngrok-bin>@expo/ngrok-bin-darwin-x64": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/freebsd-ia32": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/freebsd-x64": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/linux-arm64": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/linux-arm": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/linux-ia32": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/sunos-x64": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/win32-ia32": "-"
-  "@expo/ngrok-bin>@expo/ngrok-bin/win32-x64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-freebsd-ia32": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-freebsd-x64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-linux-arm64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-linux-arm": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-linux-ia32": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-sunos-x64": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-win32-ia32": "-"
+  "@expo/ngrok-bin>@expo/ngrok-bin-win32-x64": "-"
   # drizzle-kit uses esbuild internally on an older version that's vulnerable, this overrides it
   "@esbuild-kit/esm-loader": "npm:tsx@^4.21.0"
   esbuild: "0.27.3"
