@@ -45,13 +45,19 @@ export async function getStorefront() {
     id: store.id,
     name: store.name,
     slug: store.slug,
+    tagline: store.tagline,
     logoUrl: store.logoUrl,
     primaryColor: store.primaryColor,
     secondaryColor: store.secondaryColor,
     tertiaryColor: store.tertiaryColor,
     announcementText: store.announcementText,
+    homepageTemplate: store.homepageTemplate,
     currency: store.currency,
     country: store.country,
+    addressLine1: store.addressLine1,
+    city: store.city,
+    province: store.province,
+    postalCode: store.postalCode,
     contactEmail: store.contactEmail,
     contactPhone: store.contactPhone,
     activePaymentMethods: ["manual_fake_qris"],
@@ -69,11 +75,15 @@ export async function getStorefront() {
 // Admin settings
 // ---------------------------------------------------------------------------
 
+export const HOMEPAGE_TEMPLATES = ["basic", "basic-1", "bold"] as const;
+export type HomepageTemplate = (typeof HOMEPAGE_TEMPLATES)[number];
+
 export async function getSettings() {
   const store = await requireActiveStore();
   return {
     name: store.name,
     tagline: store.tagline ?? "",
+    homepageTemplate: store.homepageTemplate,
     contactEmail: store.contactEmail ?? "",
     contactPhone: store.contactPhone ?? "",
     website: store.website ?? "",
@@ -93,6 +103,7 @@ export async function getSettings() {
 export interface UpdateSettingsInput {
   name: string;
   tagline?: string;
+  homepageTemplate?: string;
   contactEmail?: string;
   contactPhone?: string;
   website?: string;
@@ -113,6 +124,10 @@ export async function updateSettings(input: UpdateSettingsInput) {
     throw new AppError("VALIDATION_ERROR", "Nama toko wajib diisi");
   }
 
+  if (input.homepageTemplate && !HOMEPAGE_TEMPLATES.includes(input.homepageTemplate as HomepageTemplate)) {
+    throw new AppError("VALIDATION_ERROR", "Template homepage tidak valid");
+  }
+
   const store = await requireActiveStore();
 
   await db
@@ -123,6 +138,7 @@ export async function updateSettings(input: UpdateSettingsInput) {
       contactPhone: input.contactPhone?.trim() || null,
       country: input.country?.trim() || store.country,
       currency: input.currency?.trim() || store.currency,
+      homepageTemplate: input.homepageTemplate?.trim() || store.homepageTemplate,
       updatedAt: new Date(),
       tagline: input.tagline?.trim() || null,
       website: input.website?.trim() || null,

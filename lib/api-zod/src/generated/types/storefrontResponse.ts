@@ -16,8 +16,15 @@ export interface StorefrontResponse {
   secondaryColor?: string;
   tertiaryColor?: string;
   announcementText?: string | null;
+  /** Template homepage aktif yang dipilih toko */
+  homepageTemplate?: string;
   currency: string;
   country: string;
+  tagline?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
   activePaymentMethods: string[];

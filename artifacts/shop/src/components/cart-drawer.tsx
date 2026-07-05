@@ -85,6 +85,9 @@ export function CartDrawer() {
                     <p className="font-medium text-slate-900 text-sm line-clamp-2 leading-snug">
                       {item.name}
                     </p>
+                    {item.variantLabel && (
+                      <p className="text-xs text-slate-500 mt-0.5">{item.variantLabel}</p>
+                    )}
                     <p className="text-primary font-semibold text-sm mt-1">
                       {formatIDR(
                         item.bundlePackPrice != null && item.bundlePackQty != null && item.bundlePackQty > 0

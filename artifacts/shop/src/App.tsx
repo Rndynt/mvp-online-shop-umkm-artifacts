@@ -1,31 +1,45 @@
+import { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Route, Switch, Router as WouterRouter } from 'wouter';
+import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 import NotFound from '@/pages/not-found';
 import HomePage from '@/pages/home';
 import ProductPage from '@/pages/product';
+import ProductsPage from '@/pages/products';
 import CheckoutPage from '@/pages/checkout';
 import OrderConfirmationPage from '@/pages/order-confirmation';
+import TemplatePreviewPage from '@/pages/template-preview';
+import TrackOrderPage from '@/pages/track-order';
+import ContactPage from '@/pages/contact';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: 1, staleTime: 60_000 },
-  },
-});
+function ScrollToTop() {
+  const [path] = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [path]);
+  return null;
+}
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/products/:slug" component={ProductPage} />
-      <Route path="/checkout" component={CheckoutPage} />
-      <Route path="/orders/:orderCode" component={OrderConfirmationPage} />
-      <Route component={NotFound} />
-    </Switch>
+    <>
+      <ScrollToTop />
+      <Switch>
+        <Route path="/" component={HomePage} />
+        <Route path="/preview/:templateId" component={TemplatePreviewPage} />
+        <Route path="/products" component={ProductsPage} />
+        <Route path="/products/:slug" component={ProductPage} />
+        <Route path="/checkout" component={CheckoutPage} />
+        <Route path="/orders/:orderCode" component={OrderConfirmationPage} />
+        <Route path="/track-order" component={TrackOrderPage} />
+        <Route path="/contact" component={ContactPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 
-function App() {
+function App({ queryClient }: { queryClient: QueryClient }) {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

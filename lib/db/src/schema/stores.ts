@@ -15,6 +15,7 @@ export const storesTable = pgTable("stores", {
   secondaryColor: text("secondary_color").notNull().default("#F1F5F9"),
   tertiaryColor: text("tertiary_color").notNull().default("#7C3AED"),
   announcementText: text("announcement_text"),
+  homepageTemplate: text("homepage_template").notNull().default("basic"),
   currency: text("currency").notNull().default("IDR"),
   country: text("country").notNull().default("Indonesia"),
   contactEmail: text("contact_email"),

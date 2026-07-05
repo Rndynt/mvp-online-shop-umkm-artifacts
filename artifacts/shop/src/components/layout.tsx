@@ -12,14 +12,16 @@ interface LayoutProps {
 }
 
 export function Layout({ children, mainClassName = 'max-w-5xl mx-auto px-4 sm:px-6 py-8' }: LayoutProps) {
-  const { data: storefrontResp } = useGetStorefront();
+  const { data: storefrontResp, isSuccess: storefrontLoaded } = useGetStorefront();
   const storefront = storefrontResp?.data;
 
+  // Pass `storefrontLoaded` so theme is only applied once we have real data —
+  // prevents overwriting the localStorage-cached theme with defaults mid-flight.
   useStoreTheme({
     primary: storefront?.primaryColor ?? undefined,
     secondary: storefront?.secondaryColor ?? undefined,
     tertiary: storefront?.tertiaryColor ?? undefined,
-  });
+  }, storefrontLoaded);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -30,7 +32,20 @@ export function Layout({ children, mainClassName = 'max-w-5xl mx-auto px-4 sm:px
 
       <main className={mainClassName}>{children}</main>
 
-      <Footer storeName={storefront?.name} />
+      <Footer
+        storeName={storefront?.name}
+        tagline={storefront?.tagline}
+        address={{
+          line1: storefront?.addressLine1,
+          city: storefront?.city,
+          province: storefront?.province,
+          postalCode: storefront?.postalCode,
+        }}
+        contact={{
+          email: storefront?.contactEmail,
+          phone: storefront?.contactPhone,
+        }}
+      />
 
       <CartDrawer />
     </div>

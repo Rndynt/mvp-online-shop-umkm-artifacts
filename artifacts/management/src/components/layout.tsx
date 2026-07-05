@@ -9,6 +9,7 @@ import {
   Menu,
   Tag,
   Truck,
+  LayoutTemplate,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -35,6 +36,7 @@ const NAV_GROUPS = [
     items: [
       { href: '/shipping', label: 'Pengiriman', icon: Truck },
       { href: '/analytics', label: 'Analitik', icon: BarChart3 },
+      { href: '/templates', label: 'Kelola Template', icon: LayoutTemplate },
       { href: '/settings', label: 'Pengaturan', icon: Settings },
     ],
   },

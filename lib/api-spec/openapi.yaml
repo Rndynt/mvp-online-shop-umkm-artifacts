@@ -573,7 +573,7 @@ components:
   schemas:
     AdminProduct:
       type: object
-      required: [id, name, slug, price, stockQuantity, isActive, images, bundles, features, faqs]
+      required: [id, name, slug, price, stockQuantity, isActive, images, bundles, features, faqs, optionTypes, variants]
       properties:
         id:
           type: string
@@ -617,6 +617,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProductFaq"
+        optionTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductOptionType"
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariantDetail"
 
     AdminProductInput:
       type: object
@@ -659,6 +667,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProductFaqInput"
+        optionTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductOptionTypeInput"
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariantInput"
 
     ProductBundle:
       type: object
@@ -750,6 +766,93 @@ components:
         answer:
           type: string
 
+    ProductOptionValue:
+      type: object
+      required: [id, value, sortOrder]
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+        sortOrder:
+          type: integer
+
+    ProductOptionType:
+      type: object
+      required: [id, name, sortOrder, values]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sortOrder:
+          type: integer
+        values:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductOptionValue"
+
+    ProductVariantDetail:
+      type: object
+      required: [id, stockQuantity, isActive, sortOrder, optionValueIds]
+      properties:
+        id:
+          type: string
+        sku:
+          type: string
+          nullable: true
+        price:
+          type: integer
+          nullable: true
+          description: "null = inherit price from parent product"
+        stockQuantity:
+          type: integer
+        imageUrl:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+        optionValueIds:
+          type: array
+          items:
+            type: string
+
+    ProductOptionTypeInput:
+      type: object
+      required: [name, values]
+      properties:
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            type: string
+
+    ProductVariantInput:
+      type: object
+      required: [optionCombination, stockQuantity]
+      properties:
+        optionCombination:
+          type: array
+          description: "One value string per option type, in order"
+          items:
+            type: string
+        price:
+          type: integer
+          nullable: true
+        stockQuantity:
+          type: integer
+        sku:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+
     AdminOrderStatusInput:
       type: object
       required: [status]
@@ -836,6 +939,14 @@ components:
           nullable: true
         stockQuantity:
           type: integer
+        minVariantPrice:
+          type: integer
+          nullable: true
+          description: Lowest active-variant price (null = no variants with explicit price)
+        maxVariantPrice:
+          type: integer
+          nullable: true
+          description: Highest active-variant price (null = no variants with explicit price)
         images:
           type: array
           items:
@@ -843,7 +954,7 @@ components:
 
     ProductDetail:
       type: object
-      required: [id, name, slug, price, stockQuantity, images, isActive, bundles, features, faqs]
+      required: [id, name, slug, price, stockQuantity, images, isActive, bundles, features, faqs, optionTypes, variants]
       properties:
         id:
           type: string
@@ -882,6 +993,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProductFaq"
+        optionTypes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductOptionType"
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariantDetail"
 
     ShippingMethod:
       type: object
@@ -921,10 +1040,28 @@ components:
         announcementText:
           type: string
           nullable: true
+        homepageTemplate:
+          type: string
+          description: Template homepage aktif yang dipilih toko
         currency:
           type: string
         country:
           type: string
+        tagline:
+          type: string
+          nullable: true
+        addressLine1:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        province:
+          type: string
+          nullable: true
+        postalCode:
+          type: string
+          nullable: true
         contactEmail:
           type: string
           nullable: true

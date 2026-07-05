@@ -2,6 +2,7 @@ import { db } from "@workspace/db";
 import {
   productsTable,
   productBundlesTable,
+  productVariantsTable,
   shippingMethodsTable,
   discountsTable,
   ordersTable,
@@ -19,7 +20,7 @@ import { requireActiveStore } from "./store.service";
 // ---------------------------------------------------------------------------
 
 export interface CheckoutInput {
-  items: Array<{ productId: string; quantity: number; bundleId?: string | null }>;
+  items: Array<{ productId: string; quantity: number; bundleId?: string | null; variantId?: string | null }>;
   customer: { email: string; phone: string };
   shippingAddress: {
     firstName: string;
@@ -65,17 +66,23 @@ export async function createOrder(input: CheckoutInput) {
 
   const productMap = new Map(products.map((p) => [p.id, p]));
 
-  // Pre-fetch bundles for all items that specify a bundleId
+  // Pre-fetch bundles and variants in parallel
   const bundleIds = items.map((i) => i.bundleId).filter((id): id is string => !!id);
-  const bundles = bundleIds.length
-    ? await db
-        .select()
-        .from(productBundlesTable)
-        .where(inArray(productBundlesTable.id, bundleIds))
-    : [];
-  const bundleMap = new Map(bundles.map((b) => [b.id, b]));
+  const variantIds = items.map((i) => i.variantId).filter((id): id is string => !!id);
 
-  // Per-item basic validation + bundle check
+  const [bundles, variants] = await Promise.all([
+    bundleIds.length
+      ? db.select().from(productBundlesTable).where(inArray(productBundlesTable.id, bundleIds))
+      : Promise.resolve([]),
+    variantIds.length
+      ? db.select().from(productVariantsTable).where(inArray(productVariantsTable.id, variantIds))
+      : Promise.resolve([]),
+  ]);
+
+  const bundleMap = new Map(bundles.map((b) => [b.id, b]));
+  const variantMap = new Map(variants.map((v) => [v.id, v]));
+
+  // Per-item basic validation
   for (const item of items) {
     if (item.quantity < 1) throw new AppError("VALIDATION_ERROR", "Jumlah item harus minimal 1");
     const product = productMap.get(item.productId);
@@ -85,17 +92,28 @@ export async function createOrder(input: CheckoutInput) {
       if (!bundle || bundle.productId !== item.productId)
         throw new AppError("INVALID_BUNDLE", `Bundle tidak valid untuk produk: ${product.name}`);
     }
+    if (item.variantId) {
+      const variant = variantMap.get(item.variantId);
+      if (!variant || variant.productId !== item.productId)
+        throw new AppError("INVALID_VARIANT", `Varian tidak valid untuk produk: ${product.name}`);
+      if (!variant.isActive)
+        throw new AppError("INVALID_VARIANT", `Varian tidak tersedia: ${product.name}`);
+    }
   }
 
-  // Stock check aggregated per product — one product may appear on multiple lines (different bundles)
-  const totalQtyByProduct = new Map<string, number>();
+  // Stock check aggregated per (productId, variantId) key — variants have independent stock
+  const totalQtyByKey = new Map<string, { productId: string; variantId: string | null; qty: number }>();
   for (const item of items) {
-    totalQtyByProduct.set(item.productId, (totalQtyByProduct.get(item.productId) ?? 0) + item.quantity);
+    const key = item.variantId ? `${item.productId}:${item.variantId}` : item.productId;
+    const entry = totalQtyByKey.get(key);
+    totalQtyByKey.set(key, { productId: item.productId, variantId: item.variantId ?? null, qty: (entry?.qty ?? 0) + item.quantity });
   }
-  for (const [productId, totalQty] of totalQtyByProduct) {
+  for (const { productId, variantId, qty } of totalQtyByKey.values()) {
     const product = productMap.get(productId)!;
-    if (product.stockQuantity < totalQty)
-      throw new AppError("INSUFFICIENT_STOCK", `Stok tidak cukup untuk: ${product.name}`);
+    const variant = variantId ? variantMap.get(variantId) : null;
+    const available = variant ? variant.stockQuantity : product.stockQuantity;
+    if (available < qty)
+      throw new AppError("INSUFFICIENT_STOCK", `Stok tidak cukup untuk: ${product.name}${variant ? " (varian)" : ""}`);
   }
 
   // --- Validate shipping method ---
@@ -118,7 +136,9 @@ export async function createOrder(input: CheckoutInput) {
   let subtotal = 0;
   const lineItems = items.map((item) => {
     const product = productMap.get(item.productId)!;
-    let unitPrice = product.price;
+    // Variant price takes precedence over product price when set
+    const variant = item.variantId ? variantMap.get(item.variantId) ?? null : null;
+    let unitPrice = variant?.price ?? product.price;
     let compareAtPrice = product.compareAtPrice;
 
     let lineTotal: number;

@@ -37,6 +37,31 @@ export interface ProductFaq {
   sortOrder: number;
 }
 
+export interface ProductOptionValue {
+  id: string;
+  value: string;
+  sortOrder: number;
+}
+
+export interface ProductOptionType {
+  id: string;
+  name: string;
+  sortOrder: number;
+  values: ProductOptionValue[];
+}
+
+export interface ProductVariantDetail {
+  id: string;
+  sku?: string | null;
+  /** null = inherit price from parent product */
+  price?: number | null;
+  stockQuantity: number;
+  imageUrl?: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  optionValueIds: string[];
+}
+
 export interface AdminProduct {
   id: string;
   name: string;
@@ -53,6 +78,8 @@ export interface AdminProduct {
   bundles: ProductBundle[];
   features: ProductFeature[];
   faqs: ProductFaq[];
+  optionTypes: ProductOptionType[];
+  variants: ProductVariantDetail[];
 }
 
 export interface ProductBundleInput {
@@ -74,6 +101,21 @@ export interface ProductFaqInput {
   answer: string;
 }
 
+export interface ProductOptionTypeInput {
+  name: string;
+  values: string[];
+}
+
+export interface ProductVariantInput {
+  /** One value string per option type, in order */
+  optionCombination: string[];
+  price?: number | null;
+  stockQuantity: number;
+  sku?: string | null;
+  imageUrl?: string | null;
+  isActive?: boolean;
+}
+
 export interface AdminProductInput {
   name: string;
   slug: string;
@@ -88,6 +130,8 @@ export interface AdminProductInput {
   bundles?: ProductBundleInput[];
   features?: ProductFeatureInput[];
   faqs?: ProductFaqInput[];
+  optionTypes?: ProductOptionTypeInput[];
+  variants?: ProductVariantInput[];
 }
 
 export type AdminOrderStatusInputStatus = typeof AdminOrderStatusInputStatus[keyof typeof AdminOrderStatusInputStatus];
@@ -140,6 +184,10 @@ export interface ProductListItem {
   price: number;
   compareAtPrice?: number | null;
   stockQuantity: number;
+  /** Lowest active-variant price (null = no variants with explicit price) */
+  minVariantPrice?: number | null;
+  /** Highest active-variant price (null = no variants with explicit price) */
+  maxVariantPrice?: number | null;
   images: ProductImage[];
 }
 
@@ -157,6 +205,8 @@ export interface ProductDetail {
   bundles: ProductBundle[];
   features: ProductFeature[];
   faqs: ProductFaq[];
+  optionTypes: ProductOptionType[];
+  variants: ProductVariantDetail[];
 }
 
 export interface ShippingMethod {
@@ -176,8 +226,15 @@ export interface StorefrontResponse {
   secondaryColor?: string;
   tertiaryColor?: string;
   announcementText?: string | null;
+  /** Template homepage aktif yang dipilih toko */
+  homepageTemplate?: string;
   currency: string;
   country: string;
+  tagline?: string | null;
+  addressLine1?: string | null;
+  city?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
   activePaymentMethods: string[];

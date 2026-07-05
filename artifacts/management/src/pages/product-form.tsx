@@ -8,7 +8,7 @@ import {
 } from '@workspace/api-client-react';
 import { Switch } from '@/components/ui/switch';
 import { TabsNav } from '@/components/ui/tabs-nav';
-import { ArrowLeft, Loader2, Plus, Trash2, Star } from 'lucide-react';
+import { ArrowLeft, Loader2, Plus, Trash2, Star, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ImageDropzone } from '@workspace/object-storage-web';
 
@@ -80,7 +80,7 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-// ── Local input types (mirrors API spec) ─────────────────────────────────────
+// ── Local input types ─────────────────────────────────────────────────────────
 
 interface ProductBundleInput {
   quantity: number;
@@ -101,7 +101,7 @@ interface ProductFaqInput {
   answer: string;
 }
 
-// ── Bundle row ───────────────────────────────────────────────────────────────
+// ── Bundle editor ─────────────────────────────────────────────────────────────
 
 type BundleRow = ProductBundleInput & { _key: number };
 
@@ -199,7 +199,7 @@ function BundleEditor({
   );
 }
 
-// ── Feature row ──────────────────────────────────────────────────────────────
+// ── Feature editor ────────────────────────────────────────────────────────────
 
 type FeatureRow = ProductFeatureInput & { _key: number };
 
@@ -266,7 +266,7 @@ function FeatureEditor({
   );
 }
 
-// ── FAQ row ──────────────────────────────────────────────────────────────────
+// ── FAQ editor ────────────────────────────────────────────────────────────────
 
 type FaqRow = ProductFaqInput & { _key: number };
 
@@ -325,10 +325,216 @@ function FaqEditor({
   );
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+// ── Cartesian product helper ──────────────────────────────────────────────────
+
+function cartesian<T>(...arrays: T[][]): T[][] {
+  return arrays.reduce<T[][]>(
+    (acc, arr) => acc.flatMap((combo) => arr.map((val) => [...combo, val])),
+    [[]],
+  );
+}
+
+// ── Variant types ─────────────────────────────────────────────────────────────
+
+interface OptionTypeValueRow { _key: number; value: string }
+interface OptionTypeRow { _key: number; name: string; values: OptionTypeValueRow[] }
+interface VariantRow { _key: number; optionValues: string[]; price: string; stockQuantity: string; sku: string; isActive: boolean }
+
+function generateVariantMatrix(optionTypes: OptionTypeRow[], existing: VariantRow[]): VariantRow[] {
+  const valueArrays = optionTypes.map((ot) => ot.values.map((v) => v.value).filter((v) => v.trim()));
+  if (optionTypes.length === 0 || valueArrays.some((arr) => arr.length === 0)) return existing;
+  const combos = cartesian(...valueArrays);
+  return combos.map((combo) => {
+    const found = existing.find(
+      (v) => v.optionValues.length === combo.length && v.optionValues.every((val, i) => val === combo[i]),
+    );
+    return found ?? { _key: nextKey(), optionValues: combo, price: '', stockQuantity: '0', sku: '', isActive: true };
+  });
+}
+
+// ── OptionTypeEditor ──────────────────────────────────────────────────────────
+
+function OptionTypeEditor({
+  optionTypes,
+  onChange,
+}: {
+  optionTypes: OptionTypeRow[];
+  onChange: (rows: OptionTypeRow[]) => void;
+}) {
+  function addType() {
+    onChange([...optionTypes, { _key: nextKey(), name: '', values: [] }]);
+  }
+  function removeType(key: number) {
+    onChange(optionTypes.filter((ot) => ot._key !== key));
+  }
+  function updateTypeName(key: number, name: string) {
+    onChange(optionTypes.map((ot) => (ot._key === key ? { ...ot, name } : ot)));
+  }
+  function addValue(typeKey: number) {
+    onChange(optionTypes.map((ot) => ot._key === typeKey ? { ...ot, values: [...ot.values, { _key: nextKey(), value: '' }] } : ot));
+  }
+  function updateValue(typeKey: number, valKey: number, value: string) {
+    onChange(optionTypes.map((ot) => ot._key === typeKey ? { ...ot, values: ot.values.map((v) => v._key === valKey ? { ...v, value } : v) } : ot));
+  }
+  function removeValue(typeKey: number, valKey: number) {
+    onChange(optionTypes.map((ot) => ot._key === typeKey ? { ...ot, values: ot.values.filter((v) => v._key !== valKey) } : ot));
+  }
+
+  return (
+    <div className="space-y-3">
+      {optionTypes.length === 0 && (
+        <p className="text-sm text-slate-400 text-center py-3 bg-slate-50 rounded-lg">
+          Belum ada tipe opsi. Klik tombol di bawah untuk mulai menambah dimensi seperti "Ukuran" atau "Warna".
+        </p>
+      )}
+      {optionTypes.map((ot) => (
+        <div key={ot._key} className="rounded-xl border border-slate-200 p-4 space-y-3 bg-slate-50/40">
+          <div className="flex items-center gap-2">
+            <input
+              value={ot.name}
+              onChange={(e) => updateTypeName(ot._key, e.target.value)}
+              placeholder="cth. Ukuran, Warna, Rasa, Berat..."
+              className={cn(inputCls, 'flex-1')}
+            />
+            <RemoveButton onClick={() => removeType(ot._key)} />
+          </div>
+          <div className="flex flex-wrap gap-2 items-center">
+            {ot.values.map((v) => (
+              <div key={v._key} className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5">
+                <input
+                  value={v.value}
+                  onChange={(e) => updateValue(ot._key, v._key, e.target.value)}
+                  placeholder="nilai..."
+                  className="text-sm text-slate-800 outline-none w-16 min-w-0"
+                />
+                <button type="button" onClick={() => removeValue(ot._key, v._key)} className="text-slate-300 hover:text-red-400 transition-colors ml-0.5 flex-shrink-0">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addValue(ot._key)}
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/8 hover:bg-primary/12 px-2.5 py-1.5 rounded-lg transition-colors"
+            >
+              <Plus className="w-3 h-3" /> Tambah Nilai
+            </button>
+          </div>
+        </div>
+      ))}
+      <AddButton onClick={addType} label="Tambah Tipe Opsi" />
+    </div>
+  );
+}
+
+// ── VariantMatrix ─────────────────────────────────────────────────────────────
+
+function VariantMatrix({
+  optionTypes,
+  variantRows,
+  onChange,
+}: {
+  optionTypes: OptionTypeRow[];
+  variantRows: VariantRow[];
+  onChange: (rows: VariantRow[]) => void;
+}) {
+  function update(key: number, patch: Partial<VariantRow>) {
+    onChange(variantRows.map((v) => (v._key === key ? { ...v, ...patch } : v)));
+  }
+
+  if (optionTypes.length === 0) return null;
+
+  if (variantRows.length === 0) {
+    return (
+      <p className="text-sm text-slate-400 text-center py-4 bg-slate-50 rounded-lg">
+        Tambahkan tipe opsi dan nilai di atas untuk melihat matriks varian.
+      </p>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200">
+      <table className="w-full text-sm">
+        <thead className="bg-slate-50 border-b border-slate-200">
+          <tr>
+            <th className="text-left px-4 py-2.5 font-medium text-slate-600 text-xs">Varian</th>
+            <th className="text-left px-3 py-2.5 font-medium text-slate-600 text-xs">Harga Override</th>
+            <th className="text-left px-3 py-2.5 font-medium text-slate-600 text-xs">Stok *</th>
+            <th className="text-left px-3 py-2.5 font-medium text-slate-600 text-xs">SKU</th>
+            <th className="text-center px-3 py-2.5 font-medium text-slate-600 text-xs">Aktif</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {variantRows.map((v) => (
+            <tr key={v._key} className={v.isActive ? '' : 'opacity-50'}>
+              <td className="px-4 py-2.5">
+                <span className="font-medium text-slate-800 text-sm">{v.optionValues.join(' / ')}</span>
+              </td>
+              <td className="px-3 py-2">
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none">Rp</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={v.price}
+                    onChange={(e) => update(v._key, { price: e.target.value })}
+                    placeholder="default"
+                    className="w-28 border border-slate-200 rounded-lg pl-7 pr-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/60 bg-white"
+                  />
+                </div>
+              </td>
+              <td className="px-3 py-2">
+                <input
+                  type="number"
+                  min={0}
+                  value={v.stockQuantity}
+                  onChange={(e) => update(v._key, { stockQuantity: e.target.value })}
+                  className="w-20 border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/60 bg-white"
+                  required
+                />
+              </td>
+              <td className="px-3 py-2">
+                <input
+                  value={v.sku}
+                  onChange={(e) => update(v._key, { sku: e.target.value })}
+                  placeholder="opsional"
+                  className="w-28 border border-slate-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/60 bg-white"
+                />
+              </td>
+              <td className="px-3 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={v.isActive}
+                  onChange={(e) => update(v._key, { isActive: e.target.checked })}
+                  className="w-4 h-4 rounded accent-primary"
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="text-xs text-slate-400 px-4 py-2 border-t border-slate-100">
+        * Harga Override kosong = pakai harga produk utama. Stok 0 = "Stok Habis" di toko.
+      </p>
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 
 let _keyCounter = 0;
 function nextKey() { return ++_keyCounter; }
+
+type ProductTab = 'dasar' | 'media' | 'bundle' | 'fitur' | 'faq' | 'varian';
+
+const TABS: import('@/components/ui/tabs-nav').TabItem<ProductTab>[] = [
+  { id: 'dasar',  label: 'Info & Harga' },
+  { id: 'varian', label: 'Varian' },
+  { id: 'media',  label: 'Media' },
+  { id: 'bundle', label: 'Bundle Harga' },
+  { id: 'fitur',  label: 'Fitur Produk' },
+  { id: 'faq',    label: 'FAQ' },
+];
 
 export default function ProductFormPage() {
   const params = useParams<{ id?: string }>();
@@ -359,8 +565,11 @@ export default function ProductFormPage() {
   const [bundles, setBundles] = useState<BundleRow[]>([]);
   const [features, setFeatures] = useState<FeatureRow[]>([]);
   const [faqs, setFaqs] = useState<FaqRow[]>([]);
+  const [optionTypes, setOptionTypes] = useState<OptionTypeRow[]>([]);
+  const [variantRows, setVariantRows] = useState<VariantRow[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
+  const [tab, setTab] = useState<ProductTab>('dasar');
 
   useEffect(() => {
     const product = existingData?.data;
@@ -404,6 +613,37 @@ export default function ProductFormPage() {
           answer: f.answer as string,
         })),
       );
+
+      // Load variant option types
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const loadedOptionTypes: OptionTypeRow[] = (product.optionTypes ?? []).map((ot: any) => ({
+        _key: nextKey(),
+        name: ot.name as string,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        values: (ot.values ?? []).map((v: any) => ({ _key: nextKey(), value: v.value as string })),
+      }));
+      setOptionTypes(loadedOptionTypes);
+
+      // Reconstruct variant rows from API data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const loadedVariants: VariantRow[] = (product.variants ?? []).map((v: any) => {
+        // Map optionValueIds to values in order of optionTypes
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const optionValues = (product.optionTypes ?? []).map((ot: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const match = (ot.values ?? []).find((val: any) => (v.optionValueIds ?? []).includes(val.id));
+          return match ? (match.value as string) : '';
+        });
+        return {
+          _key: nextKey(),
+          optionValues,
+          price: v.price != null ? String(v.price) : '',
+          stockQuantity: String(v.stockQuantity ?? 0),
+          sku: v.sku ?? '',
+          isActive: v.isActive ?? true,
+        };
+      });
+      setVariantRows(loadedVariants);
     }
   }, [existingData]);
 
@@ -411,6 +651,12 @@ export default function ProductFormPage() {
     setName(value);
     if (!slugTouched) setSlug(slugify(value));
   }
+
+  // Auto-regenerate variant matrix when option types / values change
+  useEffect(() => {
+    setVariantRows((prev) => generateVariantMatrix(optionTypes, prev));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(optionTypes.map((ot) => ({ name: ot.name, values: ot.values.map((v) => v.value) })))]);
 
   function addBundle() {
     setBundles((prev) => [...prev, { _key: nextKey(), quantity: 1, price: 0, label: null, badge: null, isFeatured: prev.length === 0 }]);
@@ -440,6 +686,14 @@ export default function ProductFormPage() {
       if (!f.question.trim() || !f.answer.trim()) { toast.error('Pertanyaan dan jawaban FAQ wajib diisi'); return; }
     }
 
+    const hasVariants = optionTypes.length > 0 && variantRows.length > 0;
+    if (hasVariants) {
+      for (const v of variantRows) {
+        const stock = Number(v.stockQuantity);
+        if (Number.isNaN(stock) || stock < 0) { toast.error('Stok varian tidak valid'); return; }
+      }
+    }
+
     const payload = {
       name: name.trim(),
       slug: slug.trim(),
@@ -454,27 +708,37 @@ export default function ProductFormPage() {
       bundles: bundles.map(({ _key: _k, ...b }) => b),
       features: features.map(({ _key: _k, ...f }) => f),
       faqs: faqs.map(({ _key: _k, ...f }) => f),
+      optionTypes: optionTypes.map((ot) => ({
+        name: ot.name,
+        values: ot.values.map((v) => v.value).filter((v) => v.trim()),
+      })),
+      variants: variantRows.map((v) => ({
+        optionCombination: v.optionValues,
+        price: v.price.trim() ? Number(v.price) : null,
+        stockQuantity: Number(v.stockQuantity),
+        sku: v.sku.trim() || null,
+        imageUrl: null,
+        isActive: v.isActive,
+      })),
     };
 
     setSubmitting(true);
     try {
       if (isEdit && params.id) {
         await updateProduct.mutateAsync({ id: params.id, data: payload });
-        toast.success('Produk berhasil diperbarui');
+        toast.success('Perubahan berhasil disimpan');
+        // Tetap di halaman edit — jangan navigate ke list
       } else {
         await createProduct.mutateAsync({ data: payload });
         toast.success('Produk berhasil ditambahkan');
+        navigate('/');
       }
-      navigate('/');
     } catch (err) {
       toast.error(`Gagal: ${err instanceof Error ? err.message : 'Terjadi kesalahan'}`);
     } finally {
       setSubmitting(false);
     }
   }
-
-  type ProductTab = 'dasar' | 'media' | 'detail';
-  const [tab, setTab] = useState<ProductTab>('dasar');
 
   if (isEdit && isLoadingExisting) {
     return (
@@ -484,34 +748,51 @@ export default function ProductFormPage() {
     );
   }
 
-  const TABS: import('@/components/ui/tabs-nav').TabItem<ProductTab>[] = [
-    { id: 'dasar', label: 'Info & Harga' },
-    { id: 'media', label: 'Media' },
-    { id: 'detail', label: 'Detail & Paket' },
-  ];
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
+      {/* ── Header ── */}
       <button
         onClick={() => navigate('/')}
         className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary mb-5 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
-        Kembali
+        Kembali ke Produk
       </button>
 
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {isEdit ? 'Edit Produk' : 'Produk Baru'}
-        </h1>
-        <p className="text-slate-500 text-sm mt-0.5">
-          {isEdit ? 'Ubah detail produk di bawah ini' : 'Isi detail produk yang ingin ditambahkan'}
-        </p>
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {isEdit ? 'Edit Produk' : 'Produk Baru'}
+          </h1>
+          <p className="text-slate-500 text-sm mt-0.5">
+            {isEdit ? 'Ubah detail produk di bawah ini' : 'Isi detail produk yang ingin ditambahkan'}
+          </p>
+        </div>
+
+        {/* Tombol simpan di header — selalu terlihat tanpa scroll */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="inline-flex items-center justify-center border border-slate-300 text-slate-600 text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            form="product-form"
+            disabled={submitting}
+            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
+          >
+            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+            {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
+          </button>
+        </div>
       </div>
 
       <TabsNav tabs={TABS} active={tab} onChange={(id) => setTab(id)} className="mb-5" />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form id="product-form" onSubmit={handleSubmit} className="space-y-4 pb-8">
         {/* ── Tab: Info & Harga ── */}
         {tab === 'dasar' && (
           <>
@@ -632,59 +913,75 @@ export default function ProductFormPage() {
           </Card>
         )}
 
-        {/* ── Tab: Detail & Paket ── */}
-        {tab === 'detail' && (
-          <>
-            <Card
-              title="Bundle Harga"
-              action={<AddButton onClick={addBundle} label="Tambah Paket" />}
-            >
-              <p className="text-xs text-slate-500 -mt-1">
-                Jika ada bundle, harga satuan digantikan oleh pilihan paket di halaman produk. Tandai ⭐ untuk paket yang disorot.
-              </p>
-              <BundleEditor bundles={bundles} onChange={setBundles} />
-            </Card>
-
-            <Card
-              title="Fitur Produk"
-              action={<AddButton onClick={addFeature} label="Tambah Fitur" />}
-            >
-              <p className="text-xs text-slate-500 -mt-1">
-                Tampil sebagai section bergambar di bawah detail produk — cocok untuk highlight keunggulan.
-              </p>
-              <FeatureEditor features={features} onChange={setFeatures} />
-            </Card>
-
-            <Card
-              title="FAQ"
-              action={<AddButton onClick={addFaq} label="Tambah FAQ" />}
-            >
-              <p className="text-xs text-slate-500 -mt-1">
-                Pertanyaan umum yang muncul sebagai accordion di bawah halaman produk.
-              </p>
-              <FaqEditor faqs={faqs} onChange={setFaqs} />
-            </Card>
-          </>
+        {/* ── Tab: Bundle Harga ── */}
+        {tab === 'bundle' && (
+          <Card
+            title="Bundle Harga"
+            action={<AddButton onClick={addBundle} label="Tambah Paket" />}
+          >
+            <p className="text-xs text-slate-500 -mt-1">
+              Jika ada bundle, harga satuan digantikan oleh pilihan paket di halaman produk. Tandai ⭐ untuk paket yang disorot.
+            </p>
+            <BundleEditor bundles={bundles} onChange={setBundles} />
+          </Card>
         )}
 
-        {/* ── Submit — always visible ── */}
-        <div className="flex gap-3 pb-8 pt-2">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="flex-1 inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors disabled:opacity-60"
+        {/* ── Tab: Fitur Produk ── */}
+        {tab === 'fitur' && (
+          <Card
+            title="Fitur Produk"
+            action={<AddButton onClick={addFeature} label="Tambah Fitur" />}
           >
-            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            {submitting ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Tambah Produk'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="inline-flex items-center justify-center border border-slate-300 text-slate-600 text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-slate-50 transition-colors"
+            <p className="text-xs text-slate-500 -mt-1">
+              Tampil sebagai section bergambar di bawah detail produk — cocok untuk highlight keunggulan.
+            </p>
+            <FeatureEditor features={features} onChange={setFeatures} />
+          </Card>
+        )}
+
+        {/* ── Tab: FAQ ── */}
+        {tab === 'faq' && (
+          <Card
+            title="FAQ"
+            action={<AddButton onClick={addFaq} label="Tambah FAQ" />}
           >
-            Batal
-          </button>
-        </div>
+            <p className="text-xs text-slate-500 -mt-1">
+              Pertanyaan umum yang muncul sebagai accordion di bawah halaman produk.
+            </p>
+            <FaqEditor faqs={faqs} onChange={setFaqs} />
+          </Card>
+        )}
+
+        {/* ── Tab: Varian ── */}
+        {tab === 'varian' && (
+          <>
+            <Card title="Tipe Opsi">
+              <p className="text-xs text-slate-500 -mt-1">
+                Definisikan dimensi opsi produk (contoh: "Ukuran" dengan nilai S, M, L, XL). Matriks varian di bawah akan otomatis terupdate.
+              </p>
+              <OptionTypeEditor optionTypes={optionTypes} onChange={setOptionTypes} />
+            </Card>
+
+            {optionTypes.length > 0 && (
+              <Card title="Matriks Varian">
+                <p className="text-xs text-slate-500 -mt-1">
+                  Isi stok untuk tiap kombinasi. Harga override kosong berarti pakai harga produk utama.
+                </p>
+                <VariantMatrix
+                  optionTypes={optionTypes}
+                  variantRows={variantRows}
+                  onChange={setVariantRows}
+                />
+              </Card>
+            )}
+
+            {optionTypes.length > 0 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-700">
+                💡 Saat produk punya varian, stok di tab <strong>Info &amp; Harga</strong> tidak digunakan — stok dihitung per varian dari matriks di atas.
+              </div>
+            )}
+          </>
+        )}
       </form>
     </div>
   );
