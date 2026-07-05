@@ -10,6 +10,7 @@ import {
   Tag,
   Truck,
   LayoutTemplate,
+  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -35,6 +36,7 @@ const NAV_GROUPS = [
     label: 'Toko',
     items: [
       { href: '/shipping', label: 'Pengiriman', icon: Truck },
+      { href: '/payment-methods', label: 'Metode Pembayaran', icon: CreditCard },
       { href: '/analytics', label: 'Analitik', icon: BarChart3 },
       { href: '/templates', label: 'Kelola Template', icon: LayoutTemplate },
       { href: '/settings', label: 'Pengaturan', icon: Settings },

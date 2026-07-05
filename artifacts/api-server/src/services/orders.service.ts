@@ -71,7 +71,7 @@ export async function serializeOrder(orderCode: string) {
     payment: payment
       ? {
           method: payment.method,
-          displayName: "QRIS",
+          displayName: payment.method === "manual_bank_transfer" ? "Transfer Bank" : "QRIS",
           status: payment.status,
           amount: payment.amount,
           instruction: payment.instructionJson,

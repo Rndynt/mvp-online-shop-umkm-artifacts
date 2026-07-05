@@ -8,6 +8,7 @@ import ordersRouter from "./orders";
 import adminProductsRouter from "./admin/products";
 import adminOrdersRouter from "./admin/orders";
 import adminSettingsRouter from "./admin/settings";
+import adminPaymentMethodsRouter from "./admin/payment-methods";
 import storageRouter from "./storage";
 
 const router = Router();
@@ -21,6 +22,7 @@ router.use(ordersRouter);
 router.use(adminProductsRouter);
 router.use(adminOrdersRouter);
 router.use(adminSettingsRouter);
+router.use(adminPaymentMethodsRouter);
 router.use(storageRouter);
 
 export default router;

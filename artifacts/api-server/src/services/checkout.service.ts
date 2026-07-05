@@ -14,6 +14,7 @@ import { eq, and, inArray } from "drizzle-orm";
 import { AppError } from "../lib/errors";
 import { generateId, generateOrderCode } from "../lib/utils";
 import { requireActiveStore } from "./store.service";
+import { getPaymentConfig } from "./payment-methods.service";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -48,12 +49,21 @@ export async function createOrder(input: CheckoutInput) {
   if (!items?.length || !customer?.email || !customer?.phone || !shippingAddress || !shippingMethodId) {
     throw new AppError("VALIDATION_ERROR", "Field wajib tidak lengkap");
   }
-  const validPaymentMethods = ["manual_fake_qris", "manual_bank_transfer"];
-  if (paymentMethod && !validPaymentMethods.includes(paymentMethod)) {
-    throw new AppError("VALIDATION_ERROR", `Metode pembayaran tidak valid: ${paymentMethod}`);
-  }
-
   const store = await requireActiveStore();
+  const paymentConfig = await getPaymentConfig();
+
+  // Validate selected method against admin-configured enabled methods
+  const resolvedPayment = paymentMethod ?? "manual_fake_qris";
+  if (resolvedPayment === "manual_bank_transfer" && !paymentConfig.bankTransferEnabled) {
+    throw new AppError("VALIDATION_ERROR", "Transfer Bank sedang tidak tersedia");
+  }
+  if (resolvedPayment === "manual_fake_qris" && !paymentConfig.qrisEnabled) {
+    throw new AppError("VALIDATION_ERROR", "QRIS sedang tidak tersedia");
+  }
+  const knownMethods = ["manual_fake_qris", "manual_bank_transfer"];
+  if (!knownMethods.includes(resolvedPayment)) {
+    throw new AppError("VALIDATION_ERROR", `Metode pembayaran tidak valid: ${resolvedPayment}`);
+  }
 
   // --- Validate products & stock ---
   const productIds = items.map((i) => i.productId);
@@ -261,11 +271,7 @@ export async function createOrder(input: CheckoutInput) {
         title: "Transfer Bank Manual",
         description: `Transfer Rp ${totalAmount.toLocaleString("id-ID")} ke salah satu rekening berikut sebelum ${expiresAt.toLocaleString("id-ID")}`,
         qrPayload: null,
-        bankAccounts: [
-          { bank: "BCA", accountNumber: "1234567890", accountName: "Kopio Indonesia" },
-          { bank: "BNI", accountNumber: "0987654321", accountName: "Kopio Indonesia" },
-          { bank: "Mandiri", accountNumber: "1122334455", accountName: "Kopio Indonesia" },
-        ],
+        bankAccounts: paymentConfig.bankAccounts,
         expiresAt: expiresAt.toISOString(),
       }
     : {

@@ -13,6 +13,7 @@ import SettingsPage from '@/pages/settings';
 import TemplatesPage from '@/pages/templates';
 import DiscountsPage from '@/pages/discounts';
 import ShippingSettingsPage from '@/pages/shipping-settings';
+import PaymentMethodsPage from '@/pages/payment-methods';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient({
@@ -32,6 +33,7 @@ function Router() {
         <Route path="/orders/:orderCode" component={OrderDetailPage} />
         <Route path="/discounts" component={DiscountsPage} />
         <Route path="/shipping" component={ShippingSettingsPage} />
+        <Route path="/payment-methods" component={PaymentMethodsPage} />
         <Route path="/analytics" component={AnalyticsPage} />
         <Route path="/templates" component={TemplatesPage} />
         <Route path="/settings" component={SettingsPage} />

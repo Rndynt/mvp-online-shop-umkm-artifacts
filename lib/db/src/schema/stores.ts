@@ -1,4 +1,28 @@
-import { pgTable, text, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+
+export interface BankAccount {
+  bank: string;
+  accountNumber: string;
+  accountName: string;
+}
+
+export interface PaymentConfig {
+  qrisEnabled: boolean;
+  qrisImageUrl?: string | null;
+  bankTransferEnabled: boolean;
+  bankAccounts: BankAccount[];
+}
+
+export const DEFAULT_PAYMENT_CONFIG: PaymentConfig = {
+  qrisEnabled: true,
+  qrisImageUrl: null,
+  bankTransferEnabled: true,
+  bankAccounts: [
+    { bank: "BCA", accountNumber: "1234567890", accountName: "Kopio Indonesia" },
+    { bank: "BNI", accountNumber: "0987654321", accountName: "Kopio Indonesia" },
+    { bank: "Mandiri", accountNumber: "1122334455", accountName: "Kopio Indonesia" },
+  ],
+};
 
 export const storesTable = pgTable("stores", {
   id: text("id").primaryKey(),
@@ -20,6 +44,7 @@ export const storesTable = pgTable("stores", {
   country: text("country").notNull().default("Indonesia"),
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),
+  paymentConfig: jsonb("payment_config").$type<PaymentConfig>(),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
