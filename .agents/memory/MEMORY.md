@@ -6,3 +6,4 @@
 - [RukoLite homepage template system](rukolite-homepage-templates.md) — active template is a persisted store setting managed in Management, not just a URL query param
 - [RukoLite variant system](rukolite-variant-system.md) — Shopify-style multi-dimensional variants fully implemented; cart lineId composes both bundleId and variantId; checkout validates variant stock/price server-side
 - [RukoLite payment config](rukolite-payment-config.md) — stored as JSONB in storesTable; GET/PUT /api/admin/payment-methods; checkout validates enabled methods server-side
+- [RukoLite object storage](rukolite-object-storage.md) — upload code existed unprovisioned; bucket/env vars needed setup_object_storage; private-serve route was a 401 stub to fix
