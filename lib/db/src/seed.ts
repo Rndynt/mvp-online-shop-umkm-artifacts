@@ -113,11 +113,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&q=80", alt: "Kopi Arabika Gayo Bubuk dalam kemasan", sortOrder: 0 },
         { url: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800&q=80", alt: "Biji kopi arabika Gayo yang telah disangrai", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 65000, label: "1 Pack", badge: null, isFeatured: false },
-        { quantity: 2, price: 119000, label: "2 Pack", badge: "Hemat 8%", isFeatured: true },
-        { quantity: 3, price: 169000, label: "3 Pack", badge: "Hemat 13%", isFeatured: false },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.unsplash.com/photo-1752757280931-8e0364457158?w=1000&q=80", title: "Single Origin Gayo", description: "Dipanen dari perkebunan dataran tinggi Aceh dengan cita rasa floral dan asam segar yang khas." },
         { imageUrl: "https://images.unsplash.com/photo-1633275513781-a04cf6d1454d?w=1000&q=80", title: "Disangrai Segar Mingguan", description: "Setiap batch disangrai dalam jumlah kecil setiap minggu untuk menjaga kesegaran aroma." },
@@ -151,11 +147,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=800&q=80", alt: "Kopi Robusta Lampung Bubuk dalam kemasan", sortOrder: 0 },
         { url: "https://images.unsplash.com/photo-1690983326555-8b8e27843a32?w=800&q=80", alt: "Biji kopi robusta yang telah disangrai gelap", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 45000, label: "1 Pack", badge: null, isFeatured: false },
-        { quantity: 2, price: 84000, label: "2 Pack", badge: "Hemat 7%", isFeatured: true },
-        { quantity: 3, price: 119000, label: "3 Pack", badge: "Hemat 12%", isFeatured: false },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1000&q=80", title: "Body Tebal & Pekat", description: "Karakter robusta klasik dengan body tebal, cocok untuk yang suka kopi kental." },
         { imageUrl: "https://images.unsplash.com/photo-1690983326555-8b8e27843a32?w=1000&q=80", title: "Nikmat Diseduh Tubruk", description: "Gilingan medium-coarse yang pas untuk kopi tubruk ala warung kopi tradisional." },
@@ -188,10 +180,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1524350876685-274059332603?w=800&q=80", alt: "Kopi Toraja Sapan biji utuh dalam kemasan", sortOrder: 0 },
         { url: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&q=80", alt: "Biji kopi Toraja Sapan close up", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 95000, label: "1 Pack", badge: null, isFeatured: false },
-        { quantity: 2, price: 175000, label: "2 Pack", badge: "Hemat 8%", isFeatured: true },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=1000&q=80", title: "Whole Bean Premium", description: "Dijual dalam bentuk biji utuh agar Anda bisa menggiling sesaat sebelum diseduh untuk aroma maksimal." },
         { imageUrl: "https://images.unsplash.com/photo-1524350876685-274059332603?w=1000&q=80", title: "Proses Giling Basah Khas Sulawesi", description: "Metode semi-washed tradisional menghasilkan body berat dengan keasaman rendah yang khas Toraja." },
@@ -224,11 +213,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80", alt: "Kopi Sidikalang Bubuk dalam kemasan", sortOrder: 0 },
         { url: "https://images.pexels.com/photos/2819842/pexels-photo-2819842.jpeg?w=800&q=80", alt: "Biji kopi Sidikalang dalam wadah", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 55000, label: "1 Pack", badge: null, isFeatured: false },
-        { quantity: 2, price: 100000, label: "2 Pack", badge: "Hemat 9%", isFeatured: true },
-        { quantity: 3, price: 140000, label: "3 Pack", badge: "Hemat 15%", isFeatured: false },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1000&q=80", title: "Body Tebal Khas Sumatra", description: "Proses giling basah tradisional menghasilkan karakter body tebal dengan rasa rempah yang khas." },
         { imageUrl: "https://images.pexels.com/photos/2819842/pexels-photo-2819842.jpeg?w=1000&q=80", title: "Smooth di Akhir Tegukan", description: "Meski body tebal, aftertaste tetap smooth dan tidak meninggalkan rasa pahit berlebih." },
@@ -261,10 +246,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1610632380989-680fe40816c6?w=800&q=80", alt: "French Press Kopio Classic", sortOrder: 0 },
         { url: "https://images.unsplash.com/photo-1708127368781-cd5f069a90a5?w=800&q=80", alt: "French press kaca dengan gagang", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 189000, label: "1 Unit", badge: null, isFeatured: false },
-        { quantity: 2, price: 349000, label: "2 Unit", badge: "Hemat 8%", isFeatured: true },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.unsplash.com/photo-1610632380989-680fe40816c6?w=1000&q=80", title: "Kaca Borosilikat Tahan Panas", description: "Tahan terhadap perubahan suhu mendadak dan tidak menyerap bau maupun rasa dari seduhan sebelumnya." },
         { imageUrl: "https://images.pexels.com/photos/2748535/pexels-photo-2748535.jpeg?w=1000&q=80", title: "Filter 4-Lapis Stainless", description: "Menyaring ampas kopi secara maksimal sehingga hasil seduhan lebih bersih dan halus di lidah." },
@@ -298,10 +280,7 @@ async function main() {
         { url: "https://images.pexels.com/photos/13736104/pexels-photo-13736104.jpeg?w=800&q=80", alt: "Grinder Kopi Manual Kopio Hand Mill", sortOrder: 0 },
         { url: "https://images.pexels.com/photos/13736090/pexels-photo-13736090.jpeg?w=800&q=80", alt: "Detail gilingan kopi manual", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 249000, label: "1 Unit", badge: null, isFeatured: false },
-        { quantity: 2, price: 459000, label: "2 Unit", badge: "Hemat 8%", isFeatured: true },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.pexels.com/photos/13736104/pexels-photo-13736104.jpeg?w=1000&q=80", title: "Mata Pisau Keramik Presisi", description: "Menghasilkan gilingan konsisten dan tidak mudah berkarat dibanding mata pisau baja biasa." },
         { imageUrl: "https://images.pexels.com/photos/13736090/pexels-photo-13736090.jpeg?w=1000&q=80", title: "6 Level Kehalusan", description: "Dari kasar untuk French Press hingga halus untuk Espresso, atur sesuai metode seduh favoritmu." },
@@ -334,10 +313,7 @@ async function main() {
         { url: "https://images.pexels.com/photos/7658094/pexels-photo-7658094.jpeg?w=800&q=80", alt: "Dripper V60 Kopio Ceramic Set lengkap", sortOrder: 0 },
         { url: "https://images.pexels.com/photos/5567650/pexels-photo-5567650.jpeg?w=800&q=80", alt: "Proses menyeduh kopi dengan dripper V60", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 215000, label: "1 Set", badge: null, isFeatured: false },
-        { quantity: 2, price: 399000, label: "2 Set", badge: "Hemat 7%", isFeatured: true },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.pexels.com/photos/5745641/pexels-photo-5745641.jpeg?w=1000&q=80", title: "Spiral Rib untuk Aliran Optimal", description: "Desain alur spiral di dalam dripper membantu air mengalir merata untuk ekstraksi rasa yang seimbang." },
         { imageUrl: "https://images.pexels.com/photos/7658113/pexels-photo-7658113.jpeg?w=1000&q=80", title: "Paket Lengkap Siap Pakai", description: "Sudah termasuk server kaca dan 40 kertas filter, cukup tambahkan kopi dan air panas." },
@@ -371,9 +347,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=800&q=80", alt: "Mesin Kopi Espresso Kopio Home Barista", sortOrder: 0 },
         { url: "https://images.unsplash.com/photo-1754847307554-314a05e2ced6?w=800&q=80", alt: "Mesin espresso semi-otomatis di rumah", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 1250000, label: "1 Unit", badge: null, isFeatured: false },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=1000&q=80", title: "Pompa 15 Bar", description: "Menghasilkan tekanan ekstraksi optimal untuk crema espresso yang kaya dan konsisten." },
         { imageUrl: "https://images.unsplash.com/photo-1754847419778-221460071b64?w=1000&q=80", title: "Steam Wand untuk Latte & Cappuccino", description: "Buat foam susu sendiri di rumah untuk membuat latte, cappuccino, hingga latte art sederhana." },
@@ -406,9 +380,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1521871460521-c7780a35e114?w=800&q=80", alt: "Moka Pot Kopio Stovetop", sortOrder: 0 },
         { url: "https://images.unsplash.com/photo-1508229176843-4e05d98415e2?w=800&q=80", alt: "Moka pot di atas kompor sedang menyeduh", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 259000, label: "1 Unit", badge: null, isFeatured: false },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.pexels.com/photos/4641439/pexels-photo-4641439.jpeg?w=1000&q=80", title: "Rasa Menyerupai Espresso", description: "Tekanan uap air menghasilkan kopi pekat dengan crema tipis tanpa perlu mesin espresso mahal." },
         { imageUrl: "https://images.unsplash.com/photo-1521871460521-c7780a35e114?w=1000&q=80", title: "Praktis di Atas Kompor", description: "Tidak perlu listrik, cukup panaskan di atas kompor gas atau elektrik biasa." },
@@ -469,10 +441,7 @@ async function main() {
         { url: "https://images.unsplash.com/photo-1514066558159-fc8c737ef259?w=800&q=80", alt: "Kopio Ceramic Mug Set", sortOrder: 0 },
         { url: "https://images.unsplash.com/photo-1501843508755-af0829d48618?w=800&q=80", alt: "Mug keramik Kopio close up", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 99000, label: "1 Set (2 Mug)", badge: null, isFeatured: false },
-        { quantity: 2, price: 185000, label: "2 Set (4 Mug)", badge: "Hemat 7%", isFeatured: true },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.unsplash.com/photo-1609269139523-3ef050397e70?w=1000&q=80", title: "Desain Minimalis", description: "Cocok untuk penggunaan sehari-hari maupun dipajang di rak dapur estetik." },
         { imageUrl: "https://images.unsplash.com/photo-1625603539427-35785c450557?w=1000&q=80", title: "Aman Microwave & Dishwasher", description: "Praktis dipanaskan ulang dan dicuci tanpa mengurangi kualitas glasir." },
@@ -505,10 +474,7 @@ async function main() {
         { url: "https://images.pexels.com/photos/17516410/pexels-photo-17516410.jpeg?w=800&q=80", alt: "Toples Kopi Kedap Udara Kopio berisi biji kopi", sortOrder: 0 },
         { url: "https://images.pexels.com/photos/30349811/pexels-photo-30349811.jpeg?w=800&q=80", alt: "Tampilan atas toples kopi kedap udara", sortOrder: 1 },
       ],
-      bundles: [
-        { quantity: 1, price: 129000, label: "1 Unit", badge: null, isFeatured: false },
-        { quantity: 2, price: 239000, label: "2 Unit", badge: "Hemat 7%", isFeatured: true },
-      ],
+      bundles: [],
       features: [
         { imageUrl: "https://images.pexels.com/photos/7125639/pexels-photo-7125639.jpeg?w=1000&q=80", title: "Valve CO2 Satu Arah", description: "Melepas gas dari biji kopi segar tanpa membiarkan udara luar masuk dan merusak aroma." },
         { imageUrl: "https://images.pexels.com/photos/29179833/pexels-photo-29179833.jpeg?w=1000&q=80", title: "Sendok Takar Magnetik", description: "Sendok takar menempel magnetis di luar toples, praktis dan tidak mudah hilang." },
