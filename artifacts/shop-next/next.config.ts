@@ -1,6 +1,6 @@
 import type { NextConfig } from 'next';
 
-const apiTarget = 'http://127.0.0.1:8080';
+const apiTarget = process.env.API_ORIGIN ?? 'http://127.0.0.1:8080';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
