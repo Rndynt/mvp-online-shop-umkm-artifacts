@@ -244,7 +244,6 @@ export default function ProductPage() {
                   <span className="text-3xl font-bold text-slate-900">
                     {formatIDR(minVariantPrice!)} – {formatIDR(maxVariantPrice!)}
                   </span>
-                  <span className="text-sm text-slate-400">tergantung pilihan</span>
                 </>
               ) : (
                 <>
