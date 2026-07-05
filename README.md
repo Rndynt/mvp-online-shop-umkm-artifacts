@@ -140,6 +140,8 @@ Ada dua kemungkinan environment yang biasa dipakai di HP Android — **pakai per
 - **Termux asli** (prompt biasanya `~ $`) → pakai perintah `pkg`
 - **Ubuntu di dalam Termux** (lewat `proot-distro`, prompt biasanya `root@localhost:~#`) → pakai perintah `apt` (karena ini sudah masuk ke sistem Ubuntu, bukan Termux lagi — `pkg` tidak akan berfungsi di sini, apalagi sebagai `root`)
 
+> ⚠️ **Jangan campur perintah dari dua blok di bawah.** Kalau prompt kamu `root@localhost:~#`, kamu di Ubuntu — pakai **blok Ubuntu/apt** saja dari awal sampai akhir (termasuk bagian database di langkah 2). Memakai perintah Termux (`initdb`, `pg_ctl`) di Ubuntu akan gagal dengan error seperti `cannot be run as root` atau `role "root" does not exist`.
+
 ### 1. Persiapan awal (sekali saja)
 
 **Jika di Termux asli (`pkg`):**
@@ -152,14 +154,16 @@ npm install -g pnpm
 **Jika di Ubuntu/proot-distro (`apt`):**
 ```bash
 apt update && apt upgrade -y
-apt install nodejs npm postgresql postgresql-contrib git -y
+apt install postgresql postgresql-contrib git curl -y
+
+# Pasang Node.js 20 langsung lewat NodeSource (hindari install paket "nodejs"/"npm" dari
+# apt biasa — sering bentrok/conflict kalau npm sudah pernah terpasang sebelumnya)
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install nodejs -y
+
 npm install -g pnpm
 ```
-> Kalau versi Node.js dari `apt` terlalu lama (cek dengan `node -v`, proyek ini butuh Node 20+), pasang lewat NodeSource:
-> ```bash
-> curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-> apt install nodejs -y
-> ```
+> Kalau sempat mencoba `apt install nodejs npm` dan muncul error `Unable to satisfy dependencies` / konflik dengan `npm`, jalankan `apt remove nodejs npm -y` dulu, baru pakai cara NodeSource di atas.
 
 ### 2. Siapkan database PostgreSQL lokal
 
