@@ -182,14 +182,24 @@ createdb online_shop_umkm
 
 **Jika di Ubuntu/proot-distro (`apt`):**
 ```bash
+# Cek dulu apakah cluster PostgreSQL sudah ada
+pg_lsclusters
+```
+> Kalau hasilnya kosong ("No PostgreSQL clusters exist"), berarti cluster-nya belum pernah dibuat — ini memang tidak otomatis di sebagian environment proot-distro. Buat dulu (sekali saja, ganti `16` dengan versi yang muncul waktu instalasi, cek dengan `psql --version` kalau tidak yakin):
+> ```bash
+> apt install postgresql-common -y
+> pg_createcluster 16 main --start
+> ```
+
+```bash
 # Jalankan service PostgreSQL
 service postgresql start
 
-# Masuk sebagai user postgres untuk membuat database
+# Masuk sebagai user postgres untuk membuat role & database
 su postgres -c "createuser -s root"
 createdb online_shop_umkm
 ```
-> Setiap kali membuka ulang sesi Ubuntu, jalankan lagi `service postgresql start` sebelum menjalankan aplikasi.
+> Setiap kali membuka ulang sesi Ubuntu, jalankan lagi `service postgresql start` sebelum menjalankan aplikasi. `createuser` di atas hanya perlu dijalankan sekali (kalau sudah ada, akan muncul error "role already exists" — abaikan saja).
 
 ### 3. Siapkan file environment variable
 
