@@ -20,8 +20,8 @@ interface ImageDropzoneProps {
 }
 
 /**
- * Drag-and-drop image uploader. Uploads directly to object storage via a
- * presigned URL and reports back the servable URL (mount path + objectPath).
+ * Drag-and-drop image uploader. Uploads the file directly to Cloudinary via
+ * the backend and reports back the public CDN URL.
  */
 export function ImageDropzone({
   value,
@@ -38,7 +38,7 @@ export function ImageDropzone({
   const { uploadFile, isUploading, progress, error } = useUpload({
     basePath,
     onSuccess: (response) => {
-      onUploaded(`${basePath}${response.objectPath}`, response);
+      onUploaded(response.url, response);
     },
   });
 

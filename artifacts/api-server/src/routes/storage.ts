@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import multer from "multer";
-import { RequestUploadUrlResponse } from "@workspace/api-zod";
+import { UploadImageResponse } from "@workspace/api-zod";
 import { uploadBufferToCloudinary } from "../lib/cloudinary";
 
 const router: IRouter = Router();
@@ -40,7 +40,7 @@ router.post("/storage/uploads", (req: Request, res: Response) => {
       const result = await uploadBufferToCloudinary(req.file.buffer, req.file.originalname);
 
       res.json(
-        RequestUploadUrlResponse.parse({
+        UploadImageResponse.parse({
           url: result.url,
           metadata: {
             name: req.file.originalname,

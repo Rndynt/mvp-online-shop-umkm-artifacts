@@ -7,24 +7,22 @@ interface UploadMetadata {
 }
 
 export interface UploadResponse {
-  uploadURL: string;
-  objectPath: string;
+  url: string;
   metadata: UploadMetadata;
 }
 
 interface UseUploadOptions {
-  /** Base path where object storage routes are mounted (default: "/api/storage") */
+  /** Base path where storage routes are mounted (default: "/api/storage") */
   basePath?: string;
   onSuccess?: (response: UploadResponse) => void;
   onError?: (error: Error) => void;
 }
 
 /**
- * React hook for handling file uploads with presigned URLs.
+ * React hook for handling file uploads.
  *
- * Implements the two-step presigned URL upload flow:
- * 1. Request a presigned URL from the backend (sends JSON metadata, NOT the file)
- * 2. Upload the file directly to the presigned URL
+ * Single-step upload: the file is sent as multipart/form-data directly to the
+ * backend, which streams it to Cloudinary and returns the public CDN URL.
  */
 export function useUpload(options: UseUploadOptions = {}) {
   const basePath = options.basePath ?? "/api/storage";
@@ -32,52 +30,28 @@ export function useUpload(options: UseUploadOptions = {}) {
   const [error, setError] = useState<Error | null>(null);
   const [progress, setProgress] = useState(0);
 
-  const requestUploadUrl = useCallback(
-    async (file: File): Promise<UploadResponse> => {
-      const response = await fetch(`${basePath}/uploads/request-url`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: file.name,
-          size: file.size,
-          contentType: file.type || "application/octet-stream",
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to get upload URL");
-      }
-
-      return response.json();
-    },
-    [basePath],
-  );
-
-  const uploadToPresignedUrl = useCallback(async (file: File, uploadURL: string): Promise<void> => {
-    const response = await fetch(uploadURL, {
-      method: "PUT",
-      body: file,
-      headers: { "Content-Type": file.type || "application/octet-stream" },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to upload file to storage");
-    }
-  }, []);
-
   const uploadFile = useCallback(
     async (file: File): Promise<UploadResponse | null> => {
       setIsUploading(true);
       setError(null);
-      setProgress(0);
+      setProgress(10);
 
       try {
-        setProgress(10);
-        const uploadResponse = await requestUploadUrl(file);
+        const formData = new FormData();
+        formData.append("file", file);
 
         setProgress(40);
-        await uploadToPresignedUrl(file, uploadResponse.uploadURL);
+        const response = await fetch(`${basePath}/uploads`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "Gagal mengunggah gambar");
+        }
+
+        const uploadResponse: UploadResponse = await response.json();
 
         setProgress(100);
         options.onSuccess?.(uploadResponse);
@@ -91,7 +65,7 @@ export function useUpload(options: UseUploadOptions = {}) {
         setIsUploading(false);
       }
     },
-    [requestUploadUrl, uploadToPresignedUrl, options],
+    [basePath, options],
   );
 
   return {
