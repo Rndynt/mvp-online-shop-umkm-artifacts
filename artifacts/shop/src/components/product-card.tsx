@@ -102,14 +102,14 @@ export function ProductCard({
           <div className="mt-auto pt-2">
             <div className="flex items-baseline gap-2 mb-3 flex-wrap">
               {hasRange ? (
-                <span className="font-bold text-slate-900 text-base">
-                  {formatIDR(minVariantPrice!)} – {formatIDR(maxVariantPrice!)}
+                <span className="font-bold text-slate-900 text-sm">
+                  {formatIDR(minVariantPrice!, { showSymbol: false })} – {formatIDR(maxVariantPrice!, { showSymbol: false })}
                 </span>
               ) : (
                 <>
-                  <span className="font-bold text-slate-900 text-base">{formatIDR(displayPrice)}</span>
+                  <span className="font-bold text-slate-900 text-sm">{formatIDR(displayPrice, { showSymbol: false })}</span>
                   {compareAtPrice && (
-                    <span className="text-sm text-slate-400 line-through">{formatIDR(compareAtPrice)}</span>
+                    <span className="text-xs text-slate-400 line-through">{formatIDR(compareAtPrice, { showSymbol: false })}</span>
                   )}
                 </>
               )}
