@@ -176,7 +176,7 @@ CORS_ORIGIN="http://localhost:3000"
 VITE_API_URL="/api"
 ```
 
-> Fitur upload gambar (foto produk/logo) butuh bucket Google Cloud Storage aktif — kalau dijalankan murni lokal di Termux tanpa akses ke platform storage tersebut, fitur upload gambar tidak akan berfungsi kecuali kamu siapkan sendiri kredensial GCS dan isi `PUBLIC_OBJECT_SEARCH_PATHS` / `PRIVATE_OBJECT_DIR`.
+> **Penting soal upload gambar di Termux:** fitur upload foto produk/logo memakai **Replit Object Storage**, dan cara aplikasi ini mengautentikasi ke storage-nya adalah lewat sebuah service internal (`sidecar`) yang **hanya tersedia di dalam environment Replit**. Meng-copy nilai `PUBLIC_OBJECT_SEARCH_PATHS` / `PRIVATE_OBJECT_DIR` / `DEFAULT_OBJECT_STORAGE_BUCKET_ID` ke `.env` di Termux **tidak akan membuat upload gambar berfungsi** — fitur ini hanya bisa dipakai saat project dijalankan di Replit. Bagian lain aplikasi (produk, pesanan, dll tanpa foto baru) tetap berjalan normal di Termux.
 
 ### 4. Install dependencies (jika belum)
 
