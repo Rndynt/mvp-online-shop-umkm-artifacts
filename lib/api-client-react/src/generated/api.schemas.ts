@@ -188,6 +188,10 @@ export interface ProductListItem {
   minVariantPrice?: number | null;
   /** Highest active-variant price (null = no variants with explicit price) */
   maxVariantPrice?: number | null;
+  /** True if the product has selectable variants (e.g. weight, color) — quick-add must prompt for selection */
+  hasVariants: boolean;
+  /** True if the product has multi-pack bundles — quick-add must prompt for selection */
+  hasBundles: boolean;
   images: ProductImage[];
 }
 

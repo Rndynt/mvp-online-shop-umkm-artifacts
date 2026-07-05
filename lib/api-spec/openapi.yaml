@@ -920,7 +920,7 @@ components:
 
     ProductListItem:
       type: object
-      required: [id, name, slug, price, stockQuantity, images]
+      required: [id, name, slug, price, stockQuantity, images, hasVariants, hasBundles]
       properties:
         id:
           type: string
@@ -947,6 +947,12 @@ components:
           type: integer
           nullable: true
           description: Highest active-variant price (null = no variants with explicit price)
+        hasVariants:
+          type: boolean
+          description: True if the product has selectable variants (e.g. weight, color) — quick-add must prompt for selection
+        hasBundles:
+          type: boolean
+          description: True if the product has multi-pack bundles — quick-add must prompt for selection
         images:
           type: array
           items:

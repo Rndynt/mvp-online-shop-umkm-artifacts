@@ -115,7 +115,7 @@ export async function listProducts() {
 
   return Promise.all(
     products.map(async (p) => {
-      const [images, variants] = await Promise.all([
+      const [images, variants, bundles] = await Promise.all([
         getProductImages(p.id),
         db
           .select({ price: productVariantsTable.price, stockQuantity: productVariantsTable.stockQuantity })
@@ -126,6 +126,10 @@ export async function listProducts() {
               eq(productVariantsTable.isActive, true),
             ),
           ),
+        db
+          .select({ id: productBundlesTable.id })
+          .from(productBundlesTable)
+          .where(eq(productBundlesTable.productId, p.id)),
       ]);
 
       // Each variant's effective price: override if set, else inherit product base price
@@ -150,6 +154,8 @@ export async function listProducts() {
         stockQuantity,
         minVariantPrice,
         maxVariantPrice,
+        hasVariants: variants.length > 0,
+        hasBundles: bundles.length > 0,
         images: images.map(serializeImage),
       };
     }),

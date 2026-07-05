@@ -69,6 +69,8 @@ export const ListProductsResponse = zod.object({
   "stockQuantity": zod.number(),
   "minVariantPrice": zod.number().nullish().describe('Lowest active-variant price (null = no variants with explicit price)'),
   "maxVariantPrice": zod.number().nullish().describe('Highest active-variant price (null = no variants with explicit price)'),
+  "hasVariants": zod.boolean().describe('True if the product has selectable variants (e.g. weight, color) — quick-add must prompt for selection'),
+  "hasBundles": zod.boolean().describe('True if the product has multi-pack bundles — quick-add must prompt for selection'),
   "images": zod.array(zod.object({
   "id": zod.string(),
   "url": zod.string(),
