@@ -118,7 +118,7 @@ export async function listProducts() {
       const [images, variants] = await Promise.all([
         getProductImages(p.id),
         db
-          .select({ price: productVariantsTable.price })
+          .select({ price: productVariantsTable.price, stockQuantity: productVariantsTable.stockQuantity })
           .from(productVariantsTable)
           .where(
             and(
@@ -131,10 +131,13 @@ export async function listProducts() {
       // Each variant's effective price: override if set, else inherit product base price
       let minVariantPrice: number | null = null;
       let maxVariantPrice: number | null = null;
+      // When variants exist, aggregate their stock (product-level stockQuantity is not used)
+      let stockQuantity = p.stockQuantity;
       if (variants.length > 0) {
         const effectivePrices = variants.map((v) => v.price ?? p.price);
         minVariantPrice = Math.min(...effectivePrices);
         maxVariantPrice = Math.max(...effectivePrices);
+        stockQuantity = variants.reduce((sum, v) => sum + v.stockQuantity, 0);
       }
 
       return {
@@ -144,7 +147,7 @@ export async function listProducts() {
         shortDescription: p.shortDescription,
         price: p.price,
         compareAtPrice: p.compareAtPrice,
-        stockQuantity: p.stockQuantity,
+        stockQuantity,
         minVariantPrice,
         maxVariantPrice,
         images: images.map(serializeImage),
