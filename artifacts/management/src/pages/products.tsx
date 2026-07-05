@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import {
   useAdminListProducts,
@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Plus, Package, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Package, MoreHorizontal, Pencil, Trash2, Search, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 function formatRupiah(amount: number) {
@@ -65,13 +65,38 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
   );
 }
 
+type StatusFilter = 'all' | 'active' | 'inactive';
+
+const STATUS_TABS: { value: StatusFilter; label: string }[] = [
+  { value: 'all', label: 'Semua' },
+  { value: 'active', label: 'Aktif' },
+  { value: 'inactive', label: 'Nonaktif' },
+];
+
 export default function ProductsPage() {
   const [, navigate] = useLocation();
   const { data, isLoading, refetch } = useAdminListProducts();
   const deleteProduct = useAdminDeleteProduct();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const products = data?.data ?? [];
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return products.filter((p) => {
+      const matchesSearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        (p.sku ?? '').toLowerCase().includes(q);
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'active' && p.isActive) ||
+        (statusFilter === 'inactive' && !p.isActive);
+      return matchesSearch && matchesStatus;
+    });
+  }, [products, search, statusFilter]);
 
   async function handleDelete() {
     if (!pendingDeleteId) return;
@@ -85,8 +110,11 @@ export default function ProductsPage() {
     }
   }
 
+  const hasActiveFilters = search.trim() !== '' || statusFilter !== 'all';
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Kelola Produk</h1>
@@ -101,20 +129,92 @@ export default function ProductsPage() {
         </button>
       </div>
 
+      {/* Search + Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        {/* Search input */}
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama atau SKU produk..."
+            className="w-full pl-9 pr-9 py-2.5 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-slate-400 transition-shadow"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Status tabs */}
+        <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-0.5 shrink-0">
+          {STATUS_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setStatusFilter(tab.value)}
+              className={`px-3.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                statusFilter === tab.value
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Result count */}
+      {!isLoading && (hasActiveFilters || products.length > 0) && (
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs text-slate-400">
+            {hasActiveFilters
+              ? `${filtered.length} dari ${products.length} produk`
+              : `${products.length} produk`}
+          </p>
+          {hasActiveFilters && (
+            <button
+              onClick={() => { setSearch(''); setStatusFilter('all'); }}
+              className="text-xs text-primary hover:underline"
+            >
+              Reset filter
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Content */}
       {isLoading ? (
         <div className="bg-white rounded-xl border border-slate-200 p-10 text-center text-slate-400 text-sm">
           Memuat produk...
         </div>
-      ) : products.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-10 text-center">
           <Package className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 text-sm">Belum ada produk. Tambahkan produk pertama Anda.</p>
+          <p className="text-slate-500 text-sm">
+            {hasActiveFilters
+              ? 'Tidak ada produk yang cocok dengan filter ini.'
+              : 'Belum ada produk. Tambahkan produk pertama Anda.'}
+          </p>
+          {hasActiveFilters && (
+            <button
+              onClick={() => { setSearch(''); setStatusFilter('all'); }}
+              className="mt-3 text-sm text-primary hover:underline"
+            >
+              Reset filter
+            </button>
+          )}
         </div>
       ) : (
         <>
           {/* Mobile */}
           <div className="sm:hidden space-y-2">
-            {products.map((p) => (
+            {filtered.map((p) => (
               <div
                 key={p.id}
                 onClick={() => navigate(`/products/${p.id}`)}
@@ -171,7 +271,7 @@ export default function ProductsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.map((p) => (
+                {filtered.map((p) => (
                   <TableRow
                     key={p.id}
                     className="border-slate-100 hover:bg-slate-50/80 cursor-pointer"
