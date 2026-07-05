@@ -9,6 +9,28 @@ args = ["pnpm", "store", "prune"]
 env = { "CI" = "true" }
 
 [workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "artifacts/shop-next: web"
+
+[[workflows.workflow]]
+name = "artifacts/shop-next: web"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm --filter @workspace/shop-next run dev"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [agent]
 stack = "BEST_EFFORT_FALLBACK"
@@ -28,3 +50,7 @@ CORS_ORIGIN = "https://rukolite.replit.app,http://localhost:3000"
 NODE_ENV = "development"
 PORT = "5000"
 VITE_API_URL = "/api"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
