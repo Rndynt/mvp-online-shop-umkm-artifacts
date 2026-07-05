@@ -1096,6 +1096,10 @@ components:
           type: string
           nullable: true
           description: Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing.
+        variantId:
+          type: string
+          nullable: true
+          description: Optional variant ID — when provided the server validates the variant belongs to the product and uses variant pricing/stock.
 
     CheckoutCustomer:
       type: object

@@ -48,6 +48,10 @@ export async function createOrder(input: CheckoutInput) {
   if (!items?.length || !customer?.email || !customer?.phone || !shippingAddress || !shippingMethodId) {
     throw new AppError("VALIDATION_ERROR", "Field wajib tidak lengkap");
   }
+  const validPaymentMethods = ["manual_fake_qris", "manual_bank_transfer"];
+  if (paymentMethod && !validPaymentMethods.includes(paymentMethod)) {
+    throw new AppError("VALIDATION_ERROR", `Metode pembayaran tidak valid: ${paymentMethod}`);
+  }
 
   const store = await requireActiveStore();
 

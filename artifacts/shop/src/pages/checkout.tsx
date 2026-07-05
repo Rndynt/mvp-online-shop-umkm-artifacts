@@ -269,6 +269,12 @@ export default function CheckoutPage() {
               {/* Shipping */}
               <div className="bg-white rounded-2xl border border-slate-200 p-6">
                 <h2 className="font-semibold text-slate-900 mb-4">Pilih Kurir</h2>
+                {shippingMethods.length === 0 && (
+                  <div className="py-6 text-center text-slate-400 text-sm">
+                    <p>Tidak ada kurir tersedia saat ini.</p>
+                    <p className="mt-1">Silakan hubungi toko untuk informasi pengiriman.</p>
+                  </div>
+                )}
                 <div className="space-y-3">
                   {shippingMethods.map((method) => (
                     <label
