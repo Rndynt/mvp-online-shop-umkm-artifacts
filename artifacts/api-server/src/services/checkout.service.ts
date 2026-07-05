@@ -249,17 +249,33 @@ export async function createOrder(input: CheckoutInput) {
   });
 
   // --- Persist payment ---
-  const instruction = {
-    title: "Bayar via QRIS",
-    description: `Scan QR code di bawah dan bayar Rp ${totalAmount.toLocaleString("id-ID")} sebelum ${expiresAt.toLocaleString("id-ID")}`,
-    qrPayload: `00020101021226570011ID.CO.BCA.WWW01189360050300000898480215${orderCode}0303UMI51440014ID.CO.QRIS.WWW0215ID20232132394500303UMI5204481453033605802ID5906RukoLite6015Jakarta Selatan61051234062290525${orderCode}0703A0163049CE1`,
-    expiresAt: expiresAt.toISOString(),
-  };
+  const isBankTransfer = paymentMethod === "manual_bank_transfer";
+  const resolvedMethod = isBankTransfer ? "manual_bank_transfer" : "manual_fake_qris";
+
+  const instruction = isBankTransfer
+    ? {
+        title: "Transfer Bank Manual",
+        description: `Transfer Rp ${totalAmount.toLocaleString("id-ID")} ke salah satu rekening berikut sebelum ${expiresAt.toLocaleString("id-ID")}`,
+        qrPayload: null,
+        bankAccounts: [
+          { bank: "BCA", accountNumber: "1234567890", accountName: "Kopio Indonesia" },
+          { bank: "BNI", accountNumber: "0987654321", accountName: "Kopio Indonesia" },
+          { bank: "Mandiri", accountNumber: "1122334455", accountName: "Kopio Indonesia" },
+        ],
+        expiresAt: expiresAt.toISOString(),
+      }
+    : {
+        title: "Bayar via QRIS",
+        description: `Scan QR code di bawah dan bayar Rp ${totalAmount.toLocaleString("id-ID")} sebelum ${expiresAt.toLocaleString("id-ID")}`,
+        qrPayload: `00020101021226570011ID.CO.BCA.WWW01189360050300000898480215${orderCode}0303UMI51440014ID.CO.QRIS.WWW0215ID20232132394500303UMI5204481453033605802ID5906RukoLite6015Jakarta Selatan61051234062290525${orderCode}0703A0163049CE1`,
+        bankAccounts: null,
+        expiresAt: expiresAt.toISOString(),
+      };
 
   await db.insert(paymentsTable).values({
     id: generateId(),
     orderId,
-    method: "manual_fake_qris",
+    method: resolvedMethod,
     status: "pending",
     amount: totalAmount,
     instructionJson: instruction,
@@ -268,8 +284,8 @@ export async function createOrder(input: CheckoutInput) {
   return {
     orderCode,
     payment: {
-      method: "manual_fake_qris",
-      displayName: "QRIS",
+      method: resolvedMethod,
+      displayName: isBankTransfer ? "Transfer Bank" : "QRIS",
       status: "pending",
       amount: totalAmount,
       instruction,

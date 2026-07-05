@@ -60,7 +60,7 @@ export async function getStorefront() {
     postalCode: store.postalCode,
     contactEmail: store.contactEmail,
     contactPhone: store.contactPhone,
-    activePaymentMethods: ["manual_fake_qris"],
+    activePaymentMethods: ["manual_fake_qris", "manual_bank_transfer"],
     activeShippingMethods: shippingMethods.map((m) => ({
       id: m.id,
       code: m.code,

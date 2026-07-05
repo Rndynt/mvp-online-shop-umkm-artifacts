@@ -1145,13 +1145,13 @@ components:
           type: string
         paymentMethod:
           type: string
-          enum: [manual_fake_qris]
+          enum: [manual_fake_qris, manual_bank_transfer]
         discountCode:
           type: string
 
     PaymentInstructionDetail:
       type: object
-      required: [title, description, qrPayload, expiresAt]
+      required: [title, description, expiresAt]
       properties:
         title:
           type: string
@@ -1159,6 +1159,20 @@ components:
           type: string
         qrPayload:
           type: string
+          nullable: true
+        bankAccounts:
+          type: array
+          nullable: true
+          items:
+            type: object
+            required: [bank, accountNumber, accountName]
+            properties:
+              bank:
+                type: string
+              accountNumber:
+                type: string
+              accountName:
+                type: string
         expiresAt:
           type: string
           format: date-time

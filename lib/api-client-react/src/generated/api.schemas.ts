@@ -274,6 +274,7 @@ export type CheckoutRequestPaymentMethod = typeof CheckoutRequestPaymentMethod[k
 
 export const CheckoutRequestPaymentMethod = {
   manual_fake_qris: 'manual_fake_qris',
+  manual_bank_transfer: 'manual_bank_transfer',
 } as const;
 
 export interface CheckoutRequest {
@@ -286,10 +287,17 @@ export interface CheckoutRequest {
   discountCode?: string;
 }
 
+export interface BankAccount {
+  bank: string;
+  accountNumber: string;
+  accountName: string;
+}
+
 export interface PaymentInstructionDetail {
   title: string;
   description: string;
-  qrPayload: string;
+  qrPayload?: string | null;
+  bankAccounts?: BankAccount[] | null;
   expiresAt: string;
 }
 
