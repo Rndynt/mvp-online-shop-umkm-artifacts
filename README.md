@@ -182,24 +182,34 @@ createdb online_shop_umkm
 
 **Jika di Ubuntu/proot-distro (`apt`):**
 ```bash
-# Cek dulu apakah cluster PostgreSQL sudah ada
+# 1. Cek dulu apakah cluster PostgreSQL sudah ada
 pg_lsclusters
 ```
-> Kalau hasilnya kosong ("No PostgreSQL clusters exist"), berarti cluster-nya belum pernah dibuat — ini memang tidak otomatis di sebagian environment proot-distro. Buat dulu (sekali saja, ganti `16` dengan versi yang muncul waktu instalasi, cek dengan `psql --version` kalau tidak yakin):
+> Kalau hasilnya kosong ("No PostgreSQL clusters exist"), cluster-nya belum pernah dibuat — ini memang tidak otomatis di sebagian environment proot-distro. **Jangan menebak nomor versi** — cek dulu versi PostgreSQL yang benar-benar ter-install:
 > ```bash
-> apt install postgresql-common -y
-> pg_createcluster 16 main --start
+> # 2. Cari versi PostgreSQL yang benar-benar terpasang (lihat folder yang muncul, mis. 16, 17, 18, dst)
+> ls /usr/lib/postgresql/
+> ```
+> Kalau folder itu kosong (paket server belum benar-benar terpasang, cuma `postgresql-common` saja), install dulu:
+> ```bash
+> apt install postgresql -y
+> ls /usr/lib/postgresql/
+> ```
+> Setelah dapat nomor versinya (ganti `<VERSI>` di bawah dengan angka itu, contoh: `18`):
+> ```bash
+> # 3. Buat cluster-nya (sekali saja)
+> pg_createcluster <VERSI> main --start
 > ```
 
 ```bash
-# Jalankan service PostgreSQL
+# 4. Jalankan service PostgreSQL
 service postgresql start
 
-# Masuk sebagai user postgres untuk membuat role & database
+# 5. Masuk sebagai user postgres untuk membuat role & database
 su postgres -c "createuser -s root"
 createdb online_shop_umkm
 ```
-> Setiap kali membuka ulang sesi Ubuntu, jalankan lagi `service postgresql start` sebelum menjalankan aplikasi. `createuser` di atas hanya perlu dijalankan sekali (kalau sudah ada, akan muncul error "role already exists" — abaikan saja).
+> Setiap kali membuka ulang sesi Ubuntu, jalankan lagi `service postgresql start` sebelum menjalankan aplikasi. Langkah `pg_createcluster` dan `createuser` di atas hanya perlu dijalankan **sekali saja** — kalau diulang dan muncul error "already exists"/"role already exists", itu normal, abaikan saja.
 
 ### 3. Siapkan file environment variable
 
