@@ -1,84 +1,67 @@
 # RukoLite — Online Shop UMKM MVP
 
-A full-stack online shop for Indonesian small businesses (UMKM), with a React storefront, Express API, and management placeholder. Built as a pnpm monorepo on Replit.
+A full-stack Indonesian UMKM (small business) online shop platform, built as a **pnpm monorepo** on Replit. Demo store: **Kopio** — a specialty coffee shop.
 
-## Run & Operate
-
-All three services start automatically via configured workflows:
-
-| Workflow | URL | Command |
-|---|---|---|
-| API Server | `/api` | `pnpm --filter @workspace/api-server run dev` |
-| Shop (storefront) | `/` | `pnpm --filter @workspace/shop run dev` |
-| Management | `/management/` | `pnpm --filter @workspace/management run dev` |
-
-Other useful commands:
-- `pnpm install` — install all dependencies (run after git pull)
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev)
-- `pnpm --filter @workspace/db run seed` — seed demo products, shipping, discounts
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks from OpenAPI spec
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-
-## Required Environment Variables
-
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string (auto-provided by Replit) |
-| `SESSION_SECRET` | Secret for session signing (set in Replit Secrets) |
-
-## Stack
-
-- **Monorepo**: pnpm workspaces, TypeScript 5.9, Node.js 24
-- **API**: Express 5, Pino logging, Zod validation, esbuild bundler
-- **DB**: PostgreSQL + Drizzle ORM (schema push, no migration files)
-- **Frontend**: React + Vite + Tailwind CSS v4, Zustand, React Router v7
-- **API contract**: OpenAPI spec → Orval codegen → typed hooks in `lib/api-client-react`
-
-## Where Things Live
+## Architecture
 
 ```
 artifacts/
-  api-server/   Express 5 backend (clean architecture modules)
-  shop/         React+Vite storefront (/, /products/:slug, /checkout, /orders/:code)
-  management/   Placeholder (login/CRUD not in MVP scope)
+  api-server/     Express 5 REST API        → port 8080  (proxied at /api)
+  shop/           React + Vite storefront   → port 24349 (proxied at /)
+  management/     React + Vite admin panel  → port 24310 (proxied at /management/)
 lib/
-  db/           Drizzle schema + seed script
-  shared/       Shared TypeScript types, constants, formatIDR()
-  api-spec/     openapi.yaml — source of truth for API contract
-  api-client/   Vanilla fetch client (typed by shared)
-  api-client-react/  Orval-generated React Query hooks
-  api-zod/      Drizzle-zod type exports
+  db/             Drizzle ORM + PostgreSQL schema + seed
+  shared/         Shared TypeScript types & constants
+  api-zod/        Zod validation schemas for API
+  api-client/     Fetch-based API client (framework-agnostic)
+  api-client-react/ React Query wrappers
+  api-spec/       OpenAPI spec
+  object-storage-web/ Google Cloud Storage helpers
 ```
 
-## Architecture Decisions
+## Running the Project
 
-- **No Next.js**: Replit artifacts only support `react-vite`; the spec's Next.js/Fastify choices were adapted to React+Vite/Express 5
-- **Fake QRIS**: Payment is demo-only (`manual_fake_qris`); no real payment gateway wired up in MVP
-- **Backend recalculates totals**: Frontend cart is estimate-only; checkout endpoint re-fetches prices, shipping, and discounts from DB
-- **Drizzle push (not migrate)**: Dev uses `drizzle-kit push` for simplicity; add migration files before production
-- **Orval codegen**: API client hooks are generated from `lib/api-spec/openapi.yaml` — edit the spec, run codegen, never edit generated files directly
+Three workflows start automatically:
+- **artifacts/api-server: API Server** — builds & starts the Express API
+- **artifacts/shop: web** — Vite dev server for the storefront
+- **artifacts/management: web** — Vite dev server for the management panel
 
-## Demo Data (seed)
+## Database
 
-- **Store**: RukoLite (slug: `rukolite`, teal primary)
-- **Products**: Tas Kanvas Handy, Pouch Kulit Multifungsi, Tumbler Stainless Slim, Notebook Dot Grid A5
-- **Shipping**: Standard (Rp 15.000), Express (Rp 30.000)
-- **Discount**: `HEMAT10` — 10% off
+Uses **Replit's managed PostgreSQL** (`DATABASE_URL` auto-injected).
 
-## ROADMAP Status
+```bash
+# Push schema changes
+pnpm --filter @workspace/db run push
 
-See `ROADMAP.md` for the full checklist. As of import:
-- Phase 0 (docs) ✅ — Phase 1 (structure) 🔄 — Phases 2–7 ⏳
+# Re-seed demo data (Kopio coffee store, 12 products, shipping methods, discount code)
+pnpm --filter @workspace/db run seed
+```
+
+Demo discount code: **NGOPI10** (10% off)
+
+## Environment Variables
+
+Set in Replit Secrets / Env Vars:
+
+| Key | Value | Notes |
+|-----|-------|-------|
+| `DATABASE_URL` | auto | Managed by Replit |
+| `SESSION_SECRET` | secret | Set as Replit Secret |
+| `PORT` | `5000` | API listen port (remapped by Replit to 8080) |
+| `CORS_ORIGIN` | comma-separated origins | Allowed CORS origins |
+| `VITE_API_URL` | `/api` | API base URL for frontend |
+| `NODE_ENV` | `development` | Runtime environment |
+
+## Key Features
+
+- **Storefront**: product listing, product detail with variants, cart drawer, checkout with shipping selection, QRIS payment confirmation
+- **Management**: product CRUD, order management, discount codes, shipping methods, analytics, store template picker
+- **Variants**: Shopify-style multi-dimensional product variants (e.g. grind type × weight)
+- **Theming**: CSS custom properties via `@theme inline`; active storefront template persisted in DB
 
 ## User Preferences
 
-_Populate as you learn — explicit instructions worth remembering across sessions._
-
-## Gotchas
-
-- Run `pnpm install` before starting workflows on a fresh clone
-- `pnpm --filter @workspace/db run push` + `seed` must be run once before the API returns real data
-- The mockup-sandbox workflow (`/__mockup`) is only needed for Canvas/design exploration
-- Theme colors are applied as CSS vars via `@theme inline`; use `bg-primary` etc., not hardcoded Tailwind colors
-- After import, check for duplicate workflow names — artifact-managed workflows can collide with legacy ones
+- Keep existing monorepo structure (`artifacts/` + `lib/`)
+- Use pnpm workspaces (not Turborepo)
+- Indonesian locale (IDR currency, Bahasa Indonesia UI)
