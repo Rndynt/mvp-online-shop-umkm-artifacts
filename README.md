@@ -133,21 +133,37 @@ Buat file `.env` di root proyek (lihat `.env.example`):
 
 ## Menjalankan Proyek Secara Lokal di Termux (HP Android)
 
-Panduan ini untuk menjalankan proyek di HP Android memakai aplikasi **Termux**, setelah kamu sudah meng-clone repo dan menjalankan `pnpm install`.
+Panduan ini untuk menjalankan proyek di HP Android, setelah kamu sudah meng-clone repo dan menjalankan `pnpm install`.
+
+Ada dua kemungkinan environment yang biasa dipakai di HP Android — **pakai perintah yang sesuai dengan environment kamu saat ini**:
+
+- **Termux asli** (prompt biasanya `~ $`) → pakai perintah `pkg`
+- **Ubuntu di dalam Termux** (lewat `proot-distro`, prompt biasanya `root@localhost:~#`) → pakai perintah `apt` (karena ini sudah masuk ke sistem Ubuntu, bukan Termux lagi — `pkg` tidak akan berfungsi di sini, apalagi sebagai `root`)
 
 ### 1. Persiapan awal (sekali saja)
 
+**Jika di Termux asli (`pkg`):**
 ```bash
-# Update paket Termux & pasang Node.js 20 + PostgreSQL
 pkg update && pkg upgrade -y
 pkg install nodejs-lts postgresql git -y
-
-# Pasang pnpm (jika belum ada)
 npm install -g pnpm
 ```
 
+**Jika di Ubuntu/proot-distro (`apt`):**
+```bash
+apt update && apt upgrade -y
+apt install nodejs npm postgresql postgresql-contrib git -y
+npm install -g pnpm
+```
+> Kalau versi Node.js dari `apt` terlalu lama (cek dengan `node -v`, proyek ini butuh Node 20+), pasang lewat NodeSource:
+> ```bash
+> curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+> apt install nodejs -y
+> ```
+
 ### 2. Siapkan database PostgreSQL lokal
 
+**Jika di Termux asli (`pkg`):**
 ```bash
 # Inisialisasi database (sekali saja)
 initdb $PREFIX/var/lib/postgresql
@@ -158,8 +174,18 @@ pg_ctl -D $PREFIX/var/lib/postgresql start
 # Buat database untuk RukoLite
 createdb online_shop_umkm
 ```
+> Setiap kali membuka ulang Termux, jalankan lagi `pg_ctl -D $PREFIX/var/lib/postgresql start` sebelum menjalankan aplikasi.
 
-> Setiap kali membuka ulang Termux, kamu perlu menjalankan lagi `pg_ctl -D $PREFIX/var/lib/postgresql start` sebelum menjalankan aplikasi.
+**Jika di Ubuntu/proot-distro (`apt`):**
+```bash
+# Jalankan service PostgreSQL
+service postgresql start
+
+# Masuk sebagai user postgres untuk membuat database
+su postgres -c "createuser -s root"
+createdb online_shop_umkm
+```
+> Setiap kali membuka ulang sesi Ubuntu, jalankan lagi `service postgresql start` sebelum menjalankan aplikasi.
 
 ### 3. Siapkan file environment variable
 
