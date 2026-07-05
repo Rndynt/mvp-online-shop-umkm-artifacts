@@ -12,4 +12,6 @@ export interface CheckoutItem {
   quantity: number;
   /** Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing. */
   bundleId?: string | null;
+  /** Optional variant ID — when provided the server uses variant pricing and stock. */
+  variantId?: string | null;
 }

@@ -3,6 +3,8 @@ import { z } from "zod";
 export const checkoutItemSchema = z.object({
   productId: z.string().uuid(),
   quantity: z.number().int().min(1),
+  bundleId: z.string().uuid().optional(),
+  variantId: z.string().uuid().optional(),
 });
 
 export const checkoutCustomerSchema = z.object({
@@ -26,7 +28,7 @@ export const checkoutRequestSchema = z.object({
   customer: checkoutCustomerSchema,
   shippingAddress: checkoutShippingAddressSchema,
   shippingMethodId: z.string().uuid(),
-  paymentMethod: z.literal("manual_fake_qris"),
+  paymentMethod: z.enum(["manual_fake_qris", "manual_bank_transfer"]),
   discountCode: z.string().optional(),
 });
 

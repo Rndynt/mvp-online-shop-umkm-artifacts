@@ -193,7 +193,7 @@ export const CreateCheckoutBody = zod.object({
   "country": zod.string()
 }),
   "shippingMethodId": zod.string(),
-  "paymentMethod": zod.enum(['manual_fake_qris']),
+  "paymentMethod": zod.enum(['manual_fake_qris', 'manual_bank_transfer']),
   "discountCode": zod.string().optional()
 })
 

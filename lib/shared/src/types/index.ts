@@ -67,6 +67,8 @@ export interface ShippingMethod {
 export interface CheckoutItem {
   productId: string;
   quantity: number;
+  bundleId?: string;
+  variantId?: string;
 }
 
 export interface CheckoutCustomer {

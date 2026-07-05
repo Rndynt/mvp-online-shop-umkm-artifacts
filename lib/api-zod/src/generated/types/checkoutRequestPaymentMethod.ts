@@ -11,4 +11,5 @@ export type CheckoutRequestPaymentMethod = typeof CheckoutRequestPaymentMethod[k
 
 export const CheckoutRequestPaymentMethod = {
   manual_fake_qris: 'manual_fake_qris',
+  manual_bank_transfer: 'manual_bank_transfer',
 } as const;
