@@ -181,15 +181,23 @@ createdb online_shop_umkm
 > Setiap kali membuka ulang Termux, jalankan lagi `pg_ctl -D $PREFIX/var/lib/postgresql start` sebelum menjalankan aplikasi.
 
 **Jika di Ubuntu/proot-distro (`apt`):**
-```bash
-# Jalankan service PostgreSQL
-service postgresql start
 
-# Masuk sebagai user postgres untuk membuat database
-su postgres -c "createuser -s root"
+> ⚠️ **PostgreSQL tidak reliable dijalankan di dalam Ubuntu/proot-distro.** `proot` memalsukan (fake) kepemilikan user/UID untuk keperluan sandbox, sementara filesystem asli Android di baliknya cuma mengenal satu UID nyata. PostgreSQL secara ketat mengecek kecocokan UID pemilik data directory demi keamanan, sehingga `pg_createcluster`/`initdb` akan selalu gagal dengan error `data directory has wrong ownership` — ini bukan salah konfigurasi, memang batasan proot.
+>
+> **Solusi yang benar-benar jalan:** jalankan PostgreSQL-nya di **Termux asli** (bukan di dalam Ubuntu), sementara Node.js/pnpm/aplikasi tetap jalan di Ubuntu. Proot-distro berbagi jaringan yang sama dengan Termux host-nya, jadi dari dalam Ubuntu tetap bisa connect ke `localhost:5432` milik Termux.
+
+Buka **sesi Termux baru** (keluar dulu dari `proot-distro login ubuntu`, atau tab Termux terpisah):
+```bash
+# Di TERMUX ASLI (bukan di dalam Ubuntu)
+pkg update && pkg upgrade -y
+pkg install postgresql -y
+initdb $PREFIX/var/lib/postgresql
+pg_ctl -D $PREFIX/var/lib/postgresql start
 createdb online_shop_umkm
 ```
-> Setiap kali membuka ulang sesi Ubuntu, jalankan lagi `service postgresql start` sebelum menjalankan aplikasi.
+Lalu **kembali ke sesi Ubuntu/proot-distro** untuk lanjut ke langkah berikutnya — `DATABASE_URL` cukup mengarah ke `localhost:5432` seperti biasa.
+
+> Setiap mau kerja lagi, kamu butuh **dua sesi Termux terpisah**: satu sesi Termux asli untuk `pg_ctl -D $PREFIX/var/lib/postgresql start` (database), satu sesi lagi masuk ke Ubuntu/proot-distro untuk menjalankan aplikasi.
 
 ### 3. Siapkan file environment variable
 
