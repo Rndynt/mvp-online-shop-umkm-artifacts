@@ -289,17 +289,17 @@ export interface CheckoutRequest {
   discountCode?: string;
 }
 
-export interface BankAccount {
+export type PaymentInstructionDetailBankAccountsItem = {
   bank: string;
   accountNumber: string;
   accountName: string;
-}
+};
 
 export interface PaymentInstructionDetail {
   title: string;
   description: string;
   qrPayload?: string | null;
-  bankAccounts?: BankAccount[] | null;
+  bankAccounts?: PaymentInstructionDetailBankAccountsItem[] | null;
   expiresAt: string;
 }
 
@@ -387,10 +387,8 @@ export interface UploadUrlRequest {
 }
 
 export interface UploadUrlResponse {
-  /** Presigned GCS URL for PUT upload. */
-  uploadURL: string;
-  /** Normalized object path (e.g. `/objects/uploads/uuid`). Store this in your database. */
-  objectPath: string;
+  /** Public Cloudinary CDN URL of the uploaded image. Store this in your database. */
+  url: string;
   metadata?: UploadUrlRequest;
 }
 
@@ -473,5 +471,9 @@ export type AdminGetOrder200 = {
 
 export type AdminUpdateOrderStatus200 = {
   data: OrderResponse;
+};
+
+export type UploadImageBody = {
+  file: Blob;
 };
 

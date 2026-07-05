@@ -5,10 +5,12 @@
  * RukoLite Online Shop UMKM MVP API
  * OpenAPI spec version: 0.1.0
  */
+import type { PaymentInstructionDetailBankAccountsItem } from './paymentInstructionDetailBankAccountsItem';
 
 export interface PaymentInstructionDetail {
   title: string;
   description: string;
-  qrPayload: string;
+  qrPayload?: string | null;
+  bankAccounts?: PaymentInstructionDetailBankAccountsItem[] | null;
   expiresAt: Date;
 }

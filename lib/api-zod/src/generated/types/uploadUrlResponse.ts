@@ -8,9 +8,7 @@
 import type { UploadUrlRequest } from './uploadUrlRequest';
 
 export interface UploadUrlResponse {
-  /** Presigned GCS URL for PUT upload. */
-  uploadURL: string;
-  /** Normalized object path (e.g. `/objects/uploads/uuid`). Store this in your database. */
-  objectPath: string;
+  /** Public Cloudinary CDN URL of the uploaded image. Store this in your database. */
+  url: string;
   metadata?: UploadUrlRequest;
 }

@@ -176,7 +176,8 @@ export const CreateCheckoutBody = zod.object({
   "items": zod.array(zod.object({
   "productId": zod.string(),
   "quantity": zod.number().min(1),
-  "bundleId": zod.string().nullish().describe('Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing.')
+  "bundleId": zod.string().nullish().describe('Optional bundle ID — when provided the server validates the bundle belongs to the product and uses bundle pricing.'),
+  "variantId": zod.string().nullish().describe('Optional variant ID — when provided the server validates the variant belongs to the product and uses variant pricing\/stock.')
 })).min(1),
   "customer": zod.object({
   "email": zod.string().email(),
@@ -208,7 +209,12 @@ export const CreateCheckoutResponse = zod.object({
   "instruction": zod.object({
   "title": zod.string(),
   "description": zod.string(),
-  "qrPayload": zod.string(),
+  "qrPayload": zod.string().nullish(),
+  "bankAccounts": zod.array(zod.object({
+  "bank": zod.string(),
+  "accountNumber": zod.string(),
+  "accountName": zod.string()
+})).nullish(),
   "expiresAt": zod.coerce.date()
 })
 })
@@ -265,7 +271,12 @@ export const GetOrderByCodeResponse = zod.object({
   "instruction": zod.object({
   "title": zod.string(),
   "description": zod.string(),
-  "qrPayload": zod.string(),
+  "qrPayload": zod.string().nullish(),
+  "bankAccounts": zod.array(zod.object({
+  "bank": zod.string(),
+  "accountNumber": zod.string(),
+  "accountName": zod.string()
+})).nullish(),
   "expiresAt": zod.coerce.date()
 })
 }),
@@ -740,7 +751,12 @@ export const AdminGetOrderResponse = zod.object({
   "instruction": zod.object({
   "title": zod.string(),
   "description": zod.string(),
-  "qrPayload": zod.string(),
+  "qrPayload": zod.string().nullish(),
+  "bankAccounts": zod.array(zod.object({
+  "bank": zod.string(),
+  "accountNumber": zod.string(),
+  "accountName": zod.string()
+})).nullish(),
   "expiresAt": zod.coerce.date()
 })
 }),
@@ -802,7 +818,12 @@ export const AdminUpdateOrderStatusResponse = zod.object({
   "instruction": zod.object({
   "title": zod.string(),
   "description": zod.string(),
-  "qrPayload": zod.string(),
+  "qrPayload": zod.string().nullish(),
+  "bankAccounts": zod.array(zod.object({
+  "bank": zod.string(),
+  "accountNumber": zod.string(),
+  "accountName": zod.string()
+})).nullish(),
   "expiresAt": zod.coerce.date()
 })
 }),
@@ -812,19 +833,13 @@ export const AdminUpdateOrderStatusResponse = zod.object({
 
 
 /**
- * Returns a presigned GCS URL for direct upload. The client sends JSON
- * metadata here, then uploads the file directly to the returned URL.
- * @summary Request a presigned URL for file upload
+ * Single-step image upload. Client sends the file as multipart/form-data
+ * (field name "file"). Server streams it to Cloudinary and returns the
+ * public CDN URL directly.
+ * @summary Upload an image file to Cloudinary
  */
-
-
-
-
-
-export const RequestUploadUrlBody = zod.object({
-  "name": zod.string().min(1).describe('Original file name.'),
-  "size": zod.number().min(1).describe('File size in bytes.'),
-  "contentType": zod.string().min(1).describe('MIME type of the file (e.g. `image\/jpeg`).')
+export const UploadImageBody = zod.object({
+  "file": zod.instanceof(File)
 })
 
 
@@ -832,38 +847,13 @@ export const RequestUploadUrlBody = zod.object({
 
 
 
-export const RequestUploadUrlResponse = zod.object({
-  "uploadURL": zod.string().url().describe('Presigned GCS URL for PUT upload.'),
-  "objectPath": zod.string().describe('Normalized object path (e.g. `\/objects\/uploads\/uuid`). Store this in your database.'),
+export const UploadImageResponse = zod.object({
+  "url": zod.string().url().describe('Public Cloudinary CDN URL of the uploaded image. Store this in your database.'),
   "metadata": zod.object({
   "name": zod.string().min(1).describe('Original file name.'),
   "size": zod.number().min(1).describe('File size in bytes.'),
   "contentType": zod.string().min(1).describe('MIME type of the file (e.g. `image\/jpeg`).')
 }).optional()
 })
-
-
-/**
- * Unconditionally public — no authentication or ACL checks.
- * Searches PUBLIC_OBJECT_SEARCH_PATHS for the given file path.
- * @summary Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
- */
-export const GetPublicObjectParams = zod.object({
-  "filePath": zod.coerce.string().describe('Relative file path within the public search paths.')
-})
-
-export const GetPublicObjectResponse = zod.unknown()
-
-
-/**
- * Serves object entities uploaded via presigned URLs. These can optionally
- * be protected with authentication or ACL checks based on the use case.
- * @summary Serve an object entity from PRIVATE_OBJECT_DIR
- */
-export const GetStorageObjectParams = zod.object({
-  "objectPath": zod.coerce.string().describe('Object path within the private object dir (e.g. `uploads\/some-uuid`).')
-})
-
-export const GetStorageObjectResponse = zod.unknown()
 
 

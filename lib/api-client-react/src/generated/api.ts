@@ -43,7 +43,7 @@ import type {
   ListShippingMethods200,
   PaymentConfirmationRequest,
   SubmitPaymentConfirmation200,
-  UploadUrlRequest,
+  UploadImageBody,
   UploadUrlResponse
 } from './api.schemas';
 
@@ -1281,38 +1281,41 @@ export const useAdminUpdateOrderStatus = <TError = ErrorType<ErrorResponse>,
       return useMutation(getAdminUpdateOrderStatusMutationOptions(options));
     }
 
-export const getRequestUploadUrlUrl = () => {
+export const getUploadImageUrl = () => {
 
 
 
 
-  return `/api/storage/uploads/request-url`
+  return `/api/storage/uploads`
 }
 
 /**
- * Returns a presigned GCS URL for direct upload. The client sends JSON
- * metadata here, then uploads the file directly to the returned URL.
- * @summary Request a presigned URL for file upload
+ * Single-step image upload. Client sends the file as multipart/form-data
+ * (field name "file"). Server streams it to Cloudinary and returns the
+ * public CDN URL directly.
+ * @summary Upload an image file to Cloudinary
  */
-export const requestUploadUrl = async (uploadUrlRequest: UploadUrlRequest, options?: RequestInit): Promise<UploadUrlResponse> => {
+export const uploadImage = async (uploadImageBody: UploadImageBody, options?: RequestInit): Promise<UploadUrlResponse> => {
+    const formData = new FormData();
+formData.append(`file`, uploadImageBody.file);
 
-  return customFetch<UploadUrlResponse>(getRequestUploadUrlUrl(),
+  return customFetch<UploadUrlResponse>(getUploadImageUrl(),
   {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(uploadUrlRequest)
+    method: 'POST'
+    ,
+    body: formData
   }
 );}
 
 
 
 
-export const getRequestUploadUrlMutationOptions = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestUploadUrl>>, TError,{data: BodyType<UploadUrlRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof requestUploadUrl>>, TError,{data: BodyType<UploadUrlRequest>}, TContext> => {
+export const getUploadImageMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadImage>>, TError,{data: BodyType<UploadImageBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadImage>>, TError,{data: BodyType<UploadImageBody>}, TContext> => {
 
-const mutationKey = ['requestUploadUrl'];
+const mutationKey = ['uploadImage'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1322,10 +1325,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestUploadUrl>>, {data: BodyType<UploadUrlRequest>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadImage>>, {data: BodyType<UploadImageBody>}> = (props) => {
           const {data} = props ?? {};
 
-          return  requestUploadUrl(data,requestOptions)
+          return  uploadImage(data,requestOptions)
         }
 
 
@@ -1335,179 +1338,21 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type RequestUploadUrlMutationResult = NonNullable<Awaited<ReturnType<typeof requestUploadUrl>>>
-    export type RequestUploadUrlMutationBody = BodyType<UploadUrlRequest>
-    export type RequestUploadUrlMutationError = ErrorType<ErrorResponse>
+    export type UploadImageMutationResult = NonNullable<Awaited<ReturnType<typeof uploadImage>>>
+    export type UploadImageMutationBody = BodyType<UploadImageBody>
+    export type UploadImageMutationError = ErrorType<ErrorResponse>
 
     /**
- * @summary Request a presigned URL for file upload
+ * @summary Upload an image file to Cloudinary
  */
-export const useRequestUploadUrl = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestUploadUrl>>, TError,{data: BodyType<UploadUrlRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+export const useUploadImage = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadImage>>, TError,{data: BodyType<UploadImageBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
-        Awaited<ReturnType<typeof requestUploadUrl>>,
+        Awaited<ReturnType<typeof uploadImage>>,
         TError,
-        {data: BodyType<UploadUrlRequest>},
+        {data: BodyType<UploadImageBody>},
         TContext
       > => {
-      return useMutation(getRequestUploadUrlMutationOptions(options));
+      return useMutation(getUploadImageMutationOptions(options));
     }
-
-export const getGetPublicObjectUrl = (filePath: string,) => {
-
-
-
-
-  return `/api/storage/public-objects/${filePath}`
-}
-
-/**
- * Unconditionally public — no authentication or ACL checks.
- * Searches PUBLIC_OBJECT_SEARCH_PATHS for the given file path.
- * @summary Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
- */
-export const getPublicObject = async (filePath: string, options?: RequestInit): Promise<Blob> => {
-
-  return customFetch<Blob>(getGetPublicObjectUrl(filePath),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getGetPublicObjectQueryKey = (filePath: string,) => {
-    return [
-    `/api/storage/public-objects/${filePath}`
-    ] as const;
-    }
-
-
-export const getGetPublicObjectQueryOptions = <TData = Awaited<ReturnType<typeof getPublicObject>>, TError = ErrorType<ErrorResponse>>(filePath: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicObject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetPublicObjectQueryKey(filePath);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPublicObject>>> = ({ signal }) => getPublicObject(filePath, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: filePath !== null && filePath !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPublicObject>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetPublicObjectQueryResult = NonNullable<Awaited<ReturnType<typeof getPublicObject>>>
-export type GetPublicObjectQueryError = ErrorType<ErrorResponse>
-
-
-/**
- * @summary Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
- */
-
-export function useGetPublicObject<TData = Awaited<ReturnType<typeof getPublicObject>>, TError = ErrorType<ErrorResponse>>(
- filePath: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPublicObject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getGetPublicObjectQueryOptions(filePath,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-
-export const getGetStorageObjectUrl = (objectPath: string,) => {
-
-
-
-
-  return `/api/storage/objects/${objectPath}`
-}
-
-/**
- * Serves object entities uploaded via presigned URLs. These can optionally
- * be protected with authentication or ACL checks based on the use case.
- * @summary Serve an object entity from PRIVATE_OBJECT_DIR
- */
-export const getStorageObject = async (objectPath: string, options?: RequestInit): Promise<Blob> => {
-
-  return customFetch<Blob>(getGetStorageObjectUrl(objectPath),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getGetStorageObjectQueryKey = (objectPath: string,) => {
-    return [
-    `/api/storage/objects/${objectPath}`
-    ] as const;
-    }
-
-
-export const getGetStorageObjectQueryOptions = <TData = Awaited<ReturnType<typeof getStorageObject>>, TError = ErrorType<ErrorResponse>>(objectPath: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getStorageObject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetStorageObjectQueryKey(objectPath);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getStorageObject>>> = ({ signal }) => getStorageObject(objectPath, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: objectPath !== null && objectPath !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getStorageObject>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetStorageObjectQueryResult = NonNullable<Awaited<ReturnType<typeof getStorageObject>>>
-export type GetStorageObjectQueryError = ErrorType<ErrorResponse>
-
-
-/**
- * @summary Serve an object entity from PRIVATE_OBJECT_DIR
- */
-
-export function useGetStorageObject<TData = Awaited<ReturnType<typeof getStorageObject>>, TError = ErrorType<ErrorResponse>>(
- objectPath: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getStorageObject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getGetStorageObjectQueryOptions(objectPath,options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
 

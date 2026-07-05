@@ -1,0 +1,11 @@
+interface AnnouncementBarProps {
+  text: string;
+}
+
+export function AnnouncementBar({ text }: AnnouncementBarProps) {
+  return (
+    <div className="bg-primary text-white text-center py-2 px-4 text-sm font-medium tracking-wide">
+      {text}
+    </div>
+  );
+}
