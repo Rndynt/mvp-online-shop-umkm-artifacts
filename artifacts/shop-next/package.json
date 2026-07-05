@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "dotenv -e ../../.env -- next dev --hostname 0.0.0.0 --port ${PORT:-5000}",
-    "build": "next build",
+    "build": "pnpm dlx @opennextjs/cloudflare@latest build",
+    "build:next": "next build",
+    "deploy": "pnpm dlx wrangler@4.107.0 deploy",
+    "preview": "pnpm dlx @opennextjs/cloudflare@latest preview",
     "start": "dotenv -e ../../.env -- next start --hostname 0.0.0.0 --port ${PORT:-5000}",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
